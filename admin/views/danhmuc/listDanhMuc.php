@@ -26,7 +26,7 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Thêm Danh Mục Sản Phẩm</h3>
+                <a href="<?= BASE_URL_ADMIN . '?act=form-them-danh-muc' ?>"class="btn btn-success">Thêm Danh Mục</a>
               </div>
               <!-- /.card-header -->
               <div class="card-body">

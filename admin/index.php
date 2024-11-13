@@ -20,7 +20,11 @@ $act = $_GET['act'] ?? '/';
 
 match ($act) {
     // Trang chủ
+    // Danh mục
     'danh-muc' => (new AdminDanhMucController()) -> danhSachDanhMuc(),   
-    // Đơn hàng
+    'form-them-danh-muc' => (new AdminDanhMucController()) -> formAddDanhMuc(),   
+    'them-danh-muc' => (new AdminDanhMucController()) -> postAddDanhMuc(),   
+    
+
     
 };
