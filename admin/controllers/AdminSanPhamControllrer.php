@@ -17,26 +17,26 @@
             //hiển thị form nhập
             $listDanhMuc = $this->modelDanhMuc->getAllDanhMuc();
             require_once './views/sanpham/addSanPham.php';
+            deleteSessionError();
         }
-
         
         public function postAddSanPham(){
             //thêm dữ liệu xử lý
             // var_dump($_POST);
             if($_SERVER['REQUEST_METHOD'] == 'POST'){
-                $ten_sach = $_POST['ten_sach'];
-                $gia_sach = $_POST['gia_sach'];
-                $gia_khuyen_mai = $_POST['gia_khuyen_mai'];
-                $so_luong = $_POST['so_luong'];
-                $ngay_xuat_ban = $_POST['ngay_xuat_ban'];
-                $danh_muc_id = $_POST['danh_muc_id'];
-                $trang_thai = $_POST['trang_thai'];
-                $the_loai_id = $_POST['the_loai_id'];
-                $mo_ta = $_POST['mo_ta'];
+                $ten_sach = $_POST['ten_sach'] ?? '';
+                $gia_sach = $_POST['gia_sach'] ?? '';
+                $gia_khuyen_mai = $_POST['gia_khuyen_mai'] ?? '';
+                $so_luong = $_POST['so_luong'] ?? '';
+                $ngay_xuat_ban = $_POST['ngay_xuat_ban'] ?? '';
+                $danh_muc_id = $_POST['danh_muc_id'] ?? '';
+                $trang_thai = $_POST['trang_thai'] ?? '';
+                $the_loai_id = $_POST['the_loai_id'] ?? '';
+                $mo_ta = $_POST['mo_ta'] ?? '';//var_dump($mo_ta);die;
 
-                $hinh_anh = $_FILES['hinh_anh'];
+                $hinh_anh = $_FILES['hinh_anh'] ?? null;
                 // lưu ảnh
-                $file_thumb = uploadFile($hinh_anh, './uploads');
+                $file_thumb = uploadFile($hinh_anh, './uploads/');
                 // mảng hình ảnh
                 $img_array = $_FILES['img_array'];
 
@@ -65,17 +65,26 @@
                 if(empty($the_loai_id)){
                     $errors['the_loai_id'] = 'Thể loại không được để trống.';
                 }
+                if($hinh_anh['error'] !== 0){
+                    $errors['$hinh_anh'] = 'Phải chọn hình ảnh không được để trống.';
+                }
+
+                $_SESSION['error'] = $errors; 
+
                 // nếu không có lỗi 
                 if(empty($errors)){
                     // nếu không có lỗi tiến hành tiếp
                     // var_dump("kjhk");die;
-                    $this->modelSanPham->insertSanPham($ten_sach, $gia_sach, $gia_khuyen_mai, $so_luong, 
+                    $san_pham_id = $this->modelSanPham->insertSanPham($ten_sach, $gia_sach, $gia_khuyen_mai, $so_luong, 
                                                         $ngay_xuat_ban, $danh_muc_id, $trang_thai, $the_loai_id ,$mo_ta, $file_thumb);
+                    // var_dump($san_pham_id); die;
                     header("Location: " . BASE_URL_ADMIN . '?act=san-pham');
                     exit();
                 }else{
                     // trả về form và lỗi
-                    require_once './views/sanpham/addSanPham.php';
+                    // đặt chỉ thị xóa session sau khi hiển thị form
+                    $_SESSION['flash'] = true;
+                    header("Location: " . BASE_URL_ADMIN . '?act=form-them-san-pham');
                 }
             }
         }
