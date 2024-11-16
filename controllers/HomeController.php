@@ -2,15 +2,15 @@
 
 class HomeController
 {
-    public $modelSanPham;
+    public $modelProduct;
 
     public function __construct()
     {
-        $this->modelSanPham = new SanPham();    
+        $this->modelProduct = new ProductModel();    
     }
 
-    public function home(){
-        echo "Home";
+    public function home() {
+        require_once './views/home.php';
     }
 
     public function trangChu(){
@@ -18,7 +18,7 @@ class HomeController
     }
 
     public function danhSachSanPham(){
-        $listProduct = $this->modelSanPham->getAllProduct();
+        $listProduct = $this->modelProduct->getAllProducts();
         require_once './views/listProduct.php';
     }
 

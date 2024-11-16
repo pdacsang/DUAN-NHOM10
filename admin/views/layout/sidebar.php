@@ -31,14 +31,25 @@
               </p>
             </a>
           </li>
+
           <li class="nav-item">
-            <a href="<?php BASE_URL_ADMIN . '?act=danh-muc' ?>" class="nav-link">
+            <a href="<?= BASE_URL_ADMIN . '?act=danh-muc' ?>" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
-                Danh Mục Sản Phẩm
+                Quản Lý Danh Mục
               </p>
             </a>
           </li>
+
+          <li class="nav-item">
+            <a href="<?= BASE_URL_ADMIN . '?act=don-hang' ?>" class="nav-link">
+              <i class="nav-icon fas fa-book-open"></i>
+              <p>
+                Quản Lý Đơn Hàng
+              </p>
+            </a>
+          </li>
+
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

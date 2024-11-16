@@ -1,4 +1,4 @@
-<?php require_once './views/layout/header.php' ?>
+<?php require_once './views/layout/header.php'; ?>
 <?php require_once './views/layout/navbar.php' ?>
 <?php require_once './views/layout/sidebar.php' ?>
 
@@ -23,7 +23,7 @@
                 </div>
                 <div class="bestselling__product-text">
                     <h3 class="bestselling__product-title">
-                        <a href="#" class="bestselling__product-link">Biểu tượng thất truyền</a>
+                        <a href="index.php?act=showProductDetail&id=1" class="bestselling__product-link">Biểu tượng thất truyền</a>
                     </h3>
 
                     <div class="bestselling__product-rate-wrap">

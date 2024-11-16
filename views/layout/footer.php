@@ -99,6 +99,7 @@
     </div>
     <script src="js/jq.js"></script>
     <script src="js/index.js"></script>
+    <script src="js/product.js"></script>
 <!-- Code injected by live-server -->
 <script>
 	// <![CDATA[  <-- For SVG support

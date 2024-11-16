@@ -12,6 +12,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Paytone+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="stylesheet" href="./assets/css/home.css">
+    <link rel="stylesheet" href="./assets/css/product.css">
+    <script src="index.js"></script>
+    
+
 </head>
 <body>
     <div class="app">

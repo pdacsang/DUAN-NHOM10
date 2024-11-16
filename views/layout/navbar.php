@@ -1,3 +1,4 @@
+
 <header id="header">
         <!-- header top -->
         <div class="header__top">
@@ -87,18 +88,82 @@
         <div class="header__nav">
             <div class="container">
                 <section class="row">
-                    <div class="header__nav-menu-wrap col-lg-3 col-md-0 col-sm-0">
-                        <i class="fas fa-bars header__nav-menu-icon"></i>
-                        <div class="header__nav-menu-title">Danh mục sản phẩm</div>
-                    </div>
+                
+                <div class="header__nav-menu-wrap col-lg-3 col-md-0 col-sm-0">
+                <i class="fas fa-bars header__nav-menu-icon">
+    <div id="dropdownMenu" class="header__nav-menu hidden">
+        <select onchange="location = this.value;">
+            <option value="index.php?act=productByCategory" <?= empty($_GET['danh_muc_id']) ? 'selected' : '' ?>>
+                Tất cả
+            </option>
+            <?php if (isset($categories)): ?>
+                <?php foreach ($categories as $category): ?>
+                    <option 
+                        value="index.php?act=productByCategory&danh_muc_id=<?= $category['id'] ?>" 
+                        <?= (isset($_GET['danh_muc_id']) && $_GET['danh_muc_id'] == $category['id']) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($category['ten_danh_muc']) ?>
+                    </option>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <option disabled>Không có danh mục</option>
+            <?php endif; ?>
+        </select>
+    </div>
+</i>
+
+<style>
+    .header__nav-menu {
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 10px;
+        z-index: 1000;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .fas.fa-bars {
+        cursor: pointer;
+        font-size: 24px;
+    }
+</style>
+<div class="header__nav-menu-title">Danh mục sản phẩm</div>
+<script>
+    const menuIcon = document.querySelector(".header__nav-menu-icon");
+const dropdownMenu = document.getElementById("dropdownMenu");
+
+menuIcon.addEventListener("mouseover", () => {
+    dropdownMenu.classList.remove("hidden");
+});
+
+menuIcon.addEventListener("mouseout", (e) => {
+    if (!menuIcon.contains(e.relatedTarget)) {
+        dropdownMenu.classList.add("hidden");
+    }
+});
+dropdownMenu.addEventListener("mouseout", (e) => {
+    if (!menuIcon.contains(e.relatedTarget)) {
+        dropdownMenu.classList.add("hidden");
+    }
+});
+</script>
+    
+</div>
+
+
+
 
                     <div class="header__nav col-lg-9 col-md-0 col-sm-0">
                         <ul class="header__nav-list">
                             <li class="header__nav-item">
-                                <a href="index.html" class="header__nav-link">Trang chủ</a>
+                                <a href="index.php" class="header__nav-link">Trang chủ</a>
                             </li>
                             <li class="header__nav-item">
-                                <a href="category.html" class="header__nav-link">Danh mục sản phẩm</a>
+                                <a href="index.php?act=productByCategory" class="header__nav-link">Danh mục sản phẩm</a>
+                                
                             </li>
                             <li class="header__nav-item">
                                 <a href="product.html" class="header__nav-link">Sản phẩm</a>
