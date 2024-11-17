@@ -45,7 +45,6 @@
           <div class="col-12 col-sm-6">
             <h3 class="my-3"><b>Tên Sách:</b> <?= $sanPham['ten_sach'] ?></h3>
             <hr>
-
             <h4 class="mt-3"><b>Giá Tiền:</b> <small><?= $sanPham['gia_sach'] ?></small></h4>
             <h4 class="mt-3"><b>Giá Khuyến Mãi:</b> <small><?= $sanPham['gia_khuyen_mai'] ?></small></h4>
             <h4 class="mt-3"><b>Số Lượng:</b> <small><?= $sanPham['so_luong'] ?></small></h4>
@@ -91,7 +90,7 @@
                         <form action="<?= BASE_URL_ADMIN . '?act=update-trang-thai-binh-luan' ?>" method="post">
                           <input type="hidden" name="id_binh_luan" value="<?= $binhLuan['id'] ?>">
                           <input type="hidden" name="name_view" value="detail_sanpham">
-                          <button onclick="return confirm('Bạn có muốn ẩn binhg luận này không?')" class="btn btn-warning">
+                          <button onclick="return confirm('Bạn có muốn ẩn bình luận này không?')" class="btn btn-warning">
                             <?= $binhLuan['trang_thai'] == 1 ? 'Ẩn' : 'Bỏ ẩn' ?>
                           </button>
                         </form>

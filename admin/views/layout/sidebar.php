@@ -24,7 +24,7 @@
                with font-awesome or any other icon font library -->
           <li class="nav-item">
             <a href="../widgets.html" class="nav-link">
-            <i class="nav-icon fas fa-tachometer-alt"></i>
+              <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
                 Thống Kê
                 <i class="right fas fa-angle-left"></i>
@@ -49,6 +49,16 @@
               </p>
             </a>
           </li>
+
+          <li class="nav-item">
+            <a href="<?= BASE_URL_ADMIN . '?act=don-hang' ?>" class="nav-link">
+              <i class="nav-icon fas fa-book"></i>
+              <p>
+                Quản Lý Đơn Hàng
+              </p>
+            </a>
+          </li>
+
 
         </ul>
       </nav>
