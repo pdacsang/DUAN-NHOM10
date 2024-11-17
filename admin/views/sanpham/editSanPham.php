@@ -188,7 +188,7 @@
 
   function addfaqs() {
     html = '<tr id="faqs-row-' + faqs_row + '">';
-    html += '<td><img src="https://cdn.tgdd.vn/Files/2021/04/18/1344308/tim-hieu-giong-cho-alaska-nguon-goc-dac-diem-cach-nuoi-bang-gia-202203281548533637.jpg" style="width: 50px; height: 50px;" alt=""></td>';
+    html += '<td><img src="https://d1iv5z3ivlqga1.cloudfront.net/wp-content/uploads/2023/10/27135755/81NBmxCR30L._AC_UF10001000_QL80_.jpg" style="width: 50px; height: 50px;" alt=""></td>';
     html += '<td><input type="file" name="img_array[]" class="form-control"></td>';
     html += '<td class="mt-10"><button type="button" class="badge badge-danger" onclick="removeRow('+ faqs_row +', null);"><i class="fa fa-trash"></i> Delete</button></td>';
 
