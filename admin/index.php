@@ -31,12 +31,14 @@ match ($act) {
     'sua-danh-muc' => (new AdminDanhMucController()) -> postEditDanhMuc(),   
     'xoa-danh-muc' => (new AdminDanhMucController()) -> deleteDanhMuc(),   
     // Sản phẩm
-    'san-pham' => (new AdminSanPhamController()) -> danhSachSanPham(),   
-    'form-them-san-pham' => (new AdminSanPhamController()) -> formAddSanPham(),   
-    'them-san-pham' => (new AdminSanPhamController()) -> postAddSanPham(),   
-    // 'form-sua-san-pham' => (new AdminSanPhamController()) -> formEditSanPham(),   
-    // 'sua-san-pham' => (new AdminSanPhamController()) -> postEditSanPham(),   
-    // 'xoa-san-pham' => (new AdminSanPhamController()) -> deleteSanPham(),   
+    'san-pham' => (new AdminSanPhamController())->danhSachSanPham(),
+    'form-them-san-pham' => (new AdminSanPhamController())->formAddSanPham(),
+    'them-san-pham' => (new AdminSanPhamController())->postAddSanPham(),
+    'form-sua-san-pham' => (new AdminSanPhamController())->formEditSanPham(),
+    'sua-san-pham' => (new AdminSanPhamController())->postEditSanPham(),
+    'sua-album-anh-san-pham' => (new AdminSanPhamController())->postEditAnhSanPham(),
+    'xoa-san-pham' => (new AdminSanPhamController())->deleteSanPham(),
+    'chi-tiet-san-pham' => (new AdminSanPhamController())->detailSanPham(), 
 
     
 };
