@@ -26,11 +26,16 @@ class AdminSanPhamController
 
     public function  postAddSanPham()
     {
+
         // hàm này dùng để xử lý thêm dữ liệu 
         // var_dump('abc');
         // die();
         // kiểm tra xem dữ liệu có được submit lên không
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // echo '<pre>';
+            // print_r($_POST);
+            // echo '<pre>';
+            // exit();
             // lấy ra dữ liệu
             $ten_sach = $_POST['ten_sach'] ?? '';
             $gia_sach = $_POST['gia_sach'] ?? '';
@@ -78,13 +83,21 @@ class AdminSanPhamController
 
             $_SESSION['error'] = $errors;
 
+            if(count($errors)){
+                header('location:'.$_SERVER['HTTP_REFERER']);
+                exit();
+            }
             // nếu không có lỗi tiến hành thêm sản phẩm
-            if (empty($errors)) {
-                // var_dump('abc'); die();
-                // nếu không có lỗi tiến hành thêm sản phẩm
-                $san_pham_id = $this->modelSanPham->insertSanPham($ten_sach, $gia_sach, $gia_khuyen_mai, $so_luong, $ngay_xuat_ban, $danh_muc_id, $trang_thai, $mo_ta, $file_thumb);
-                // var_dump($san_pham_id); die();
-                // xử lýt thêm abblum ảnh sản phẩm img_array
+
+            // var_dump('abc'); die();
+            // nếu không có lỗi tiến hành thêm sản phẩm
+            $san_pham_id = $this->modelSanPham->insertSanPham($ten_sach, $gia_sach, $gia_khuyen_mai, $so_luong, $ngay_xuat_ban, $danh_muc_id, $trang_thai, $mo_ta, $file_thumb);
+            // echo '<pre>';
+            // print_r($san_pham_id);
+            // echo '<pre>';
+            // var_dump($san_pham_id); die();
+            // xử lýt thêm abblum ảnh sản phẩm img_array
+            if ($san_pham_id) {
                 if (!empty($img_array['name'])) {
                     foreach ($img_array['name'] as $key => $value) {
                         $file = [
