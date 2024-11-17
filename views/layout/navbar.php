@@ -73,12 +73,13 @@
                         </div>
                     </div>
 
-                    <a href="cart.html" class="col-lg-1 col-md-1 col-sm-0 header__cart">
-                        <div class="header__cart-icon-wrap">
-                            <span class="header__notice">4</span>
-                            <i class="fas fa-shopping-cart header__nav-cart-icon"></i>
-                        </div>
-                    </a>
+                    <a href="index.php?act=viewCart" class="col-lg-1 col-md-1 col-sm-0 header__cart">
+    <div class="header__cart-icon-wrap">
+        <i class="fas fa-shopping-cart header__nav-cart-icon"></i>
+        <span class="header__notice"><?= htmlspecialchars($uniqueProductCount ?? 0) ?></span> 
+    </div>
+</a>
+
                 </section>
             </div>   
         </div>
@@ -149,6 +150,44 @@ dropdownMenu.addEventListener("mouseout", (e) => {
         dropdownMenu.classList.add("hidden");
     }
 });
+function updateCart(productId, quantity) {
+    fetch('index.php?act=updateCart', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            quantity: quantity
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Cập nhật tổng giá cho sản phẩm
+            document.querySelector(`#item-total-${productId}`).textContent =
+                new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).format(data.itemTotal);
+
+            // Cập nhật tổng giá giỏ hàng
+            document.querySelector('#cart-total').textContent =
+                new Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND'
+                }).format(data.totalAmount);
+
+            // Cập nhật số lượng sản phẩm khác nhau
+            if (data.uniqueProductCount !== undefined) {
+                document.querySelector('.cart-count').textContent = data.uniqueProductCount;
+            }
+        } else {
+            alert(data.message || 'Có lỗi xảy ra khi cập nhật.');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
 </script>
     
 </div>

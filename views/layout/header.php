@@ -13,7 +13,9 @@
     <link rel="stylesheet" href="./assets/css/style.css">
     <link rel="stylesheet" href="./assets/css/home.css">
     <link rel="stylesheet" href="./assets/css/product.css">
-    <script src="index.js"></script>
+    <link rel="stylesheet" href="./assets/css/cart.css">
+
+    <script src="./assets/js/cart.js"></script>
     
 
 </head>

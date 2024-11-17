@@ -2,11 +2,13 @@
 class ProductModel {
     private $conn;
 
-     public function __construct()
-        {
-            $this->conn = connectDB();
+    public function __construct() {
+        $this->conn = connectDB();
+        if (!$this->conn) {
+            $this->logError(new Exception("Không thể kết nối cơ sở dữ liệu."));
+            throw new Exception("Kết nối cơ sở dữ liệu thất bại.");
         }
-
+    }
 
     // Lấy tất cả sản phẩm
     public function getAllProducts() {
@@ -14,7 +16,7 @@ class ProductModel {
             $sql = "SELECT id, ten_sach, gia_sach, hinh_anh FROM san_phams";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Trả về danh sách sản phẩm
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // Trả về danh sách sản phẩm hoặc mảng rỗng
         } catch (Exception $e) {
             $this->logError($e);
             return [];
@@ -27,7 +29,7 @@ class ProductModel {
             $sql = "SELECT id, ten_danh_muc FROM danh_mucs";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Trả về danh sách danh mục
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // Trả về danh sách danh mục hoặc mảng rỗng
         } catch (Exception $e) {
             $this->logError($e);
             return [];
@@ -41,7 +43,7 @@ class ProductModel {
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':danh_muc_id', $categoryId, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC); // Trả về danh sách sản phẩm
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // Trả về danh sách sản phẩm hoặc mảng rỗng
         } catch (Exception $e) {
             $this->logError($e);
             return [];
@@ -56,7 +58,7 @@ class ProductModel {
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC); // Trả về chi tiết sản phẩm
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null; // Trả về sản phẩm hoặc null
         } catch (Exception $e) {
             $this->logError($e);
             return null;
@@ -65,6 +67,13 @@ class ProductModel {
 
     // Ghi log lỗi
     private function logError($exception) {
-        file_put_contents('./logs/error.log', date('Y-m-d H:i:s') . ' - ' . $exception->getMessage() . PHP_EOL, FILE_APPEND);
+        $message = '[' . date('Y-m-d H:i:s') . '] ERROR: ' . $exception->getMessage() . PHP_EOL;
+        $file = './logs/error.log';
+
+        if (!file_exists('./logs')) {
+            mkdir('./logs', 0777, true); // Tạo thư mục nếu chưa tồn tại
+        }
+
+        file_put_contents($file, $message, FILE_APPEND);
     }
 }

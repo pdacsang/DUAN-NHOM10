@@ -12,11 +12,11 @@ require_once './controllers/CartController.php'; // Thêm CartController
 
 // Require toàn bộ file Models
 require_once './models/ProductModel.php'; // Model sản phẩm
-require_once './models/SanPham.php';
 
 // Tạo kết nối cơ sở dữ liệu
 $dbConnection = connectDB();
-
+$cartModel = new CartModel();
+$uniqueProductCount = $cartModel->getUniqueProductCount();
 // Route
 $act = $_GET['act'] ?? '/';
 
@@ -38,6 +38,12 @@ $result = match ($act) {
         $controller = new ProductController($dbConnection);
         $controller->showProductsByCategory();
     },
+
+    'addToCart' => (new CartController($dbConnection))->addToCart(),
+    'viewCart' => (new CartController($dbConnection))->viewCart(),
+    'updateCart' => (new CartController($dbConnection))->updateCart(),
+    'removeFromCart' => (new CartController($dbConnection))->removeFromCart(),
+    'clearCart' => (new CartController($dbConnection))->clearCart(),
 
     // Xử lý khi không tìm thấy action
     default => function() {

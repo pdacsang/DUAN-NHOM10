@@ -2,7 +2,7 @@
 require_once './views/layout/header.php';
 require_once './views/layout/navbar.php';
 ?>
-
+>
 
 <section class="product">
         <div class="container">
@@ -47,41 +47,45 @@ require_once './views/layout/navbar.php';
                             <article class="product__main-info col-lg-8 col-md-8 col-sm-12"> 
    
 
-    <a href="#" class="product__main-info-title"> 
-        <h2 class="product__main-info-heading"> 
-            <?php echo htmlspecialchars($product['ten_sach']); ?> 
-        </h2> 
-    </a> 
+                            <a href="#" class="product__main-info-title">
+    <h2 class="product__main-info-heading">
+        <?php echo htmlspecialchars($product['ten_sach']); ?>
+    </h2>
+</a>
 
-    <div class="product__main-info-rate-wrap"> 
-        <i class="fas fa-star product__main-info-rate"></i> 
-        <i class="fas fa-star product__main-info-rate"></i> 
-        <i class="fas fa-star product__main-info-rate"></i> 
-        <i class="fas fa-star product__main-info-rate"></i> 
-        <i class="fas fa-star product__main-info-rate"></i> 
-    </div> 
-
-    <div class="product__main-info-price"> 
-        <span class="product__main-info-price-current"> 
-            <?php echo number_format($product['gia_sach'], 0, ',', '.') . 'đ'; ?> 
-        </span> 
-    </div> 
-
-  
-
-    <div class="product__main-info-status" >
-    <strong style="font-size: 15px;">Trạng thái: </strong>
-   <span style="font-size: 15px;"> <?php $product['trang_thai'] == 1 ? 'Còn hàng' : 'Hết hàng'; ?></span>
+<div class="product__main-info-price">
+    <span class="product__main-info-price-current">
+        <?php echo number_format($product['gia_sach'], 0, ',', '.') . 'đ'; ?>
+    </span>
 </div>
-<div class="product__main-info-cart-btn-wrap"> 
-<!-- Thêm nút này vào phần hiển thị thông tin sản phẩm -->
-<form action="index.php?controller=cart&action=add" method="post">
-    <input type="hidden" name="product_id" value="<?php $product['id']; ?>">
-    <input type="number" name="quantity" value="1" min="1" class="product__main-info-cart-quantity-total">
-    <button type="submit" class="product__main-info-cart-btn">Thêm vào giỏ hàng</button>
-</form>
-                </div> 
-</article>
+
+<div class="product__main-info-status">
+    <strong style="font-size: 15px;">Trạng thái: </strong>
+    <span style="font-size: 15px;">
+        <?php echo $product['trang_thai'] == 1 ? 'Còn hàng' : 'Hết hàng'; ?>
+    </span>
+</div>
+
+<div class="product__main-info-cart-btn-wrap">
+    <!-- Form xử lý thêm vào giỏ hàng -->
+    <form method="post" action="index.php?act=addToCart&id=<?= htmlspecialchars($product['id']); ?>">
+        <label for="quantity-<?= htmlspecialchars($product['id']); ?>">Số lượng:</label>
+        <div class="cart__body-quantity">
+            <input type="button" value="-" class="cart__body-quantity-minus" onclick="updateQuantity(false)">
+            <input type="number" step="1" min="1" max="999" name="quantity" id="quantity-<?= htmlspecialchars($product['id']); ?>" value="1">
+            <input type="button" value="+" class="cart__body-quantity-plus" onclick="updateQuantity(true)">
+        </div>
+        <button type="submit" class="product__main-info-cart-btn">Thêm vào giỏ hàng</button>
+    </form>
+</div>
+<script>
+function updateQuantity(isIncrease) {
+    const quantityInput = document.querySelector('input[name="quantity"]');
+    let quantity = parseInt(quantityInput.value);
+    quantity = isIncrease ? quantity + 1 : Math.max(1, quantity - 1); // Đảm bảo số lượng không nhỏ hơn 1
+    quantityInput.value = quantity;
+}
+</script>
 
 
                             <div class="product__main-info-contact">
@@ -120,23 +124,29 @@ require_once './views/layout/navbar.php';
                         </div>
 
                         <div class="col-12 product__main-content-wrap">
-                        <div class="product__main-info-description"> 
-        <?php  nl2br(htmlspecialchars($product['mo_ta'])); ?>
-    </div> 
+                        <div class="product__main-info-description">
+    <?= nl2br(htmlspecialchars($product['mo_ta'])); ?>
+</div>
                             <h2 class="thongtin">    <span>Thông tin chi tiết</span> 
                              </h2>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <th>Công ty phát hành</th>
-                                                <td><?php htmlspecialchars($product['nha_xuat_ban']);?></td>
-                                            </tr>
-                                            <tr><th>Ngày xuất bản</th><td><?php htmlspecialchars($product['ngay_xuat_ban']);?></td></tr>
-                                            <tr><th>Số trang</th><td><?php htmlspecialchars($product['so_trang']);?></td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
+                             <div class="table-responsive">
+    <table class="table table-bordered">
+        <tbody>
+            <tr>
+                <th>Công ty phát hành</th>
+                <td><?= htmlspecialchars($product['nha_xuat_ban']); ?></td>
+            </tr>
+            <tr>
+                <th>Ngày xuất bản</th>
+                <td><?= htmlspecialchars($product['ngay_xuat_ban']); ?></td>
+            </tr>
+            <tr>
+                <th>Số trang</th>
+                <td><?= htmlspecialchars($product['so_trang']); ?></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
                               
                         
                         </div>

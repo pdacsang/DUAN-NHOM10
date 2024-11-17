@@ -30,6 +30,9 @@ require_once './views/layout/navbar.php';
                                 <?= number_format($product['gia_sach'], 0, ',', '.'); ?> VND
                             </span>
                         </div>
+                        <form method="post" action="index.php?act=addToCart&id=<?= $product['id'] ?>">
+                            <button type="submit">Thêm vào giỏ hàng</button>
+                        </form>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
