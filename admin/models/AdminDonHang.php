@@ -29,8 +29,7 @@ class AdminDonHang
     public function getAllTrangThaiDonHang()
     {
         try {
-            $sql = 'SELECT * FROM trang_thai_don_hangs
-                ';
+            $sql = 'SELECT * FROM trang_thai_don_hangs';
 
             $stmt = $this->conn->prepare($sql);
 

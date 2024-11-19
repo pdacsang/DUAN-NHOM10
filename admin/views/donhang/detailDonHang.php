@@ -15,13 +15,19 @@
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <h1>Quản Lý - Đơn Hàng: <?= $donHang['ma_don_hang'] ?></h1>
                 </div>
-                <div>
+                <div class="col-sm-2">
                     <form action="" method="POST">
-                        <select name="" id="">
-                            <option value=""></option>
+                        <select name="" id="" class="form-group">
+                            <option value="" disabled></option>
+                            <?php foreach($listTrangThaiDonHang as $key=>$trangThai): ?>
+                            <option <?= $trangThai['id'] == $donHang['trang_thai_id'] ? 'selected' : '' ?> 
+                                    <?= $trangThai['id'] < $donHang['trang_thai_id'] ? 'disabled' : '' ?> 
+                                    value="<?= $trangThai['id']; ?>"><?= $trangThai['ten_trang_thai']; ?>
+                            </option>
+                            <?php endforeach ?>
                         </select>
                     </form>
                 </div>

@@ -21,7 +21,7 @@ class AdminDonHangController
         $donHang = $this->modelDonHang->getDetailDonHang($don_hang_id);
         // lấy danh sách đơn hàng đặt đơn hàng
         $sanPhamDonHang = $this->modelDonHang->getListSpDonHang($don_hang_id);
-        $listTrangThaiDonHang = $this->modelDonHang
+        $listTrangThaiDonHang = $this->modelDonHang->getAllTrangThaiDonHang();
 
         require_once './views/donhang/detailDonHang.php';
     }
