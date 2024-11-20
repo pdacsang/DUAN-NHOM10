@@ -29,7 +29,7 @@
                             <h3 class="card-title">Sửa Đơn Hàng: <?= $donHang['ma_don_hang'] ?></h3>
                         </div>
                         <form action="<?= BASE_URL_ADMIN . '?act=sua-don-hang' ?>" method="POST">
-                            <input type="text" name="id" value="<?= $donHang['id'] ?>" hidden>
+                            <input type="text" name="don_hang_id" value="<?= $donHang['id'] ?>" hidden>
                             <div class="card-body">
                                 <div class="form-group">
                                     <label>Tên Người Nhận</label>
