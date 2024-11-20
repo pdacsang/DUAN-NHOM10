@@ -32,7 +32,7 @@
                             <input type="text" name="id" value="<?= $danhMuc['id'] ?>" hidden>
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label">Tên Danh Mục</label>
+                                    <label>Tên Danh Mục</label>
                                     <input type="text" class="form-control" name="ten_danh_muc" value="<?= $danhMuc['ten_danh_muc'] ?>" placeholder="Nhập tên danh mục">
                                 </div>
                                 <?php if(isset($errors['ten_danh_muc'])){ ?>
@@ -40,7 +40,7 @@
                                 <?php } ?>
 
                                 <div class="form-group">
-                                    <label">Mô Tả</label>
+                                    <label>Mô Tả</label>
                                     <textarea name="mo_ta" class="form-control" placeholder="Nhập mô tả"><?= $danhMuc['mo_ta'] ?></textarea>
                                 </div>
 

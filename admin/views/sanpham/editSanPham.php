@@ -86,8 +86,8 @@
               </div>
 
               <div class="form-group">
-                <label for="danh_muc_id">Danh Mục Sản Phẩm</label>
-                <select id="danh_muc_id" name="danh_muc_id" class="form-control custom-select">
+                <label for="inputStatus">Danh Mục Sản Phẩm</label>
+                <select id="inputStatus" name="danh_muc_id" class="form-control custom-select">
                   <?php foreach ($listDanhMuc as $danhMuc) : ?>
                     <option <?= $danhMuc['id'] == $sanPham['danh_muc_id'] ? 'selected' : '' ?> value="<?= $danhMuc['id']; ?>"><?= $danhMuc['ten_danh_muc']; ?></option>
                   <?php endforeach ?>

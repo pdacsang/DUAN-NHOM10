@@ -21,12 +21,11 @@
                 <div class="col-sm-2">
                     <form action="" method="POST">
                         <select name="" id="" class="form-group">
-                            <option value="" disabled></option>
-                            <?php foreach($listTrangThaiDonHang as $key=>$trangThai): ?>
-                            <option <?= $trangThai['id'] == $donHang['trang_thai_id'] ? 'selected' : '' ?> 
-                                    <?= $trangThai['id'] < $donHang['trang_thai_id'] ? 'disabled' : '' ?> 
+                            <?php foreach ($listTrangThaiDonHang as $key => $trangThai): ?>
+                                <option <?= $trangThai['id'] == $donHang['trang_thai_id'] ? 'selected' : '' ?>
+                                    <?= $trangThai['id'] < $donHang['trang_thai_id'] ? 'disabled' : '' ?>
                                     value="<?= $trangThai['id']; ?>"><?= $trangThai['ten_trang_thai']; ?>
-                            </option>
+                                </option>
                             <?php endforeach ?>
                         </select>
                     </form>
@@ -41,11 +40,13 @@
             <div class="row">
                 <div class="col-12">
                     <?php
-                        if($donHang['trang_thai_id'] == 1){
+                        if ($donHang['trang_thai_id'] == 1) {
                             $colorAlerts = 'primary';
-                        }elseif($donHang['trang_thai_id'] == 2){
+                        } elseif ($donHang['trang_thai_id'] >= 2 && $donHang['trang_thai_id'] <= 9) {
+                            $colorAlerts = 'warning';
+                        } elseif ($donHang['trang_thai_id'] == 10) {
                             $colorAlerts = 'success';
-                        }else{
+                        } else {
                             $colorAlerts = 'danger';
                         }
                     ?>
@@ -116,9 +117,9 @@
                                     </thead>
                                     <tbody>
                                         <?php $tong_tien = 0; ?>
-                                        <?php foreach($sanPhamDonHang as $key=>$sanPham) : ?>
+                                        <?php foreach ($sanPhamDonHang as $key => $sanPham) : ?>
                                             <tr>
-                                                <td><?= $key+1 ?></td>
+                                                <td><?= $key + 1 ?></td>
                                                 <td><?= $sanPham['ten_sach'] ?></td>
                                                 <td><?= $sanPham['don_gia'] ?></td>
                                                 <td><?= $sanPham['so_luong'] ?></td>
@@ -135,7 +136,7 @@
 
                         <div class="row">
                             <!-- accepted payments column -->
-                            
+
                             <!-- /.col -->
                             <div class="col-6">
                                 <p class="lead">Ngày Đặt Hàng: <?= $donHang['ngay_dat'] ?></p>

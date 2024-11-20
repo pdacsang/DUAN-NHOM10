@@ -26,6 +26,106 @@ class AdminDonHangController
         require_once './views/donhang/detailDonHang.php';
     }
 
+
+    public function formEditDonHang()
+    {
+        $id = $_GET['id_don_hang'];
+        $donHang = $this->modelDonHang->getDetailDonHang($id);
+        $listTrangThaiDonHang = $this->modelDonHang->getAllTrangThaiDonHang();
+        if ($donHang) {
+            require_once './views/donhang/editDonHang.php';
+            deleteSessionError();
+        } else {
+            header("Location:" . BASE_URL_ADMIN . '?act=don-hang');
+            exit();
+        }
+    }
+
+    public function  postEditDonHang()
+    {
+        // hàm này dùng để xử lý thêm dữ liệu 
+        // kiểm tra xem dữ liệu có được submit lên không
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // lấy ra dữ liệu\
+            // Lấy ra dữ liệu cũ của sản phẩm
+            $san_pham_id = $_POST['san_pham_id'] ?? '';
+            // truy vấn
+            $sanPhamOld = $this->modelSanPham->getDetailSanPham($san_pham_id);
+            $old_file = $sanPhamOld['hinh_anh']; // lấy ảnh cũ để phục vụ cho sửa ảnh
+
+
+            $ten_sach = $_POST['ten_sach'] ?? '';
+            $gia_sach = $_POST['gia_sach'] ?? '';
+            $gia_khuyen_mai = $_POST['gia_khuyen_mai'] ?? '';
+            $so_luong = $_POST['so_luong'] ?? '';
+            $ngay_xuat_ban = $_POST['ngay_xuat_ban'] ?? '';
+            $danh_muc_id = $_POST['danh_muc_id'] ?? '';
+            $trang_thai = $_POST['trang_thai'] ?? '';
+            $mo_ta = $_POST['mo_ta'] ?? '';
+
+            $hinh_anh = $_FILES['hinh_anh'] ?? null;
+
+
+            // tạo 1 mảng trống để chứa dữ liệu
+            $errors = [];
+
+            if (empty($ten_sach)) {
+                $errors['ten_sach'] = 'Tên sách không được để trống';
+            }
+            if (empty($gia_sach)) {
+                $errors['gia_sach'] = 'Giá sách không được để trống';
+            }
+            if (empty($gia_khuyen_mai)) {
+                $errors['gia_khuyen_mai'] = 'Giá khuyến không được để trống';
+            }
+            if (empty($so_luong)) {
+                $errors['so_luong'] = 'Số lượng sản phẩm không được để trống';
+            }
+            if (empty($ngay_xuat_ban)) {
+                $errors['ngay_xuat_ban'] = 'Ngày xuất bản không được để trống';
+            }
+            if (empty($danh_muc_id)) {
+                $errors['danh_muc_id'] = 'Danh mục sản phẩm phải chọn';
+            }
+            if (empty($trang_thai)) {
+                $errors['trang_thai'] = 'Trạng thái sản phẩm phải chọn';
+            }
+
+            $_SESSION['error'] = $errors;
+
+            // logic sửa ảnh
+            if (isset($hinh_anh) && $hinh_anh['error'] == UPLOAD_ERR_OK) {
+                // upload ảnh mới lêm
+                $new_file = uploadFile($hinh_anh, './uploads/');
+                if (!empty($old_file)) { // nếu có ảnh cũ thì xóa đi
+                    deleteFile($old_file);
+                }
+            } else {
+                $new_file = $old_file;
+            }
+
+            // nếu không có lỗi tiến hành thêm sản phẩm
+            if (empty($errors)) {
+                // var_dump('abc'); die();
+                // nếu không có lỗi tiến hành thêm sản phẩm
+                $this->modelSanPham->updateSanPham($san_pham_id, $ten_sach, $gia_sach, $gia_khuyen_mai, $so_luong, $ngay_xuat_ban, $danh_muc_id, $trang_thai, $mo_ta, $new_file);
+
+                header("Location:" . BASE_URL_ADMIN . '?act=san-pham');
+                exit();
+            } else {
+                // trả về form và lỗi
+                // Dặt chỉ thị xóa session sau khi hiển thị form
+                $_SESSION['flash'] = true;
+                header("Location:" . BASE_URL_ADMIN . '?act=form-sua-san-pham&id_san_pham=' . $san_pham_id);
+                exit();
+            }
+        }
+    }
+
+
+
+
+
     // public function formAddSanPham()
     // {
     //     // hàm này hiển thị form nhập
@@ -115,105 +215,6 @@ class AdminDonHangController
     //             // Dặt chỉ thị xóa session sau khi hiển thị form
     //             $_SESSION['flash'] = true;
     //             header("Location:" . BASE_URL_ADMIN . '?act=form-them-san-pham');
-    //             exit();
-    //         }
-    //     }
-    // }
-
-
-    // public function formEditSanPham()
-    // {
-    //     // hàm này hiển thị form nhập
-    //     // lấy ra thông tin sản phẩm cần sửa
-    //     $id = $_GET['id_san_pham'];
-    //     $sanPham = $this->modelSanPham->getDetailSanPham($id);
-    //     $listAnhSanPham = $this->modelSanPham->getListAnhSanPham($id);
-    //     $listDanhMuc = $this->modelDanhMuc->getAllDanhMuc();
-    //     if ($sanPham) {
-    //         require_once './views/sanpham/editSanPham.php';
-    //         deleteSessionError();
-    //     } else {
-    //         header("Location:" . BASE_URL_ADMIN . '?act=san-pham');
-    //         exit();
-    //     }
-    // }
-
-    // public function  postEditSanPham()
-    // {
-    //     // hàm này dùng để xử lý thêm dữ liệu 
-    //     // kiểm tra xem dữ liệu có được submit lên không
-    //     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    //         // lấy ra dữ liệu\
-    //         // Lấy ra dữ liệu cũ của sản phẩm
-    //         $san_pham_id = $_POST['san_pham_id'] ?? '';
-    //         // truy vấn
-    //         $sanPhamOld = $this->modelSanPham->getDetailSanPham($san_pham_id);
-    //         $old_file = $sanPhamOld['hinh_anh']; // lấy ảnh cũ để phục vụ cho sửa ảnh
-
-
-    //         $ten_sach = $_POST['ten_sach'] ?? '';
-    //         $gia_sach = $_POST['gia_sach'] ?? '';
-    //         $gia_khuyen_mai = $_POST['gia_khuyen_mai'] ?? '';
-    //         $so_luong = $_POST['so_luong'] ?? '';
-    //         $ngay_xuat_ban = $_POST['ngay_xuat_ban'] ?? '';
-    //         $danh_muc_id = $_POST['danh_muc_id'] ?? '';
-    //         $trang_thai = $_POST['trang_thai'] ?? '';
-    //         $mo_ta = $_POST['mo_ta'] ?? '';
-
-    //         $hinh_anh = $_FILES['hinh_anh'] ?? null;
-
-
-    //         // tạo 1 mảng trống để chứa dữ liệu
-    //         $errors = [];
-
-    //         if (empty($ten_sach)) {
-    //             $errors['ten_sach'] = 'Tên sách không được để trống';
-    //         }
-    //         if (empty($gia_sach)) {
-    //             $errors['gia_sach'] = 'Giá sách không được để trống';
-    //         }
-    //         if (empty($gia_khuyen_mai)) {
-    //             $errors['gia_khuyen_mai'] = 'Giá khuyến không được để trống';
-    //         }
-    //         if (empty($so_luong)) {
-    //             $errors['so_luong'] = 'Số lượng sản phẩm không được để trống';
-    //         }
-    //         if (empty($ngay_xuat_ban)) {
-    //             $errors['ngay_xuat_ban'] = 'Ngày xuất bản không được để trống';
-    //         }
-    //         if (empty($danh_muc_id)) {
-    //             $errors['danh_muc_id'] = 'Danh mục sản phẩm phải chọn';
-    //         }
-    //         if (empty($trang_thai)) {
-    //             $errors['trang_thai'] = 'Trạng thái sản phẩm phải chọn';
-    //         }
-
-    //         $_SESSION['error'] = $errors;
-
-    //         // logic sửa ảnh
-    //         if (isset($hinh_anh) && $hinh_anh['error'] == UPLOAD_ERR_OK) {
-    //             // upload ảnh mới lêm
-    //             $new_file = uploadFile($hinh_anh, './uploads/');
-    //             if (!empty($old_file)) { // nếu có ảnh cũ thì xóa đi
-    //                 deleteFile($old_file);
-    //             }
-    //         } else {
-    //             $new_file = $old_file;
-    //         }
-
-    //         // nếu không có lỗi tiến hành thêm sản phẩm
-    //         if (empty($errors)) {
-    //             // var_dump('abc'); die();
-    //             // nếu không có lỗi tiến hành thêm sản phẩm
-    //             $this->modelSanPham->updateSanPham($san_pham_id, $ten_sach, $gia_sach, $gia_khuyen_mai, $so_luong, $ngay_xuat_ban, $danh_muc_id, $trang_thai, $mo_ta, $new_file);
-
-    //             header("Location:" . BASE_URL_ADMIN . '?act=san-pham');
-    //             exit();
-    //         } else {
-    //             // trả về form và lỗi
-    //             // Dặt chỉ thị xóa session sau khi hiển thị form
-    //             $_SESSION['flash'] = true;
-    //             header("Location:" . BASE_URL_ADMIN . '?act=form-sua-san-pham&id_san_pham=' . $san_pham_id);
     //             exit();
     //         }
     //     }

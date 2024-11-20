@@ -45,7 +45,7 @@
             <a href="<?= BASE_URL_ADMIN . '?act=san-pham' ?>" class="nav-link">
               <i class="nav-icon fas fa-book-open"></i>
               <p>
-                Sản Phẩm
+                Quản Lý Sản Phẩm
               </p>
             </a>
           </li>
