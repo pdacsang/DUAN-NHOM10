@@ -125,7 +125,7 @@
                                                 <td><?= $sanPham['so_luong'] ?></td>
                                                 <td><?= $sanPham['thanh_tien'] ?></td>
                                             </tr>
-                                            <?php $tong_tien += $sanPham['thanh_tien']; ?>
+                                            <!-- <=? $tong_tien += $sanPham['thanh_tien']; ?> -->
                                         <?php endforeach ?>
                                     </tbody>
                                 </table>
@@ -138,15 +138,15 @@
                             <!-- accepted payments column -->
 
                             <!-- /.col -->
-                            <div class="col-6">
-                                <p class="lead">Ngày Đặt Hàng: <?= $donHang['ngay_dat'] ?></p>
+                            <!-- <div class="col-6">
+                                <p class="lead"> thêm <=? Ngày Đặt Hàng: $donHang['ngay_dat'] =>  </p>
 
                                 <div class="table-responsive">
                                     <table class="table">
                                         <tr>
                                             <th style="width:50%">Thành Tiền:</th>
                                             <td>
-                                                <?= $tong_tien ?>
+                                                <=? $tong_tien ?>
                                             </td>
                                         </tr>
                                         <tr>
@@ -155,11 +155,11 @@
                                         </tr>
                                         <tr>
                                             <th>Tổng Tiền:</th>
-                                            <td><?= $tong_tien + 50000 ?></td>
+                                            <td><=? $tong_tien + 50000 ?></td>
                                         </tr>
                                     </table>
                                 </div>
-                            </div>
+                            </div> -->
                             <!-- /.col -->
                         </div>
                         <!-- /.row -->
