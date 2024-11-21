@@ -42,7 +42,7 @@
               <?php endforeach ?>
             </div>
           </div>
-          <div class="col-12 col-sm-6">
+          <div class="col-10 col-sm-6">
             <h3 class="my-3"><b>Tên Sách:</b> <?= $sanPham['ten_sach'] ?></h3>
             <hr>
             <h4 class="mt-3"><b>Giá Tiền:</b> <small><?= $sanPham['gia_sach'] ?></small></h4>
