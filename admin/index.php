@@ -39,6 +39,8 @@ match ($act) {
     'sua-album-anh-san-pham' => (new AdminSanPhamController())->postEditAnhSanPham(),
     'xoa-san-pham' => (new AdminSanPhamController())->deleteSanPham(),
     'chi-tiet-san-pham' => (new AdminSanPhamController())->detailSanPham(), 
+    // bình luận
+    'update-trang-thai-binh-luan' => (new AdminSanPhamController())->updateTrangThaiBinhLuan(),
     // đơn hàng
     'don-hang' => (new AdminDonHangController())->danhSachDonHang(),
     'form-sua-don-hang' => (new AdminDonHangController())->formEditDonHang(),
