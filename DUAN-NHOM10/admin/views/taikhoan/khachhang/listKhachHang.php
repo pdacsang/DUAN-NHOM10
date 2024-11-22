@@ -55,7 +55,7 @@
                     <td><?= $khachHang['trang_thai'] == 1 ? 'Active':'Inactive' ?></td>
                     <td>
                         <div class="btn-group">
-                            <a href="<?= BASE_URL_ADMIN . '?act=chi-tiết-khachhang&id_khach_hang=' .$khachHang['id'] ?>">
+                            <a href="<?= BASE_URL_ADMIN . '?act=chi-tiet-khach-hang&id_khach_hang=' .$khachHang['id'] ?>">
                                 <button class="btn btn-primary"><i class="far fa-eye"></i></button>
                             </a>
                             <a href="<?= BASE_URL_ADMIN . '?act=form-sua-khach-hang&id_khach_hang=' .$khachHang['id'] ?>">

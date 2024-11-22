@@ -11,7 +11,7 @@
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="image">
-          <img src="./assets/dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
+          <img src="./assets/dist/img/avatar.png" class="img-circle elevation-2" alt="User Image">
         </div>
         <div class="info">
           <a href="#" class="d-block">Nhóm 10</a>
@@ -76,6 +76,14 @@
                 </a>
               </li>
             </ul>
+            <li class="nav-item">
+                <a href="<?= BASE_URL_ADMIN . '?act=don-hang' ?>" class="nav-link">
+              <i class="nav-icon fas fa-book"></i>
+              <p>
+                Quản Lý Đơn Hàng
+              </p>
+            </a>
+          </li>
           </li>
         </ul>
       </nav>
