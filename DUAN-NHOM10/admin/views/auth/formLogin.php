@@ -32,7 +32,7 @@
                             <?php }else{ ?>
                             <p class="text-center text-white">Vui lòng đăng nhập để vào Admin</p>
                             <?php } ?>
-                              <form action="<?= BASE_URL_ADMIN .'?act=check-login-admin' ?>" method="post" class="mt-4 form-text">
+                              <form action="<?= BASE_URL_ADMIN .'?act=check-login-admin' ?>" method="POST" class="mt-4 form-text">
                                   <div class="form-group">
                                       <label for="exampleInputEmail1">Email address</label>
                                       <input type="email" class="form-control mb-0 text-dark" id="" placeholder="Enter email" name="email">

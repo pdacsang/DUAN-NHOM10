@@ -46,8 +46,8 @@ function deleteFile($file){
 function deleteSessionError(){
     if (isset($_SESSION['flash'])) {
         unset($_SESSION['flash']);
-        unset($_SESSION['error']);
-        // session_unset();
+        // unset($_SESSION['error']);
+        session_unset();
         // session_destroy();
     }
 }
@@ -64,13 +64,15 @@ function uploadFileAlbum($file, $folderUpload, $key){
     }
     return null;
 }
-function formatDate($date){
-    return date("d-m-y",strtotime($date));
-}
+// function formatDate($date){
+//     return date("d-m-y",strtotime($date));
+// }
 // auth
 function checkLoginAdmin(){
     if (!isset($_SESSION['user_admin'])) { // ko có session redirect về trang login
-        require_once './views/auth/formLogin.php';
+        header("Location: " .BASE_URL_ADMIN. '?act=login-admin');
+        // require_once './views/auth/formLogin.php';
+        // var_dump('abc');die;
         exit();
     }
 }
