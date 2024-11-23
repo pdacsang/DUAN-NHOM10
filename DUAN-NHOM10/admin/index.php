@@ -5,7 +5,11 @@ session_start();
 require_once '../commons/env.php'; // Khai báo biến môi trường
 require_once '../commons/function.php'; // Hàm hỗ trợ
 
+checkLoginAdmin();
+
 // Require toàn bộ file Controllers
+
+require_once './controllers/AdminBaoCaoThongKeController.php';
 require_once './controllers/AdminDanhMucController.php';
 require_once './controllers/AdminSanPhamControllrer.php';
 require_once './controllers/AdminDonHangController.php';
@@ -29,6 +33,8 @@ $act = $_GET['act'] ?? '/';
 
 match ($act) {
     // Trang chủ
+    // báo cáo trang chủ
+    '/' => (new AdminBaoCaoThongKeController())->home(),
     // Danh mục
     'danh-muc' => (new AdminDanhMucController()) -> danhSachDanhMuc(),   
     'form-them-danh-muc' => (new AdminDanhMucController()) -> formAddDanhMuc(),   
@@ -73,4 +79,9 @@ match ($act) {
         'form-sua-khach-hang' =>(new AdminTaiKhoanController())->formEditKhachHang(),
         'sua-khach-hang' =>(new AdminTaiKhoanController())->postEditKhachHang(),
         'chi-tiet-khach-hang' =>(new AdminTaiKhoanController())->deltailKhachHang(),    
+
+        // route auth
+        'login-admin' => (new AdminTaiKhoanController())->formLogin(),
+        'check-login-admin' => (new AdminTaiKhoanController())->login(),
+        'logout-admin' => (new AdminTaiKhoanController())->logout(),
 };

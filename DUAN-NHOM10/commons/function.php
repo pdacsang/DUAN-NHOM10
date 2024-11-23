@@ -64,3 +64,13 @@ function uploadFileAlbum($file, $folderUpload, $key){
     }
     return null;
 }
+function formatDate($date){
+    return date("d-m-y",strtotime($date));
+}
+// auth
+function checkLoginAdmin(){
+    if (!isset($_SESSION['user_admin'])) { // ko có session redirect về trang login
+        require_once './views/auth/formLogin.php';
+        exit();
+    }
+}
