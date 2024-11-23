@@ -31,16 +31,15 @@
                         <form action="<?= BASE_URL_ADMIN . '?act=them-danh-muc' ?>" method="POST">
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label>Tên Danh Mục</label>
+                                    <label">Tên Danh Mục</label>
                                     <input type="text" class="form-control" name="ten_danh_muc" placeholder="Nhập tên danh mục">
-                                    <?php if (isset($errors['ten_danh_muc'])) { ?>
-                                        <p class="text-danger"><?= $errors['ten_danh_muc'] ?></p>
-                                    <?php } ?>
                                 </div>
-
+                                <?php if(isset($errors['ten_danh_muc'])){ ?>
+                                    <p class="text-danger"><?= $errors['ten_danh_muc'] ?></p>
+                                <?php } ?>
 
                                 <div class="form-group">
-                                    <label>Mô Tả</label>
+                                    <label">Mô Tả</label>
                                     <textarea name="mo_ta" class="form-control" placeholder="Nhập mô tả"></textarea>
                                 </div>
 

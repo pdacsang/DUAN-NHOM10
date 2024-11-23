@@ -10,7 +10,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-11">
-            <h1>Quản Lý Danh Mục Sản Phẩm</h1>
+            <h1>Quản Lý Tài Khoản Quản Trị Viên</h1>
           </div>
           <div class="col-sm-1">
             
@@ -26,7 +26,7 @@
           <div class="col-12">
             <div class="card">
               <div class="card-header">
-                <a href="<?= BASE_URL_ADMIN . '?act=form-them-danh-muc' ?>"class="btn btn-success">Thêm Danh Mục</a>
+                <a href="<?= BASE_URL_ADMIN . '?act=form-them-quan-tri' ?>"class="btn btn-success">Thêm Tài Khoản</a>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -34,24 +34,28 @@
                   <thead>
                   <tr>
                     <th>STT</th>
-                    <th>Tên Danh Mục</th>
-                    <th>Mô Tả</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Số diện thoại</th>
+                    <th>Trạng thái</th>
                     <th>Thao Tác</th>
                   </tr>
                   </thead>
                   <tbody>
-                    <?php foreach ($listDanhMuc as $key => $danhMuc) : ?>
+                    <?php foreach ($listQuanTri as $key => $quantri) : ?>
                   <tr>
                     <td><?= $key+1 ?></td>
-                    <td><?= $danhMuc['ten_danh_muc'] ?></td>
-                    <td><?= $danhMuc['mo_ta'] ?></td>
+                    <td><?= $quantri['ho_ten'] ?></td>
+                    <td><?= $quantri['email'] ?></td>
+                    <td><?= $quantri['so_dien_thoai'] ?></td>
+                    <td><?= $quantri['trang_thai'] == 1 ? 'Active':'Inactive' ?></td>
                     <td>
-                      <a href="<?= BASE_URL_ADMIN . '?act=form-sua-danh-muc&id_danh_muc=' .$danhMuc['id'] ?>">
+                      <a href="<?= BASE_URL_ADMIN . '?act=form-sua-quan-tri&id_quan_tri=' .$quantri['id'] ?>">
                         <button class="btn btn-warning">Sửa</button>
                       </a>
-                      <a href="<?= BASE_URL_ADMIN . '?act=xoa-danh-muc&id_danh_muc=' .$danhMuc['id'] ?>" 
-                      onclick="return confirm('Bạn Có muốn xóa hay không?')">
-                        <button class="btn btn-danger">Xóa</button>
+                      <a href="<?= BASE_URL_ADMIN . '?act=reset-password&id_quan_tri=' .$quantri['id'] ?>" 
+                      onclick="return confirm('Bạn Có muốn reset password của tài khoản hay không?')">
+                        <button class="btn btn-danger">Reset</button>
                       </a>
                     </td>
                   </tr>
@@ -60,8 +64,10 @@
                   <tfoot>
                   <tr>
                     <th>STT</th>
-                    <th>Tên Danh Mục</th>
-                    <th>Mô Tả</th>
+                    <th>Họ tên</th>
+                    <th>Email</th>
+                    <th>Số diện thoại</th>
+                    <th>Trạng thái</th>
                     <th>Thao Tác</th>
                   </tr>
                   </tfoot>

@@ -10,7 +10,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-11">
-                    <h1>Quản Lý Danh Mục Sản Phẩm</h1>
+                    <h1>Quản Lý Tài Khoản Quản Trị Viên</h1>
                 </div>
                 <div class="col-sm-1">
 
@@ -26,22 +26,24 @@
                 <div class="col-12">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">Sửa Danh Mục</h3>
+                            <h3 class="card-title">Thêm Tài Khoản Quản Trị</h3>
                         </div>
-                        <form action="<?= BASE_URL_ADMIN . '?act=sua-danh-muc' ?>" method="POST">
-                            <input type="text" name="id" value="<?= $danhMuc['id'] ?>" hidden>
+                        <form action="<?= BASE_URL_ADMIN . '?act=them-quan-tri' ?>" method="POST">
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label">Tên Danh Mục</label>
-                                    <input type="text" class="form-control" name="ten_danh_muc" value="<?= $danhMuc['ten_danh_muc'] ?>" placeholder="Nhập tên danh mục">
+                                    <label">Họ tên</label>
+                                        <input type="text" class="form-control" name="ho_ten" placeholder="Nhập họ tên">
+                                        <?php if (isset($_SESSION['error']['ho_ten'])) { ?>
+                                            <p class="text-danger"><?= $_SESSION['error']['ho_ten'] ?></p>
+                                        <?php } ?>
                                 </div>
-                                <?php if(isset($errors['ten_danh_muc'])){ ?>
-                                    <p class="text-danger"><?= $errors['ten_danh_muc'] ?></p>
-                                <?php } ?>
 
                                 <div class="form-group">
-                                    <label">Mô Tả</label>
-                                    <textarea name="mo_ta" class="form-control" placeholder="Nhập mô tả"><?= $danhMuc['mo_ta'] ?></textarea>
+                                    <label">Email</label>
+                                        <input type="email" class="form-control" name="email" placeholder="Nhập email">
+                                        <?php if (isset($_SESSION['error']['email'])) { ?>
+                                            <p class="text-danger"><?= $_SESSION['error']['email'] ?></p>
+                                        <?php } ?>
                                 </div>
 
                                 <div class="card-footer">

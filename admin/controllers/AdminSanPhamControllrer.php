@@ -1,10 +1,8 @@
 <?php
 class AdminSanPhamController
 {
-
     public $modelSanPham;
     public $modelDanhMuc;
-
     public function __construct()
     {
         $this->modelSanPham = new AdminSanPham();
@@ -337,4 +335,4 @@ class AdminSanPhamController
             }
         }
     }
-}
+};

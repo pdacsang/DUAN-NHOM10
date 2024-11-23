@@ -18,10 +18,10 @@
                                 <a href="#" class="header__top-link">Hướng dẫn</a>
                             </li>
                             <li class="header__top-item">
-                                <a href="#" class="header__top-link">Đăng ký</a>
+                                <a href="" class="header__top-link">Đăng ký</a>
                             </li>
                             <li class="header__top-item">
-                                <a href="#" class="header__top-link">Đăng nhập</a>
+                                <a href="<?= BASE_URL_ADMIN . '?act=login-admin' ?>" class="header__top-link">Đăng nhập</a>
                             </li>
                         </ul>
                     </nav>
