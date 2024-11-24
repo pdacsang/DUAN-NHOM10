@@ -1,8 +1,8 @@
-<footer class="main-footer">
+<footer class="main-footer" style="background-color: black;">
     <div class="float-right d-none d-sm-block">
-      <b>Nhóm 10</b>
+      <b style="color: white;">Nhóm 10</b>
     </div>
-    <strong>Dự Án 1</strong>
+    <strong style="color: white;">Dự Án 1</strong>
 </footer>
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">

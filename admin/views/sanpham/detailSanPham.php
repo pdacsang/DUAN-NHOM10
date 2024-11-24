@@ -26,43 +26,47 @@
 
   <!-- Main content -->
   <section class="content">
-
-    <!-- Default box -->
-    <div class="card card-solid">
+    <!-- Card Box -->
+    <div class="card card-solid shadow">
       <div class="card-body">
         <div class="row">
+          <!-- Product Image Section -->
           <div class="col-12 col-sm-6">
-            <h3 class="d-inline-block d-sm-none"></h3>
-            <div class="col-12">
-              <img style="width:400px; height:500px;" src="<?= BASE_URL . $sanPham['hinh_anh'] ?>" class="product-image" alt="Product Image">
+            <div class="text-center mb-4">
+              <img style="width:400px; height:500px;" src="<?= BASE_URL . $sanPham['hinh_anh'] ?>" class="img-fluid rounded border" alt="Product Image">
             </div>
-            <div class="col-12 product-image-thumbs">
+            <div class="d-flex justify-content-center flex-wrap">
               <?php foreach ($listAnhSanPham as $key => $anhSP) : ?>
-                <div class="product-image-thumb <?= $anhSP[$key] == 0 ? 'active' : '' ?>"><img src="<?= BASE_URL . $anhSP['link_hinh_anh']; ?>" alt="Product Image"></div>
+                <div class="product-image-thumb <?= $anhSP[$key] == 0 ? 'active' : '' ?> m-2">
+                  <img src="<?= BASE_URL . $anhSP['link_hinh_anh']; ?>" alt="Product Image" class="img-thumbnail" style="width:80px; height:100px;">
+                </div>
               <?php endforeach ?>
             </div>
           </div>
-          <div class="col-10 col-sm-6">
-            <h3 class="my-3"><b>Tên Sách:</b> <?= $sanPham['ten_sach'] ?></h3>
-            <hr>
-            <h4 class="mt-3"><b>Giá Tiền:</b> <small><?= $sanPham['gia_sach'] ?></small></h4>
-            <h4 class="mt-3"><b>Giá Khuyến Mãi:</b> <small><?= $sanPham['gia_khuyen_mai'] ?></small></h4>
-            <h4 class="mt-3"><b>Số Lượng:</b> <small><?= $sanPham['so_luong'] ?></small></h4>
-            <h4 class="mt-3"><b>Lượt Xem:</b> <small><?= $sanPham['luot_xem'] ?></small></h4>
-            <h4 class="mt-3"><b>Ngày Nhập:</b> <small><?= $sanPham['ngay_xuat_ban'] ?></small></h4>
-            <h4 class="mt-3"><b>Danh Mục:</b> <small><?= $sanPham['ten_danh_muc'] ?></small></h4>
-            <h4 class="mt-3"><b>Trạng Thái:</b> <small><?= $sanPham['trang_thai'] == 1 ? 'Còn Bán' : 'Dừng Bán' ?></small></h4>
-            <h4 class="mt-3"><b>Mô Tả:</b> <small><?= $sanPham['mo_ta'] ?></small></h4>
 
+          <!-- Product Details Section -->
+          <div class="col-12 col-sm-6">
+            <h3 class="my-3 text-primary"><b>Tên Sách:</b> <?= $sanPham['ten_sach'] ?></h3>
+            <hr>
+            <ul class="list-group">
+              <li class="list-group-item"><b>Giá Tiền:</b> <span class="text-danger"><?= number_format($sanPham['gia_sach'], 0, ',', '.') ?> VNĐ</span></li>
+              <li class="list-group-item"><b>Giá Khuyến Mãi:</b> <span class="text-success"><?= number_format($sanPham['gia_khuyen_mai'], 0, ',', '.') ?> VNĐ</span></li>
+              <li class="list-group-item"><b>Số Lượng:</b> <?= $sanPham['so_luong'] ?></li>
+              <li class="list-group-item"><b>Lượt Xem:</b> <?= $sanPham['luot_xem'] ?></li>
+              <li class="list-group-item"><b>Ngày Nhập:</b> <?= $sanPham['ngay_xuat_ban'] ?></li>
+              <li class="list-group-item"><b>Danh Mục:</b> <?= $sanPham['ten_danh_muc'] ?></li>
+              <li class="list-group-item"><b>Trạng Thái:</b> <?= $sanPham['trang_thai'] == 1 ? '<span class="badge bg-success">Còn Bán</span>' : '<span class="badge bg-danger">Dừng Bán</span>' ?></li>
+              <li class="list-group-item"><b>Mô Tả:</b> <?= $sanPham['mo_ta'] ?></li>
+            </ul>
           </div>
         </div>
 
-        <div class="col-12">
-          <hr>
+        <!-- Comments Section -->
+        <div class="mt-4">
           <h2>Bình luận của sản phẩm</h2>
-          <div>
-            <table id="example1" class="table table-bordered table-striped">
-              <thead>
+          <div class="table-responsive">
+            <table id="example1" class="table table-striped table-bordered">
+              <thead class="bg-secondary text-white">
                 <tr>
                   <th>STT</th>
                   <th>Người bình luận</th>
@@ -77,24 +81,25 @@
                   <tr>
                     <td><?= $key + 1 ?></td>
                     <td>
-                      <a target="_blank" href="<?= BASE_URL_ADMIN . '?act=chi-tiet-khach-hang&id_khach_hang=' . $binhLuan['tai_khoan_id'] ?>">
+                      <a href="<?= BASE_URL_ADMIN . '?act=chi-tiet-khach-hang&id_khach_hang=' . $binhLuan['tai_khoan_id'] ?>" target="_blank" class="text-info">
                         <?= $binhLuan['ho_ten'] ?>
                       </a>
                     </td>
                     <td><?= $binhLuan['noi_dung'] ?></td>
                     <td><?= $binhLuan['ngay_dang'] ?></td>
-                    <td><?= $binhLuan['trang_thai'] == 1 ? 'Hiển thị' : 'Bị ẩn' ?></td>
-
                     <td>
-                      <div class="btn-group">
-                        <form action="<?= BASE_URL_ADMIN . '?act=update-trang-thai-binh-luan' ?>" method="post">
-                          <input type="hidden" name="id_binh_luan" value="<?= $binhLuan['id'] ?>">
-                          <input type="hidden" name="name_view" value="detail_sanpham">
-                          <button onclick="return confirm('Bạn có muốn ẩn bình luận này không?')" class="btn btn-warning">
-                            <?= $binhLuan['trang_thai'] == 1 ? 'Ẩn' : 'Bỏ ẩn' ?>
-                          </button>
-                        </form>
-                      </div>
+                      <span class="badge <?= $binhLuan['trang_thai'] == 1 ? 'bg-success' : 'bg-danger' ?>">
+                        <?= $binhLuan['trang_thai'] == 1 ? 'Hiển thị' : 'Bị ẩn' ?>
+                      </span>
+                    </td>
+                    <td>
+                      <form action="<?= BASE_URL_ADMIN . '?act=update-trang-thai-binh-luan' ?>" method="post" class="d-inline-block">
+                        <input type="hidden" name="id_binh_luan" value="<?= $binhLuan['id'] ?>">
+                        <input type="hidden" name="name_view" value="detail_sanpham">
+                        <button onclick="return confirm('Bạn có muốn ẩn bình luận này không?')" class="btn btn-warning btn-sm">
+                          <?= $binhLuan['trang_thai'] == 1 ? 'Ẩn' : 'Bỏ ẩn' ?>
+                        </button>
+                      </form>
                     </td>
                   </tr>
                 <?php endforeach ?>
@@ -103,11 +108,9 @@
           </div>
         </div>
       </div>
-      <!-- /.card-body -->
     </div>
-    <!-- /.card -->
-
   </section>
+
   <!-- /.content -->
 </div>
 <!-- /.content-wrapper -->
