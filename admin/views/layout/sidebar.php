@@ -24,9 +24,9 @@
                with font-awesome or any other icon font library -->
           <li class="nav-item">
             <a href="<?= BASE_URL_ADMIN ?>" class="nav-link">
-            <i class="nav-icon fas fa-tachometer-alt"></i>
+              <i class="nav-icon fas fa-tachometer-alt"></i>
               <p>
-                Trang Chủ
+                Thống Kê
                 <i class="right fas fa-angle-left"></i>
               </p>
             </a>
@@ -45,7 +45,16 @@
             <a href="<?= BASE_URL_ADMIN . '?act=san-pham' ?>" class="nav-link">
               <i class="nav-icon fas fa-book-open"></i>
               <p>
-                Sản Phẩm
+                Quản Lý Sản Phẩm
+              </p>
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a href="<?= BASE_URL_ADMIN . '?act=don-hang' ?>" class="nav-link">
+              <i class="nav-icon fas fa-book"></i>
+              <p>
+                Quản Lý Đơn Hàng
               </p>
             </a>
           </li>
@@ -59,31 +68,23 @@
             <ul class="nav nav-treeview">
               <li class="nav-item">
                 <a href="<?= BASE_URL_ADMIN . '?act=list-tai-khoan-quan-tri' ?>" class="nav-link">
-                <i class="nav-icon far fa-user"></i>
-                <p>Tài khoản quản trị</p>
+                  <i class="nav-icon far fa-user"></i>
+                  <p>Tài khoản quản trị</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="<?= BASE_URL_ADMIN . '?act=list-tai-khoan-khach-hang' ?>" class="nav-link">
-                <i class="nav-icon far fa-user"></i>
-                <p>Tài khoản khách hàng</p>
+                  <i class="nav-icon far fa-user"></i>
+                  <p>Tài khoản khách hàng</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="" class="nav-link">
-                <i class="nav-icon far fa-user"></i>
-                <p>Tài khoản cá nhân</p>
+                  <i class="nav-icon far fa-user"></i>
+                  <p>Tài khoản cá nhân</p>
                 </a>
               </li>
             </ul>
-            <li class="nav-item">
-                <a href="<?= BASE_URL_ADMIN . '?act=don-hang' ?>" class="nav-link">
-              <i class="nav-icon fas fa-book"></i>
-              <p>
-                Quản Lý Đơn Hàng
-              </p>
-            </a>
-          </li>
           </li>
         </ul>
       </nav>

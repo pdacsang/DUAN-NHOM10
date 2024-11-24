@@ -46,6 +46,22 @@
                                         <?php } ?>
                                 </div>
 
+                                <div class="form-group">
+                                    <label">Số điện thoại</label>
+                                        <input type="so_dien_thoai" class="form-control" name="so_dien_thoai" placeholder="Nhập số điện thoại">
+                                        <?php if (isset($_SESSION['error']['so_dien_thoai'])) { ?>
+                                            <p class="text-danger"><?= $_SESSION['error']['so_dien_thoai'] ?></p>
+                                        <?php } ?>
+                                </div>
+
+                                <div class="form-group">
+                                    <label">Mật khẩu</label>
+                                        <input type="mat_khau" class="form-control" name="mat_khau" placeholder="Nhập mật khẩu">
+                                        <?php if (isset($_SESSION['error']['mat_khau'])) { ?>
+                                            <p class="text-danger"><?= $_SESSION['error']['mat_khau'] ?></p>
+                                        <?php } ?>
+                                </div>
+
                                 <div class="card-footer">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
