@@ -20,8 +20,12 @@
                             <li class="header__top-item">
                                 <a href="" class="header__top-link">Đăng ký</a>
                             </li>
-                            <li class="header__top-item">
+                            <li class="header__top-item dropdown">
                                 <a href="#" class="header__top-link">Đăng nhập</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="<?= BASE_URL . '?act=login-client' ?>">Đăng nhập Client</a></li>
+                                    <li><a href="<?= BASE_URL_ADMIN . '?act=login-admin' ?>">Đăng nhập Admin</a></li>
+                                </ul>
                             </li>
                         </ul>
                     </nav>
