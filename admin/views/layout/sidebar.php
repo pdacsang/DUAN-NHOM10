@@ -1,7 +1,7 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">
     <!-- Brand Logo -->
-    <a href="../../index3.html" class="brand-link text-center">
+    <a href="<?= BASE_URL ?>" class="brand-link text-center">
       <i class="nav-icon fas fa-home" style="color: whith;"></i>
       <strong>EduBook</strong>
     </a>

@@ -18,18 +18,6 @@
                 <div class="col-sm-10">
                     <h1>Quản Lý - Đơn Hàng: <?= $donHang['ma_don_hang'] ?></h1>
                 </div>
-                <div class="col-sm-2">
-                    <form action="" method="POST">
-                        <select name="" id="" class="form-group">
-                            <?php foreach ($listTrangThaiDonHang as $key => $trangThai): ?>
-                                <option <?= $trangThai['id'] == $donHang['trang_thai_id'] ? 'selected' : '' ?>
-                                    <?= $trangThai['id'] < $donHang['trang_thai_id'] ? 'disabled' : '' ?>
-                                    value="<?= $trangThai['id']; ?>"><?= $trangThai['ten_trang_thai']; ?>
-                                </option>
-                            <?php endforeach ?>
-                        </select>
-                    </form>
-                </div>
             </div>
         </div><!-- /.container-fluid -->
     </section>
@@ -41,13 +29,11 @@
                 <div class="col-12">
                     <?php
                     if ($donHang['trang_thai_id'] == 1) {
-                        $colorAlerts = 'primary';
-                    } elseif ($donHang['trang_thai_id'] >= 2 && $donHang['trang_thai_id'] <= 9) {
                         $colorAlerts = 'warning';
-                    } elseif ($donHang['trang_thai_id'] == 10) {
-                        $colorAlerts = 'success';
+                    } elseif ($donHang['trang_thai_id'] == 2) {
+                        $colorAlerts = 'primary';
                     } else {
-                        $colorAlerts = 'danger';
+                        $colorAlerts = 'success';
                     }
                     ?>
                     <div class="alert alert-<?= $colorAlerts; ?>" role="alert">
