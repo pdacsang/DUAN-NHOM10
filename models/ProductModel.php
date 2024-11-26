@@ -13,10 +13,10 @@ class ProductModel {
     // Lấy tất cả sản phẩm
     public function getAllProducts() {
         try {
-            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh FROM san_phams";
+            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh FROM san_phams WHERE trang_thai = 1";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // Trả về danh sách sản phẩm hoặc mảng rỗng
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
             $this->logError($e);
             return [];
@@ -29,7 +29,7 @@ class ProductModel {
             $sql = "SELECT id, ten_danh_muc FROM danh_mucs";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // Trả về danh sách danh mục hoặc mảng rỗng
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
             $this->logError($e);
             return [];
@@ -39,11 +39,14 @@ class ProductModel {
     // Lấy sản phẩm theo danh mục
     public function getProductsByCategory($categoryId) {
         try {
-            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh FROM san_phams WHERE danh_muc_id = :danh_muc_id";
+            $categoryId = intval($categoryId); // Đảm bảo dữ liệu là số nguyên
+            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh 
+                    FROM san_phams 
+                    WHERE danh_muc_id = :danh_muc_id AND trang_thai = 1";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':danh_muc_id', $categoryId, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: []; // Trả về danh sách sản phẩm hoặc mảng rỗng
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
         } catch (Exception $e) {
             $this->logError($e);
             return [];
@@ -53,15 +56,46 @@ class ProductModel {
     // Lấy thông tin chi tiết sản phẩm
     public function getProductById($id) {
         try {
+            $id = intval($id); // Đảm bảo dữ liệu là số nguyên
             $sql = "SELECT id, ten_sach, gia_sach, hinh_anh, mo_ta, trang_thai, nha_xuat_ban, so_trang, ngay_xuat_ban 
-                    FROM san_phams WHERE id = :id";
+                    FROM san_phams 
+                    WHERE id = :id AND trang_thai = 1";
             $stmt = $this->conn->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null; // Trả về sản phẩm hoặc null
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
         } catch (Exception $e) {
             $this->logError($e);
             return null;
+        }
+    }
+
+    // Hàm tìm kiếm sản phẩm
+    public function searchProducts($keyword) {
+        try {
+            // Làm sạch dữ liệu đầu vào và tạo dấu % cho phép tìm kiếm toàn bộ từ khóa
+            $keyword = '%' . trim(htmlspecialchars($keyword)) . '%'; 
+            
+            // SQL query để tìm kiếm sản phẩm theo tên hoặc mô tả
+            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh 
+                    FROM san_phams 
+                    WHERE (ten_sach LIKE :keyword OR mo_ta LIKE :keyword) AND trang_thai = 1";
+            
+            // Chuẩn bị câu truy vấn
+            $stmt = $this->conn->prepare($sql);
+            
+            // Gắn tham số vào câu truy vấn
+            $stmt->bindParam(':keyword', $keyword, PDO::PARAM_STR);
+            
+            // Thực thi câu truy vấn
+            $stmt->execute();
+            
+            // Trả về tất cả kết quả dưới dạng mảng hoặc mảng rỗng nếu không có kết quả
+            return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Exception $e) {
+            // Ghi log lỗi nếu có
+            $this->logError($e);
+            return [];
         }
     }
 
@@ -71,7 +105,7 @@ class ProductModel {
         $file = './logs/error.log';
 
         if (!file_exists('./logs')) {
-            mkdir('./logs', 0777, true); // Tạo thư mục nếu chưa tồn tại
+            mkdir('./logs', 0777, true);
         }
 
         file_put_contents($file, $message, FILE_APPEND);

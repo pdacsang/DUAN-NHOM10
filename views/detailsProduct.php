@@ -60,34 +60,65 @@ require_once './views/layout/navbar.php';
 </div>
 
 <div class="product__main-info-status">
-    <strong style="font-size: 15px;">Trạng thái: </strong>
-    <span style="font-size: 15px;">
-        <?php echo $product['trang_thai'] == 1 ? 'Còn hàng' : 'Hết hàng'; ?>
-    </span>
-</div>
+                <strong style="font-size: 15px;">Trạng thái: </strong>
+                <span style="font-size: 15px;">
+                    <?php echo $product['trang_thai'] == 1 ? 'Còn hàng' : 'Hết hàng'; ?>
+                </span>
+            </div>
 
-<div class="product__main-info-cart-btn-wrap">
+            <div class="product__main-info-cart-btn-wrap">
     <!-- Form xử lý thêm vào giỏ hàng -->
-    <form method="post" action="index.php?act=addToCart&id=<?= htmlspecialchars($product['id']); ?>">
+    <form method="post" action="index.php?act=addToCart&id=<?= htmlspecialchars($product['id']); ?>" 
+          onsubmit="ensureValidQuantity(<?= htmlspecialchars($product['id']); ?>)">
         <label for="quantity-<?= htmlspecialchars($product['id']); ?>">Số lượng:</label>
         <div class="cart__body-quantity">
-            <input type="button" value="-" class="cart__body-quantity-minus" onclick="updateQuantity(false)">
-            <input type="number" step="1" min="1" max="999" name="quantity" id="quantity-<?= htmlspecialchars($product['id']); ?>" value="1">
-            <input type="button" value="+" class="cart__body-quantity-plus" onclick="updateQuantity(true)">
+            <!-- Nút giảm số lượng -->
+            <input type="button" value="-" class="cart__body-quantity-minus" 
+                   onclick="updateQuantity(<?= htmlspecialchars($product['id']); ?>, false)">
+            <!-- Input nhập số lượng -->
+            <input type="number" step="1" min="1" max="999" name="quantity" 
+                   id="quantity-<?= htmlspecialchars($product['id']); ?>" 
+                   value="1" onchange="validateQuantity(<?= htmlspecialchars($product['id']); ?>)">
+            <!-- Nút tăng số lượng -->
+            <input type="button" value="+" class="cart__body-quantity-plus" 
+                   onclick="updateQuantity(<?= htmlspecialchars($product['id']); ?>, true)">
         </div>
+        <!-- Nút thêm vào giỏ hàng -->
         <button type="submit" class="product__main-info-cart-btn">Thêm vào giỏ hàng</button>
     </form>
 </div>
+
 <script>
-function updateQuantity(isIncrease) {
-    const quantityInput = document.querySelector('input[name="quantity"]');
-    let quantity = parseInt(quantityInput.value);
-    quantity = isIncrease ? quantity + 1 : Math.max(1, quantity - 1); // Đảm bảo số lượng không nhỏ hơn 1
-    quantityInput.value = quantity;
-}
+    // Hàm cập nhật số lượng khi nhấn nút "+" hoặc "-"
+    function updateQuantity(productId, increase) {
+        let quantityInput = document.getElementById('quantity-' + productId);
+        let currentQuantity = parseInt(quantityInput.value) || 1; // Đảm bảo giá trị mặc định là 1
+        if (increase) {
+            quantityInput.value = currentQuantity + 1;
+        } else {
+            if (currentQuantity > 1) {
+                quantityInput.value = currentQuantity - 1;
+            }
+        }
+    }
+
+    // Hàm kiểm tra số lượng nhập vào có hợp lệ không
+    function validateQuantity(productId) {
+        let quantityInput = document.getElementById('quantity-' + productId);
+        let quantity = parseInt(quantityInput.value);
+        if (quantity < 1 || isNaN(quantity)) {
+            quantityInput.value = 1; // Đặt lại giá trị tối thiểu là 1 nếu nhập sai
+        }
+    }
+
+    // Hàm đảm bảo số lượng luôn hợp lệ khi submit form
+    function ensureValidQuantity(productId) {
+        let quantityInput = document.getElementById('quantity-' + productId);
+        if (parseInt(quantityInput.value) < 1 || isNaN(quantityInput.value)) {
+            quantityInput.value = 1; // Đặt lại giá trị tối thiểu nếu cần
+        }
+    }
 </script>
-
-
                             <div class="product__main-info-contact">
                                 <a href="#" class="product__main-info-contact-fb">
                                     <i class="fab fa-facebook-f"></i>

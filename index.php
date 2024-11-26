@@ -7,53 +7,69 @@ require_once './commons/function.php'; // Hàm hỗ trợ
 
 // Require toàn bộ file Controllers
 require_once './controllers/HomeController.php';
-require_once './controllers/ProductController.php'; 
-require_once './controllers/CartController.php'; // Thêm CartController
+require_once './controllers/ProductController.php';
+require_once './controllers/SearchController.php'; 
+require_once './controllers/CartController.php'; 
+require_once './controllers/OrderController.php'; 
 
 // Require toàn bộ file Models
-require_once './models/ProductModel.php'; // Model sản phẩm
+require_once './models/ProductModel.php'; 
+require_once './models/CartModel.php';    
+require_once './models/OrderModel.php';   
 
-// Tạo kết nối cơ sở dữ liệu
+// Kết nối cơ sở dữ liệu
 $dbConnection = connectDB();
-$cartModel = new CartModel();
-$uniqueProductCount = $cartModel->getUniqueProductCount();
-// Route
+if (!$dbConnection) {
+    die("Không thể kết nối đến cơ sở dữ liệu.");
+}
+
+// Nhận hành động từ URL (Route)
 $act = $_GET['act'] ?? '/';
 
-$result = match ($act) {
-    // Trang chủ
-    '/' => (new HomeController())->home(),
-
-    // Chi tiết sản phẩm
-    'showProductDetail' => (new ProductController($dbConnection))->showProductDetail(),
-
-    // Danh sách sản phẩm
-    'productList' => function () use ($dbConnection) {
-        $controller = new ProductController($dbConnection);
-        $controller->showProductList();
+// Danh sách route
+$routes = [
+    '/' => [HomeController::class, 'home'],
+    'showProductDetail' => [ProductController::class, 'showProductDetail'],
+    'productList' => [ProductController::class, 'showProductList'],
+    'productByCategory' => [ProductController::class, 'showProductsByCategory'],
+    'search' => [SearchController::class, 'handleSearch'],
+    'addToCart' => [CartController::class, 'addToCart'],
+    'viewCart' => [CartController::class, 'viewCart'],
+    'updateCart' => function () use ($dbConnection) {
+        header('Content-Type: application/json');
+        (new CartController($dbConnection))->updateCart();
     },
+    'removeFromCart' => [CartController::class, 'removeFromCart'],
+    'placeOrder' => [OrderController::class, 'placeOrder'],
+'orderConfirmation' => [OrderController::class, 'orderConfirmation'],
 
-    // Sản phẩm theo danh mục
-    'productByCategory' => function () use ($dbConnection) {
-        $controller = new ProductController($dbConnection);
-        $controller->showProductsByCategory();
-    },
+];
 
-    'addToCart' => (new CartController($dbConnection))->addToCart(),
-    'viewCart' => (new CartController($dbConnection))->viewCart(),
-    'updateCart' => (new CartController($dbConnection))->updateCart(),
-    'removeFromCart' => (new CartController($dbConnection))->removeFromCart(),
-    'clearCart' => (new CartController($dbConnection))->clearCart(),
+// Kiểm tra và xử lý route
+try {
+    if (isset($routes[$act])) {
+        $handler = $routes[$act];
 
-    // Xử lý khi không tìm thấy action
-    default => function() {
-        http_response_code(404); // Đặt mã trạng thái HTTP là 404
-        echo "Action không hợp lệ hoặc không tồn tại.";
+        if (is_callable($handler)) {
+            $handler(); // Gọi route dạng hàm
+        } else {
+            [$class, $method] = $handler;
+            if (class_exists($class) && method_exists($class, $method)) {
+                (new $class($dbConnection))->$method(); // Gọi route dạng class/method
+            } else {
+                throw new Exception("Controller hoặc method không tồn tại: {$class}::{$method}");
+            }
+        }
+    } else {
+        http_response_code(404);
+        include './404error.php';
     }
-};
-
-// Gọi kết quả nếu là callback
-if (is_callable($result)) {
-    $result();
+} catch (Exception $e) {
+    http_response_code(500);
+    if (getenv('APP_ENV') === 'development') {
+        echo "Đã xảy ra lỗi: " . htmlspecialchars($e->getMessage());
+    } else {
+        echo "Lỗi hệ thống. Vui lòng thử lại sau.";
+        error_log($e->getMessage());
+    }
 }
-?>

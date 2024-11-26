@@ -44,20 +44,23 @@
                     </div>
 
                     <div class="col-lg-6 col-md-7 col-sm-0 header__search">
-                        <select name="" id="" class="header__search-select">
-                            <option value="0">All</option>
-                            <option value="1">Sách tiếng việt</option>
-                            <option value="2">Sách sách nước ngoài</option>
-                            <option value="3">Manga-Comic</option>
-                            
-                        </select>
-                        <input type="text" class="header__search-input" placeholder="Tìm kiếm tại đây...">
-                        <button class="header__search-btn">
-                            <div class="header__search-icon-wrap">
-                                <i class="fas fa-search header__search-icon"></i>
-                            </div>
-                        </button>
-                    </div>
+                    <form id="search-form" class="header__search-form" action="index.php" method="get">
+    <input type="hidden" name="act" value="search">
+    <div class="header__search-container">
+        <input 
+            type="text" 
+            name="keyword" 
+            class="header__search-input" 
+            placeholder="Tìm kiếm tại đây..." 
+            id="search-keyword">
+        <button type="submit" class="header__search-btn">
+            <i class="fas fa-search header__search-icon"></i>
+        </button>
+    </div>
+</form>
+    <!-- Kết quả tìm kiếm -->
+    <div id="search-results" class="search-results hidden"></div>
+</div>
 
                     <div class="col-lg-2 col-md-0 col-sm-0 header__call">
                         <div class="header__call-icon-wrap">
@@ -130,6 +133,122 @@
         cursor: pointer;
         font-size: 24px;
     }
+    .header__search-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: white;
+    overflow: hidden;
+}
+
+.header__search-category {
+    border: none;
+    padding: 0 10px;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+}
+
+.header__search-category:focus {
+    outline: none;
+}
+
+.header__search-input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+    font-size: 14px;
+    outline: none;
+    width: 500px;
+}
+
+.header__search-btn {
+    background-color: #ff4d4d;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header__search-btn .header__search-icon {
+    color: white;
+    font-size: 16px;
+}
+
+.header__search-btn:hover {
+    background-color: #e63939;
+}
+
+.header__search-container input:focus {
+    outline: none;
+}
+.search-results {
+    position: absolute;
+    top: calc(80%); /* Dưới thanh tìm kiếm */
+    left: 15px;
+    width: 100%;
+    max-width: 548px; /* Giới hạn chiều rộng */
+    background: #ffffff; /* Nền trắng */
+    border: 1px solid #ddd; /* Viền */
+    border-radius: 8px; /* Bo góc mềm mại */
+    z-index: 1000;
+    max-height: 300px; /* Chiều cao tối đa */
+    overflow-y: auto; /* Cuộn dọc nếu quá dài */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+    padding: 8px 0; /* Khoảng cách bên trong */
+}
+
+.search-results ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.search-results li {
+    display: flex; 
+    align-items: center; 
+    padding: 8px 12px; 
+    border-bottom: 1px solid #f1f1f1; 
+    cursor: pointer; 
+    transition: background-color 0.2s ease; 
+}
+
+.search-results li:hover {
+    background-color: #f9f9f9; 
+}
+
+.search-results li:last-child {
+    border-bottom: none; 
+}
+
+.search-results img {
+    width: 40px; 
+    height: 40px; 
+    object-fit: cover; 
+    border-radius: 4px; 
+    margin-right: 12px; 
+}
+
+.search-results .search-result-title {
+    font-size: 14px; 
+    color: #333; 
+    line-height: 1.4; 
+    flex: 1; 
+}
+
+.search-results .search-result-empty {
+    color: #888;
+    font-size: 14px; 
+    text-align: center; 
+    padding: 10px 0;
+}
+
 </style>
 <div class="header__nav-menu-title">Danh mục sản phẩm</div>
 <script>
@@ -150,48 +269,49 @@ dropdownMenu.addEventListener("mouseout", (e) => {
         dropdownMenu.classList.add("hidden");
     }
 });
-function updateCart(productId, quantity) {
-    fetch('index.php?act=updateCart', {
-        method: 'POST',
+document.getElementById('search-keyword').addEventListener('input', function () {
+    const keyword = this.value.trim();
+    const resultsContainer = document.getElementById('search-results');
+
+    if (keyword === '') {
+        resultsContainer.classList.add('hidden');
+        return;
+    }
+
+    // Gửi AJAX để tìm kiếm
+    fetch(`index.php?act=search&keyword=${encodeURIComponent(keyword)}`, {
+        method: 'GET',
         headers: {
-            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
         },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: quantity
+    })
+        .then((response) => response.text())
+        .then((html) => {
+            resultsContainer.innerHTML = `<ul>${html}</ul>`;
+            resultsContainer.classList.remove('hidden');
         })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Cập nhật tổng giá cho sản phẩm
-            document.querySelector(`#item-total-${productId}`).textContent =
-                new Intl.NumberFormat('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND'
-                }).format(data.itemTotal);
+        .catch((error) => {
+            console.error('Error:', error);
+            resultsContainer.innerHTML = '<p class="search-result-empty">Có lỗi xảy ra. Vui lòng thử lại.</p>';
+            resultsContainer.classList.remove('hidden');
+        });
+});
 
-            // Cập nhật tổng giá giỏ hàng
-            document.querySelector('#cart-total').textContent =
-                new Intl.NumberFormat('vi-VN', {
-                    style: 'currency',
-                    currency: 'VND'
-                }).format(data.totalAmount);
-
-            // Cập nhật số lượng sản phẩm khác nhau
-            if (data.uniqueProductCount !== undefined) {
-                document.querySelector('.cart-count').textContent = data.uniqueProductCount;
-            }
-        } else {
-            alert(data.message || 'Có lỗi xảy ra khi cập nhật.');
-        }
-    })
-    .catch(error => console.error('Error:', error));
+// Điều hướng đến trang chi tiết sản phẩm
+function redirectToProduct(productId) {
+    window.location.href = `index.php?act=showProductDetail&id=${productId}`;
 }
+
+// Ẩn kết quả khi click ra ngoài
+document.addEventListener('click', function (e) {
+    const resultsContainer = document.getElementById('search-results');
+    if (!resultsContainer.contains(e.target) && e.target.id !== 'search-keyword') {
+        resultsContainer.classList.add('hidden');
+    }
+});
 </script>
     
 </div>
-
 
 
 
@@ -203,9 +323,6 @@ function updateCart(productId, quantity) {
                             <li class="header__nav-item">
                                 <a href="index.php?act=productByCategory" class="header__nav-link">Danh mục sản phẩm</a>
                                 
-                            </li>
-                            <li class="header__nav-item">
-                                <a href="product.html" class="header__nav-link">Sản phẩm</a>
                             </li>
                             <li class="header__nav-item">
                                 <a href="post.html" class="header__nav-link">Bài viết</a>
@@ -223,3 +340,4 @@ function updateCart(productId, quantity) {
         </div>
     </header>
     <!--end header nav -->
+

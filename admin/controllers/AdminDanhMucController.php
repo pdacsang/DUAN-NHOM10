@@ -92,9 +92,5 @@
             header("Location: " . BASE_URL_ADMIN . '?act=danh-muc');
             exit();
         }
-        public function index(){
-            $listDanhMuc = $this->modelDanhMuc->getAllDanhMuc();
-            require_once './views/danhmuc/listDanhMuc.php';
-        }
     }
 ?>

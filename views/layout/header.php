@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="./assets/css/home.css">
     <link rel="stylesheet" href="./assets/css/product.css">
     <link rel="stylesheet" href="./assets/css/cart.css">
+    <link rel="stylesheet" href="./assets/css/category.css">
+
 
     <script src="./assets/js/cart.js"></script>
     
