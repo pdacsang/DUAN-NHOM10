@@ -10,6 +10,7 @@ class AdminTaiKhoanController
         $this->modelDonHang = new AdminDonHang();
         $this->modelSanPham = new AdminSanPham();
     }
+    // Admin Quản Trị
     public function danhSachQuanTri(){
         $listQuanTri = $this->modelTaiKhoan->getAllTaiKhoan(1);
         //var_dump($listQuanTri);die;
@@ -109,7 +110,6 @@ class AdminTaiKhoanController
             var_dump('Lỗi reset tài khoản');die;
         }
     }
-
     // Khách hàng
     public function danhSachKhachHang(){
         $listKhachHang = $this->modelTaiKhoan->getAllTaiKhoan(2);
@@ -173,10 +173,11 @@ class AdminTaiKhoanController
         $listBinhLuan = $this->modelSanPham->getBinhLuanFromKhachHang($id_khach_hang);
         require_once './views/taikhoan/khachhang/deltailKhachHang.php';
     }
-    // auth
+    // auth login logout
     public function formLogin() {
         require_once './views/auth/formLogin.php';
         deleteSessionError();
+        exit();
     }
     public function login() {
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
@@ -207,4 +208,115 @@ class AdminTaiKhoanController
             header("Location: " .BASE_URL_ADMIN .'?act=login-admin');
         }
     }
+    // Chỉnh tải khoản cá nhân admin
+    public function formEditAdmin() {
+        $email = $_SESSION['user_admin'];
+        $thongTin = $this->modelTaiKhoan->getTaiKhoanformEmail($email); // vì session đang lưu mỗi email
+        // var_dump($thongTin);die;
+        require_once './views/taikhoan/canhan/editAdmin.php';
+        deleteSessionError();
+    }
+    // Đổi mật khẩu
+    public function postEditMatKhauAdmin() {
+        //var_dump($_POST);die;
+        if($_SERVER['REQUEST_METHOD'] == 'POST'){
+            $old_pass = $_POST['old_pass'];
+            $new_pass = $_POST['new_pass'];
+            $confirm_pass = $_POST['confirm_pass'];
+            //var_dump($old_pass);die;
+            // Lấy thông tin user từ session
+            $user = $this->modelTaiKhoan->getTaiKhoanformEmail($_SESSION['user_admin']);
+            //var_dump($user);die;
+            $checkPass = password_verify($old_pass, $user['mat_khau']);
+            $errors = [];
+            if(!$checkPass) {
+                $errors['old_pass'] = 'Mật Khẩu Admin Không Đúng !';
+            }
+            if($new_pass !== $confirm_pass) {
+                $errors['confirm_pass'] = 'Mật Khẩu Không Khớp!';
+            }
+            if(empty($old_pass)) {
+                $errors['old_pass'] = 'Nhập mật khẩu !';
+            }
+            if(empty($new_pass)) {
+                $errors['new_pass'] = 'Nhập mật khẩu !';
+            }
+            if(empty($confirm_pass)) {
+                $errors['confirm_pass'] = 'Nhập mật khẩu !';
+            }
+            $_SESSION['error'] = $errors;
+            if(!$errors) {
+                // Thực hiện đổi mật khẩu
+                $hashPass = password_hash($new_pass, PASSWORD_BCRYPT);
+                $status = $this->modelTaiKhoan->resetPassword($user['id'], $hashPass);
+                if($status){
+                    $_SESSION['success'] = "Đổi mật khẩu thành công";
+                    $_SESSION['flash'] = true;
+                    header("Location: " .BASE_URL_ADMIN .'?act=form-sua-thong-tin-ca-nhan-admin');
+                }
+            }else{
+                // lỗi thì lưu lỗi vào session
+                $_SESSION['flash'] = true;
+                header("Location: " .BASE_URL_ADMIN .'?act=form-sua-thong-tin-ca-nhan-admin');
+                exit();
+            }
+        }
+    }
+    // Sửa thong tin admin
+    // Sửa thông tin quản trị viên
+    public function postEditAdmin() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $ho_ten = $_POST['ho_ten'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $so_dien_thoai = $_POST['so_dien_thoai'] ?? '';
+            $ngay_sinh = $_POST['ngay_sinh'] ?? '';
+            $gioi_tinh = $_POST['gioi_tinh'] ?? '';
+            $dia_chi = $_POST['dia_chi'] ?? '';
+            $trang_thai = $_POST['trang_thai'] ?? '';
+            $errors = [];
+    
+            // Validate dữ liệu
+            if (empty($ho_ten)) {
+                $errors['ho_ten'] = 'Họ tên không được để trống';
+            }
+            if (empty($email)) {
+                $errors['email'] = 'Email không được để trống';
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = 'Email không hợp lệ';
+            }
+    
+            $_SESSION['error'] = $errors;
+    
+            if (empty($errors)) {
+                // Lấy thông tin tài khoản từ session
+                $email_admin = $_SESSION['user_admin'];
+                $admin_info = $this->modelTaiKhoan->getTaiKhoanformEmail($email_admin);
+    
+                // Cập nhật thông tin
+                $status = $this->modelTaiKhoan->updateAdmin(
+                    $admin_info['id'],
+                    $ho_ten,
+                    $email,
+                    $so_dien_thoai,
+                    $ngay_sinh,
+                    $gioi_tinh,
+                    $dia_chi,
+                    $trang_thai
+                );
+    
+                if ($status) {
+                    $_SESSION['success'] = 'Cập nhật thông tin thành công';
+                    header("Location: " . BASE_URL_ADMIN . '?act=form-sua-thong-tin-ca-nhan-admin');
+                    exit();
+                } else {
+                    $_SESSION['error']['general'] = 'Cập nhật không thành công. Vui lòng thử lại.';
+                }
+            }
+            // Nếu có lỗi hoặc thất bại, quay lại form
+            header("Location: " . BASE_URL_ADMIN . '?act=form-sua-thong-tin-ca-nhan-admin');
+            exit();
+        }
+    }
+    
 }

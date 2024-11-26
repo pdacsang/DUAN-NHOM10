@@ -32,7 +32,7 @@
                             <input type="hidden" name="khach_hang_id" value="<?= $khachHang['id'] ?>">
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label>Họ tên</label>
+                                    <label">Họ tên</label>
                                         <input type="text" class="form-control" name="ho_ten" value="<?= $khachHang['ho_ten'] ?>" placeholder="Nhập họ tên">
                                         <?php if (isset($_SESSION['error']['ho_ten'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['ho_ten'] ?></p>
@@ -40,7 +40,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Email</label>
+                                    <label">Email</label>
                                         <input type="email" class="form-control" name="email" value="<?= $khachHang['email'] ?>" placeholder="Nhập email">
                                         <?php if (isset($_SESSION['error']['email'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['email'] ?></p>
@@ -48,7 +48,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Số điện thoại </label>
+                                    <label">Số điện thoại </label>
                                         <input type="text" class="form-control" name="so_dien_thoai" value="<?= $khachHang['so_dien_thoai'] ?>" placeholder="Điền SĐT">
                                         <?php if (isset($_SESSION['error']['so_dien_thoai'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['so_dien_thoai'] ?></p>
@@ -56,7 +56,7 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label>Ngày sinh</label>
+                                    <label">Ngày sinh</label>
                                         <input type="date" class="form-control" name="ngay_sinh" value="<?= $khachHang['ngay_sinh'] ?>">
                                         <?php if (isset($_SESSION['error']['ngay_sinh'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['ngay_sinh'] ?></p>
@@ -64,7 +64,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Giới tính</label>
+                                    <label">Giới tính</label>
                                     <select name="gioi_tinh" id="inputStatus" class="form-control custom-select">
                                         <option <?= $khachHang['gioi_tinh'] == 1 ? 'selected': '' ?> value="1">Nam</option>
                                         <option <?= $khachHang['gioi_tinh'] !== 1 ? 'selected': '' ?> value="2">Nữ</option>
@@ -72,7 +72,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Địa chỉ</label>
+                                    <label">Địa chỉ</label>
                                         <input type="text" class="form-control" name="dia_chi" value="<?= $khachHang['dia_chi'] ?>" placeholder="Điền địa chỉ">
                                         <?php if (isset($_SESSION['error']['dia_chi'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['dia_chi'] ?></p>

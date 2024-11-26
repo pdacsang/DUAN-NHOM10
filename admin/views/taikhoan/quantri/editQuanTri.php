@@ -32,7 +32,7 @@
                             <input type="hidden" name="quan_tri_id" value="<?= $quanTri['id'] ?>">
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label>Họ tên</label>
+                                    <label">Họ tên</label>
                                         <input type="text" class="form-control" name="ho_ten" value="<?= $quanTri['ho_ten'] ?>" placeholder="Nhập họ tên">
                                         <?php if (isset($_SESSION['error']['ho_ten'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['ho_ten'] ?></p>
@@ -40,7 +40,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Email</label>
+                                    <label">Email</label>
                                         <input type="email" class="form-control" name="email" value="<?= $quanTri['email'] ?>" placeholder="Nhập email">
                                         <?php if (isset($_SESSION['error']['email'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['email'] ?></p>
@@ -48,7 +48,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label>Số điện thoại </label>
+                                    <label">Số điện thoại </label>
                                         <input type="text" class="form-control" name="so_dien_thoai" value="<?= $quanTri['so_dien_thoai'] ?>" placeholder="Điền SĐT">
                                         <?php if (isset($_SESSION['error']['so_dien_thoai'])) { ?>
                                             <p class="text-danger"><?= $_SESSION['error']['so_dien_thoai'] ?></p>

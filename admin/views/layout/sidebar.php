@@ -1,5 +1,5 @@
   <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: black;">
+  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">
     <!-- Brand Logo -->
     <a href="../../index3.html" class="brand-link text-center">
       <i class="nav-icon fas fa-home" style="color: whith;"></i>
@@ -79,7 +79,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="" class="nav-link">
+                <a href="<?= BASE_URL_ADMIN . '?act=form-sua-thong-tin-ca-nhan-admin' ?>" class="nav-link">
                   <i class="nav-icon far fa-user"></i>
                   <p style="color: white;">Tài khoản cá nhân</p>
                 </a>

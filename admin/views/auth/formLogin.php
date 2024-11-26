@@ -1,71 +1,111 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Sign in Admin</title>
-  <link rel="stylesheet" href="./asset/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./asset/css/typography.css">
-  <link rel="stylesheet" href="./asset/css/style.css">
-  <link rel="stylesheet" href="./asset/css/responsive.css">
-  <style>
-    .text-danger-custom {
-      color: #d32f2f;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="loading">
-    <div id="loading-center">
-    </div>
-  </div>
-  <section class="sign-in-page">
-    <div class="container p-0">
-      <div class="row no-gutters height-self-center">
-        <div class="col-sm-12 align-self-center page-content rounded">
-          <div class="row m-0">
-            <div class="col-sm-12 sign-in-page-data">
-              <div class="sign-in-from bg-primary rounded">
-                <h3 class="mb-0 text-center text-white">Sign in</h3>
-                <?php if (isset($_SESSION['error'])) { ?>
-                  <p class="text-danger-custom text-center"><?= $_SESSION['error'] ?></p>
-                <?php } else { ?>
-                  <p class="text-center text-white">Vui lòng đăng nhập để vào Admin</p>
-                <?php } ?>
-                <form action="<?= BASE_URL_ADMIN . '?act=check-login-admin' ?>" method="POST" class="mt-4 form-text">
-                  <div class="form-group">
-                    <label for="exampleInputEmail1">Email address</label>
-                    <input type="email" class="form-control mb-0 text-dark" id="" placeholder="Enter email" name="email">
-                  </div>
-                  <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <a href="#" class="float-right text-dark">Quên Mật Khẩu ?</a>
-                    <input type="text" class="form-control mb-0" id="exampleInputPassword1" placeholder="Password" style="color: black;" name="password">
-                  </div>
-                  <div class="d-inline-block w-100">
-                    <div class="custom-control custom-checkbox d-inline-block mt-2 pt-1">
-                      <input type="checkbox" class="custom-control-input" id="customCheck1">
-                      <label class="custom-control-label" for="customCheck1">Remember Me</label>
-                    </div>
-                  </div>
-                  <div class="sign-info text-center">
-                    <button type="submit" class="btn btn-white d-block w-100 mb-2">Sign in</button>
-                  </div>
-                </form>
-              </div>
+   <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>Sign in Admin</title>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+      <style>
+         body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+         }
+         .sign-in-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 40px 30px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 380px;
+         }
+         .sign-in-card h3 {
+            color: #1e3c72;
+            font-weight: bold;
+            margin-bottom: 20px;
+         }
+         .form-control {
+            border-radius: 5px;
+            box-shadow: none;
+         }
+         .btn-primary {
+            background-color: #1e3c72;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
+         }
+         .btn-primary:hover {
+            background-color: #16325c;
+         }
+         .forgot-password {
+            color: #1e3c72;
+            font-size: 14px;
+            text-decoration: none;
+         }
+         .forgot-password:hover {
+            text-decoration: underline;
+         }
+         .text-danger-custom {
+            color: #d32f2f;
+         }
+         .input-group-text {
+            cursor: pointer;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="sign-in-card">
+         <!-- Header -->
+         <h3 class="text-center">Sign In</h3>
+         <!-- Notification -->
+         <?php if (isset($_SESSION['error'])) { ?>
+            <p class="text-danger-custom text-center"><?= $_SESSION['error'] ?></p>
+         <?php } else { ?>
+            <p class="text-muted text-center">Vui lòng đăng nhập để vào Admin</p>
+         <?php } ?>
+         <!-- Form -->
+         <form action="<?= BASE_URL_ADMIN . '?act=check-login-admin' ?>" method="POST">
+            <div class="form-group">
+               <label for="email">Email Address</label>
+               <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" required>
             </div>
-          </div>
-        </div>
+            <div class="form-group">
+               <label for="password">Password</label>
+               <div class="input-group">
+                  <input type="password" class="form-control" id="password" placeholder="Enter password" name="password" required>
+                  <div class="input-group-append">
+                     <span class="input-group-text" id="togglePassword">
+                        <i class="nav-icon fas fa-eye"></i>
+                     </span>
+                  </div>
+               </div>
+            </div>
+            <div class="form-group d-flex justify-content-between">
+               <div>
+                  <input type="checkbox" id="remember" name="remember">
+                  <label for="remember">Remember me</label>
+               </div>
+               <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+         </form>
       </div>
-    </div>
-  </section>
-  <!-- Sign in END -->
-  <script src="./asset/js/jquery.min.js"></script>
-  <script src="./asset/js/bootstrap.min.js"></script>
-  <script src="./asset/js/jquery.magnific-popup.min.js"></script>
-  <script src="./asset/js/custom.js"></script>
-</body>
+      <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+      <script>
+         // Toggle Password Visibility
+         const togglePassword = document.querySelector("#togglePassword");
+         const passwordInput = document.querySelector("#password");
 
+         togglePassword.addEventListener("click", function () {
+            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
+            this.innerHTML = type === "password" ? '<i class="nav-icon fas fa-eye"></i>' : '<i class="nav-icon fas fa-eye-slash"></i>';
+         });
+      </script>
+   </body>
 </html>

@@ -36,7 +36,7 @@
                     <th>STT</th>
                     <th>Họ tên</th>
                     <th>Email</th>
-                    <th>Số điện thoại</th>
+                    <th>Số diện thoại</th>
                     <th>Trạng thái</th>
                     <th>Thao Tác</th>
                   </tr>
@@ -66,7 +66,7 @@
                     <th>STT</th>
                     <th>Họ tên</th>
                     <th>Email</th>
-                    <th>Số điện thoại</th>
+                    <th>Số diện thoại</th>
                     <th>Trạng thái</th>
                     <th>Thao Tác</th>
                   </tr>

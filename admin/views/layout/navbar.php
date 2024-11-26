@@ -1,5 +1,5 @@
   <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background-color: black;">
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">
     <!-- Left navbar links -->
     <ul class="navbar-nav">
       <li class="nav-item">

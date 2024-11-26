@@ -79,8 +79,12 @@ match ($act) {
         'list-tai-khoan-khach-hang' =>(new AdminTaiKhoanController())->danhSachKhachHang(),
         'form-sua-khach-hang' =>(new AdminTaiKhoanController())->formEditKhachHang(),
         'sua-khach-hang' =>(new AdminTaiKhoanController())->postEditKhachHang(),
-        'chi-tiet-khach-hang' =>(new AdminTaiKhoanController())->deltailKhachHang(),    
-
+        'chi-tiet-khach-hang' =>(new AdminTaiKhoanController())->deltailKhachHang(),   
+        
+        // route quản lý tài khoản cá nhân (quản trị)
+        'form-sua-thong-tin-ca-nhan-admin' =>(new AdminTaiKhoanController())->formEditAdmin(), 
+        'sua-thong-tin-ca-nhan-admin' =>(new AdminTaiKhoanController())->postEditAdmin(), 
+        'sua-mat-khau-ca-nhan-admin' =>(new AdminTaiKhoanController())->postEditMatKhauAdmin(), 
         // route auth
         'login-admin' => (new AdminTaiKhoanController())->formLogin(),
         'check-login-admin' => (new AdminTaiKhoanController())->login(),
