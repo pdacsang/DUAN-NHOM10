@@ -78,7 +78,7 @@
                   <input type="password" class="form-control" id="password" placeholder="Enter password" name="password" required>
                   <div class="input-group-append">
                      <span class="input-group-text" id="togglePassword">
-                        <i class="nav-icon fas fa-eye"></i>
+                        <i class="nav-icon fas fa-eye-slash"></i>
                      </span>
                   </div>
                </div>
@@ -94,7 +94,7 @@
          </form>
       </div>
       <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
       <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
       <script>
          // Toggle Password Visibility
@@ -104,7 +104,7 @@
          togglePassword.addEventListener("click", function () {
             const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
             passwordInput.setAttribute("type", type);
-            this.innerHTML = type === "password" ? '<i class="nav-icon fas fa-eye"></i>' : '<i class="nav-icon fas fa-eye-slash"></i>';
+            this.innerHTML = type === "password" ? '<i class="nav-icon fas fa-eye-slash"></i>' : '<i class="nav-icon fas fa-eye-slash"></i>';
          });
       </script>
    </body>
