@@ -40,9 +40,13 @@ $routes = [
         (new CartController($dbConnection))->updateCart();
     },
     'removeFromCart' => [CartController::class, 'removeFromCart'],
-    'placeOrder' => [OrderController::class, 'placeOrder'],
-'orderConfirmation' => [OrderController::class, 'orderConfirmation'],
 
+    // Thêm route mới cho đặt hàng và thanh toán
+    'checkout' => [OrderController::class, 'checkout'], // Xử lý thanh toán
+    'confirmOrder' => [OrderController::class, 'confirmOrder'], // Xác nhận đơn hàng
+    'placeOrder' => [OrderController::class, 'placeOrder'],
+    'order' => [OrderController::class, 'orderForm'],
+    
 ];
 
 // Kiểm tra và xử lý route

@@ -33,7 +33,7 @@
                             <div class="card-body">
                                 <div class="form-group">
                                     <label>Tên Người Nhận</label>
-                                        <input type="text" class="form-control" name="ten_nguoi_nhan" value="<?= $donHang['ten_nguoi_nhan'] ?>" placeholder="Nhập tên người nhận">
+                                        <input type="text" class="form-control" name="ten_nguoi_nhan" value="<?= $donHang['ten_nguoi_nhan'] ?>" placeholder="Nhập tên người nhận" disabled>
                                         <?php if (isset($errors['ten_nguoi_nhan'])) { ?>
                                             <p class="text-danger"><?= $errors['ten_nguoi_nhan'] ?></p>
                                         <?php } ?>
@@ -41,7 +41,7 @@
 
                                 <div class="form-group">
                                     <label>Email</label>
-                                        <input type="email" class="form-control" name="email_nguoi_nhan" value="<?= $donHang['email_nguoi_nhan'] ?>" placeholder="Nhập email">
+                                        <input type="email" class="form-control" name="email_nguoi_nhan" value="<?= $donHang['email_nguoi_nhan'] ?>" placeholder="Nhập email" disabled>
                                         <?php if (isset($errors['email_nguoi_nhan'])) { ?>
                                             <p class="text-danger"><?= $errors['email_nguoi_nhan'] ?></p>
                                         <?php } ?>
@@ -49,7 +49,7 @@
 
                                 <div class="form-group">
                                     <label>Số Điện Thoại</label>
-                                        <input type="number" class="form-control" name="sdt_nguoi_nhan" value="<?= $donHang['sdt_nguoi_nhan'] ?>" placeholder="Nhập số điện thoại">
+                                        <input type="number" class="form-control" name="sdt_nguoi_nhan" value="<?= $donHang['sdt_nguoi_nhan'] ?>" placeholder="Nhập số điện thoại" disabled>
                                         <?php if (isset($errors['sdt_nguoi_nhan'])) { ?>
                                             <p class="text-danger"><?= $errors['sdt_nguoi_nhan'] ?></p>
                                         <?php } ?>
@@ -57,7 +57,7 @@
 
                                 <div class="form-group">
                                     <label>Địa Chỉ</label>
-                                        <input type="text" class="form-control" name="dia_chi_nguoi_nhan" value="<?= $donHang['dia_chi_nguoi_nhan'] ?>" placeholder="Nhập địa chỉ">
+                                        <input type="text" class="form-control" name="dia_chi_nguoi_nhan" value="<?= $donHang['dia_chi_nguoi_nhan'] ?>" placeholder="Nhập địa chỉ" disabled>
                                         <?php if (isset($errors['dia_chi_nguoi_nhan'])) { ?>
                                             <p class="text-danger"><?= $errors['dia_chi_nguoi_nhan'] ?></p>
                                         <?php } ?>
@@ -65,7 +65,7 @@
 
                                 <div class="form-group">
                                     <label>Ghi Chú</label>
-                                        <textarea name="ghi_chu" class="form-control" placeholder="Nhập mô tả"><?= $donHang['ghi_chu'] ?></textarea>
+                                        <textarea name="ghi_chu" class="form-control" placeholder="Nhập mô tả" disabled><?= $donHang['ghi_chu'] ?></textarea>
                                 </div>
 
                                 <div class="form-group">
@@ -75,9 +75,7 @@
                                             <option 
                                                 <?php 
                                                     if($donHang['trang_thai_id'] > $trangThai['id']
-                                                        || $donHang['trang_thai_id'] == 9
-                                                        || $donHang['trang_thai_id'] == 10
-                                                        || $donHang['trang_thai_id'] == 11)
+                                                        || $donHang['trang_thai_id'] == 3)
                                                     {
                                                         echo 'disabled';
                                                     }

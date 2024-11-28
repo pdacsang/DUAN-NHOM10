@@ -1,4 +1,4 @@
-<footer class="main-footer" style="background-color: black;">
+<footer class="main-footer" style="background: linear-gradient(135deg, #1e3c72, #2a5298);">
     <div class="float-right d-none d-sm-block">
       <b style="color: white;">Nhóm 10</b>
     </div>

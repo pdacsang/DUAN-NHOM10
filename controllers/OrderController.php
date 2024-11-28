@@ -1,121 +1,114 @@
 <?php
 require_once './models/OrderModel.php';
-require_once './models/CartModel.php';
 
 class OrderController {
+    private $db;
     private $orderModel;
-    private $cartModel;
 
     public function __construct($db) {
+        $this->db = $db;
         $this->orderModel = new OrderModel($db);
-        $this->cartModel = new CartModel($db);
     }
 
-    // Hiển thị trang thanh toán
-    public function checkout() {
-        try {
-            // Lấy thông tin giỏ hàng
-            $cartItems = $this->cartModel->getCartItems();
-            $totalAmount = $this->cartModel->getTotalAmount();
-
-            if (empty($cartItems)) {
-                throw new Exception("Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm vào giỏ hàng.");
-            }
-
-            // Hiển thị trang thanh toán
-            require './views/Order.php';
-        } catch (Exception $e) {
-            // Hiển thị lỗi và điều hướng người dùng
-            echo "<p class='error'>Lỗi: " . htmlspecialchars($e->getMessage()) . "</p>";
-            echo "<a href='index.php?act=products' class='btn'>Quay lại mua hàng</a>";
+    // Hiển thị form nhập thông tin đặt hàng
+    public function orderForm() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
+
+        include './views/Order.php';
     }
 
     // Xử lý đặt hàng
     public function placeOrder() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $cart = $_SESSION['cart'] ?? [];
+        if (empty($cart)) {
+            echo "Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.";
+            return;
+        }
+
+        // Lấy dữ liệu từ form
+        $recipientName = $_POST['recipient_name'] ?? null;
+        $email = $_POST['email'] ?? null;
+        $phone = $_POST['phone'] ?? null;
+        $address = $_POST['address'] ?? null;
+        $paymentMethodId = $_POST['payment_method'] ?? 1;
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!$recipientName || !$email || !$phone || !$address) {
+            echo "Vui lòng nhập đầy đủ thông tin.";
+            return;
+        }
+
+        // Tính tổng tiền
+        $totalAmount = array_sum(array_map(function ($item) {
+            return $item['price'] * $item['quantity'];
+        }, $cart));
+
+        if ($totalAmount <= 0) {
+            echo "Tổng tiền không hợp lệ.";
+            return;
+        }
+
         try {
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                throw new Exception("Yêu cầu không hợp lệ.");
-            }
-
-            // Lấy và kiểm tra dữ liệu từ form
-            $fullName = filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_STRING);
-            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-            $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
-            $address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_STRING);
-            $note = filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING);
-            $paymentMethod = filter_input(INPUT_POST, 'payment_method', FILTER_VALIDATE_INT);
-
-            if (empty($fullName) || empty($email) || empty($phone) || empty($address) || empty($paymentMethod)) {
-                throw new Exception("Vui lòng điền đầy đủ thông tin.");
-            }
-
-            // Kiểm tra định dạng email và số điện thoại
-            if (!$email) {
-                throw new Exception("Địa chỉ email không hợp lệ.");
-            }
-            if (!preg_match('/^0[0-9]{9,10}$/', $phone)) {
-                throw new Exception("Số điện thoại không hợp lệ.");
-            }
-
-            // Lấy thông tin giỏ hàng
-            $cartItems = $this->cartModel->getCartItems();
-            if (empty($cartItems)) {
-                throw new Exception("Giỏ hàng trống. Không thể tiến hành đặt hàng.");
-            }
-
-            // Tính tổng tiền
-            $totalAmount = array_reduce($cartItems, function ($carry, $item) {
-                return $carry + ($item['price'] * $item['quantity']);
-            }, 0);
-
-            // Tạo mã đơn hàng
-            $orderCode = 'DH-' . time();
-
-            // Thêm đơn hàng vào CSDL
-            $orderId = $this->orderModel->createOrder([
-                'ma_don_hang' => $orderCode,
-                'tai_khoan_id' => $_SESSION['user_id'] ?? 0,
-                'ten_nguoi_nhan' => $fullName,
-                'email_nguoi_nhan' => $email,
-                'sdt_nguoi_nhan' => $phone,
-                'dia_chi_nguoi_nhan' => $address,
-                'ngay_dat' => date('Y-m-d H:i:s'),
-                'tong_tien' => $totalAmount,
-                'ghi_chu' => $note,
-                'phuong_thuc_thanh_toan_id' => $paymentMethod,
-                'trang_thai_id' => 1,
-            ]);
-
-            if (!$orderId) {
-                throw new Exception("Không thể thêm đơn hàng vào CSDL.");
-            }
+            // Tạo đơn hàng
+            $userId = $_SESSION['user_id'] ?? null;
+            $orderId = $this->orderModel->createOrder(
+                $totalAmount,
+                1, // Trạng thái mặc định "Chờ xử lý"
+                $paymentMethodId,
+                $userId,
+                $recipientName,
+                $email,
+                $phone,
+                $address
+            );
 
             // Thêm chi tiết đơn hàng
-            foreach ($cartItems as $item) {
-                $this->orderModel->addOrderDetail([
-                    'don_hang_id' => $orderId,
-                    'san_pham_id' => $item['id'],
-                    'don_gia' => $item['price'],
-                    'so_luong' => $item['quantity'],
-                    'thanh_tien' => $item['price'] * $item['quantity'],
-                ]);
+            foreach ($cart as $item) {
+                $this->orderModel->addOrderDetails(
+                    $orderId,
+                    $item['id'],
+                    $item['quantity'],
+                    $item['price']
+                );
             }
 
-            
+            // Đặt hàng thành công
+            echo "Đặt hàng thành công. Mã đơn hàng: " . $orderId;
 
-            // Chuyển hướng tới trang thành công
-            header("Location: index.php?act=orderSuccess&order_id={$orderId}");
-            exit;
-
+            // Xóa giỏ hàng sau khi đặt hàng
+            unset($_SESSION['cart']);
         } catch (Exception $e) {
-            // Log lỗi nếu cần
-            error_log("Lỗi đặt hàng: " . $e->getMessage());
+            echo "Lỗi khi xử lý đơn hàng: " . htmlspecialchars($e->getMessage());
+        }
+    }
 
-            // Hiển thị lỗi cho người dùng
-            echo "<p class='error'>Lỗi: " . htmlspecialchars($e->getMessage()) . "</p>";
-            echo "<a href='index.php?act=checkout' class='btn'>Quay lại thanh toán</a>";
+    // Xác nhận đơn hàng
+    public function confirmOrder() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $orderId = $_GET['id'] ?? null;
+
+        if (!$orderId) {
+            echo "Không tìm thấy mã đơn hàng.";
+            return;
+        }
+
+        try {
+            // Lấy thông tin đơn hàng và chi tiết
+            $order = $this->orderModel->getOrder($orderId);
+            $orderDetails = $this->orderModel->getOrderDetails($orderId);
+
+            include './views/confirm_order.php';
+        } catch (Exception $e) {
+            echo "Lỗi khi lấy thông tin đơn hàng: " . htmlspecialchars($e->getMessage());
         }
     }
 }
-?>

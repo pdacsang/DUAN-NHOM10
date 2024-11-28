@@ -82,14 +82,19 @@ require_once './views/layout/navbar.php';
             </span>
             
             <div class="cart__checkout">
-            <form action="index.php?act=placeOrder" method="POST">
-    <!-- Các trường dữ liệu cần thiết -->
-    <button type="submit" class="cart__foot-price-btn">Thanh toán</button>
-</form>
+    <form action="index.php?act=order" method="POST">
+        <?php foreach ($cartItems as $item): ?>
+            <input type="hidden" name="cartItems[]" value='<?= json_encode([
+                'id' => $item['id'] ?? 0,
+                'name' => $item['name'] ?? 'Tên sản phẩm không xác định',
+                'quantity' => $item['quantity'] ?? 0, // Sử dụng 'quantity' thay cho 'so_luong'
+                'price' => $item['price'] ?? 0, // Thêm thông tin giá nếu cần
+            ], JSON_UNESCAPED_UNICODE) ?>'>
+        <?php endforeach; ?>
+        <input type="hidden" name="totalAmount" value="<?= $totalAmount ?>">
+        <button type="submit" class="cart__foot-price-btn">Thanh toán</button>
+    </form>
 </div>
-            
-        </article>
-    </div>
 </section>
 
 <?php
