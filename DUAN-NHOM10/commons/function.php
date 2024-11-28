@@ -75,4 +75,6 @@ function checkLoginAdmin(){
         // var_dump('abc');die;
         exit();
     }
+
+// client 
 }
