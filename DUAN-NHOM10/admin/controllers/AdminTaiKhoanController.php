@@ -126,35 +126,15 @@ class AdminTaiKhoanController
     public function postEditKhachHang() {
         if($_SERVER['REQUEST_METHOD'] == 'POST') {
             $khach_hang_id = $_POST['khach_hang_id'] ?? '';
-
-            $ho_ten = $_POST['ho_ten'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $so_dien_thoai = $_POST['so_dien_thoai'] ?? '';
-            $ngay_sinh = $_POST['ngay_sinh'] ?? '';
-            $gioi_tinh = $_POST['gioi_tinh'] ?? '';
-            $dia_chi = $_POST['dia_chi'] ?? '';
             $trang_thai = $_POST['trang_thai'] ?? '';
 
             $errors = [];
-            if(empty($ho_ten)) {
-                $errors['ho_ten'] = 'Điền họ tên';
-            }
-            if(empty($email)) {
-                $errors['email'] = 'Điền email';
-            }
-            if(empty($ngay_sinh)) {
-                $errors['ngay_sinh'] = 'Chọn ngày sinh';
-            }
-            if(empty($gioi_tinh)) {
-                $errors['gioi_tinh'] = 'Chọn giới tính';
-            }
             if(empty($trang_thai)) {
                 $errors['trang_thai'] = 'Vui lòng chọn trạng thái';
             }
-
             $_SESSION['error'] = $errors;
             if(empty($errors)) {
-                $this->modelTaiKhoan->updateKhachHang($khach_hang_id, $ho_ten, $email, $so_dien_thoai, $ngay_sinh, $gioi_tinh, $dia_chi, $trang_thai);
+                $this->modelTaiKhoan->updateKhachHang($khach_hang_id,$trang_thai);
                 header("Location: " . BASE_URL_ADMIN . '?act=list-tai-khoan-khach-hang');
                 exit();
             }else {
