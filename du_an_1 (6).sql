@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 23, 2024 at 01:40 PM
+-- Generation Time: Nov 25, 2024 at 03:27 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `du_an_mot`
+-- Database: `du_an_1`
 --
 
 -- --------------------------------------------------------
@@ -67,19 +67,6 @@ CREATE TABLE `chi_tiet_don_hangs` (
 INSERT INTO `chi_tiet_don_hangs` (`id`, `don_hang_id`, `san_pham_id`, `don_gia`, `so_luong`, `thanh_tien`) VALUES
 (1, 1, 11, '75100.00', 42, '82000.00'),
 (2, 2, 12, '55000.00', 12, '60000.00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `chi_tiet_gio_hangs`
---
-
-CREATE TABLE `chi_tiet_gio_hangs` (
-  `id` int NOT NULL,
-  `gio_hang_id` int NOT NULL,
-  `san_pham_id` int NOT NULL,
-  `so_luong` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -148,18 +135,8 @@ CREATE TABLE `don_hangs` (
 
 INSERT INTO `don_hangs` (`id`, `ma_don_hang`, `tai_khoan_id`, `ten_nguoi_nhan`, `email_nguoi_nhan`, `sdt_nguoi_nhan`, `dia_chi_nguoi_nhan`, `ngay_dat`, `tong_tien`, `ghi_chu`, `phuong_thuc_thanh_toan_id`, `trang_thai_id`) VALUES
 (1, 'DH-12355', 1, 'Phí Đắc Sang', 'promaxsang@gmail.com', '0147852396', 'Trịnh Văn Bô, Hà Nội', '2024-11-08', '255000.00', 'Ship nhanh', 1, 2),
-(2, 'DH-12312', 2, 'Bùi Trọng Sơn', 'buitrongson@gmail.com', '0141254445', 'Mỹ Đình, Hà Nội', '2024-11-20', '120000.00', 'Ship hỏa tốc trong ngày', 2, 6);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `gio_hangs`
---
-
-CREATE TABLE `gio_hangs` (
-  `id` int NOT NULL,
-  `tai_khoan_id` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+(2, 'DH-12312', 2, 'Bùi Trọng Sơn', 'buitrongson@gmail.com', '0141254445', 'Mỹ Đình, Hà Nội', '2024-11-20', '120000.00', 'Ship hỏa tốc trong ngày', 2, 6),
+(13, '21341234', 1, 'ádfádfá', 'hoangmacphong1912@gmail.com', '0348653702', 'ádfádfád', '2024-11-26', '12341234.00', 'ádfádfa', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -231,8 +208,8 @@ CREATE TABLE `san_phams` (
 --
 
 INSERT INTO `san_phams` (`id`, `ten_sach`, `gia_sach`, `gia_khuyen_mai`, `hinh_anh`, `so_luong`, `nha_xuat_ban`, `so_trang`, `luot_xem`, `ngay_xuat_ban`, `mo_ta`, `danh_muc_id`, `trang_thai`, `tac_gia_id`, `the_loai_id`) VALUES
-(11, 'Sách Về Lập Trình', '75000.00', '70000.00', './uploads/1731985031lap-trinh-va-cuoc-song-jeff-atwood-1085065.jpg', 12, 'EduBook', '260', 151, '2015-11-18', 'Sách Mới', 2, 1, 2, 2),
-(12, 'Code HTML', '75000.00', '50000.00', './uploads/173198500781NBmxCR30L._AC_UF10001000_QL80_.jpg', 16, NULL, NULL, 158, '2024-11-01', '242', 1, 1, NULL, NULL),
+(11, 'Sách Về Lập Trình', '75000.00', '70000.00', './uploads/1731669601lap-trinh-va-cuoc-song-jeff-atwood-1085065.jpg', 12, 'EduBook', '260', 151, '2015-11-18', 'Sách Mới', 2, 1, 2, 2),
+(12, 'Code HTML', '75000.00', '50000.00', './uploads/173237129081NBmxCR30L._AC_UF10001000_QL80_.jpg', 16, NULL, NULL, 158, '2024-11-01', '242', 1, 1, NULL, NULL),
 (14, 'Node js đẳng cấp pro vip', '987.00', '90.00', './uploads/1732367861Screenshot 2024-06-29 125405.png', 18, NULL, NULL, 0, '2024-11-16', 'Hay quá', 3, 1, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -352,14 +329,6 @@ ALTER TABLE `chi_tiet_don_hangs`
   ADD KEY `lk_san_pham` (`san_pham_id`);
 
 --
--- Indexes for table `chi_tiet_gio_hangs`
---
-ALTER TABLE `chi_tiet_gio_hangs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `lk_gio_hang_id` (`gio_hang_id`),
-  ADD KEY `lk_spid` (`san_pham_id`);
-
---
 -- Indexes for table `chuc_vus`
 --
 ALTER TABLE `chuc_vus`
@@ -379,13 +348,6 @@ ALTER TABLE `don_hangs`
   ADD KEY `ik_id` (`tai_khoan_id`),
   ADD KEY `lk_pttt` (`phuong_thuc_thanh_toan_id`),
   ADD KEY `lk_trang_thai` (`trang_thai_id`);
-
---
--- Indexes for table `gio_hangs`
---
-ALTER TABLE `gio_hangs`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `lk_tk1` (`tai_khoan_id`);
 
 --
 -- Indexes for table `hinh_anh_san_phams`
@@ -444,12 +406,6 @@ ALTER TABLE `chi_tiet_don_hangs`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `chi_tiet_gio_hangs`
---
-ALTER TABLE `chi_tiet_gio_hangs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `chuc_vus`
 --
 ALTER TABLE `chuc_vus`
@@ -465,13 +421,7 @@ ALTER TABLE `danh_mucs`
 -- AUTO_INCREMENT for table `don_hangs`
 --
 ALTER TABLE `don_hangs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `gio_hangs`
---
-ALTER TABLE `gio_hangs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `hinh_anh_san_phams`
@@ -528,25 +478,12 @@ ALTER TABLE `chi_tiet_don_hangs`
   ADD CONSTRAINT `lk_san_pham` FOREIGN KEY (`san_pham_id`) REFERENCES `san_phams` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
--- Constraints for table `chi_tiet_gio_hangs`
---
-ALTER TABLE `chi_tiet_gio_hangs`
-  ADD CONSTRAINT `lk_gio_hang_id` FOREIGN KEY (`gio_hang_id`) REFERENCES `gio_hangs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  ADD CONSTRAINT `lk_spid` FOREIGN KEY (`san_pham_id`) REFERENCES `san_phams` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
 -- Constraints for table `don_hangs`
 --
 ALTER TABLE `don_hangs`
   ADD CONSTRAINT `ik_id` FOREIGN KEY (`tai_khoan_id`) REFERENCES `tai_khoans` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `lk_pttt` FOREIGN KEY (`phuong_thuc_thanh_toan_id`) REFERENCES `phuong_thuc_thanh_toans` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   ADD CONSTRAINT `lk_trang_thai` FOREIGN KEY (`trang_thai_id`) REFERENCES `trang_thai_don_hangs` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
-
---
--- Constraints for table `gio_hangs`
---
-ALTER TABLE `gio_hangs`
-  ADD CONSTRAINT `lk_tk1` FOREIGN KEY (`tai_khoan_id`) REFERENCES `tai_khoans` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 --
 -- Constraints for table `hinh_anh_san_phams`
