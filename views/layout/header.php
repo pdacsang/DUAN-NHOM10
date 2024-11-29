@@ -15,7 +15,10 @@
     <link rel="stylesheet" href="./assets/css/product.css">
     <link rel="stylesheet" href="./assets/css/cart.css">
     <link rel="stylesheet" href="./assets/css/category.css">
-
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet"/>
+        <!-- Custom styles for this template -->
+        <link href="./assets/css/jumbotron-narrow.css" rel="stylesheet">  
+        <script src="./assets/css/jquery-1.11.3.min.js"></script>
 
     <script src="./assets/js/cart.js"></script>
     

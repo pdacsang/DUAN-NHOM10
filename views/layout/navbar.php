@@ -198,6 +198,7 @@
     border: 1px solid #ddd; /* Viền */
     border-radius: 8px; /* Bo góc mềm mại */
     z-index: 1000;
+    font-size: 70px;
     max-height: 300px; /* Chiều cao tối đa */
     overflow-y: auto; /* Cuộn dọc nếu quá dài */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
