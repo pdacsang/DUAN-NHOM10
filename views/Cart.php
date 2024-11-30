@@ -68,7 +68,12 @@ require_once './views/layout/navbar.php';
                 </article>
             <?php endforeach; ?>
         <?php else: ?>
-            <p class="cart-empty-message">Giỏ hàng của bạn đang trống.</p>
+            <p class="cart-empty-message" style="font-size:20px;text-align:center;margin-top: 20px;">Giỏ hàng của bạn đang trống.</p>
+            <div style="text-align:center;margin-bottom: 20px;" >
+            <a href="index.php?act=productByCategory" class="btn btn-success" style="font-size:10px;">Xem sản phẩm</a>
+
+            <a href="index.php" class="btn btn-primary " style="font-size:10px;">Quay lại trang chủ</a>
+            </div>
         <?php endif; ?>
 
         <!-- Footer của giỏ hàng -->

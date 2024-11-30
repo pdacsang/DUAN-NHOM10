@@ -1,6 +1,5 @@
 <?php
-session_start(); // Bắt đầu session
-
+session_start();
 // Require file Common
 require_once './commons/env.php'; // Khai báo biến môi trường
 require_once './commons/function.php'; // Hàm hỗ trợ
@@ -8,22 +7,25 @@ require_once './commons/function.php'; // Hàm hỗ trợ
 // Require toàn bộ file Controllers
 require_once './controllers/HomeController.php';
 require_once './controllers/ProductController.php';
-require_once './controllers/SearchController.php'; 
-require_once './controllers/CartController.php'; 
-require_once './controllers/OrderController.php'; 
+require_once './controllers/SearchController.php';
+require_once './controllers/CartController.php';
+require_once './controllers/OrderController.php';
 
 // Require toàn bộ file Models
-require_once './models/ProductModel.php'; 
-require_once './models/CartModel.php';    
-require_once './models/OrderModel.php';   
+require_once './models/TaiKhoan.php';
 
+require_once './models/ProductModel.php';
+require_once './models/CartModel.php';
+require_once './models/OrderModel.php';
+
+//
 // Kết nối cơ sở dữ liệu
 $dbConnection = connectDB();
 if (!$dbConnection) {
     die("Không thể kết nối đến cơ sở dữ liệu.");
 }
 
-// Nhận hành động từ URL (Route)
+// Sử dụng match để route các chức năng
 $act = $_GET['act'] ?? '/';
 
 // Danh sách route
@@ -40,15 +42,26 @@ $routes = [
         (new CartController($dbConnection))->updateCart();
     },
     'removeFromCart' => [CartController::class, 'removeFromCart'],
-
-    // Thêm route mới cho đặt hàng và thanh toán
     'checkout' => [OrderController::class, 'checkout'], // Xử lý thanh toán
     'confirmOrder' => [OrderController::class, 'confirmOrder'], // Xác nhận đơn hàng
     'placeOrder' => [OrderController::class, 'placeOrder'],
     'order' => [OrderController::class, 'orderForm'],
-    
-];
+    'orderSuccess' => [OrderController::class, 'orderSuccess'],
 
+    // auth
+    // login
+    'login' => [HomeController::class, 'formLogin'],
+    'check-login' => [HomeController::class, 'postLogin'],
+    'logout' => [HomeController::class, 'logout'],
+    // đăng ký
+    'register' => [HomeController::class, 'formRegister'],
+    'them-tai-khoan' => [HomeController::class, 'postAddUser'],
+
+    // Profile 
+    'form-sua-khach-hang' => [HomeController::class, 'formEditKhachHang'],
+    'sua-khach-hang' => [HomeController::class, 'postEditKhachHang'],
+    'chi-tiet-khach-hang' => [HomeController::class, 'deltailKhachHang'],
+];
 // Kiểm tra và xử lý route
 try {
     if (isset($routes[$act])) {

@@ -19,16 +19,19 @@
                             <a href="<?= BASE_URL . '?act=register' ?>" class="header__top-link">Đăng ký</a>
                         </li>
                         <li class="header__top-item dropdown">
-                            <a href="<?= BASE_URL . '?act=login' ?>" class="header__top-link">Đăng nhập</a>
-                            <ul class="dropdown-menu">
-                                <li><a href="<?= BASE_URL . '?act=login' ?>">Đăng nhập Client</a></li>
-                                <li><a href="<?= BASE_URL_ADMIN . '?act=login-admin' ?>">Đăng nhập Admin</a></li>
+                            <a href="#" class="header__top-link">Đăng nhập</a>
+                            <ul class="dropdown-menu" style="min-width: 130px;">
+                                <li><a href="<?= BASE_URL . '?act=login' ?>"><i class="fas fa-user fa-sm"></i> Đăng nhập Client</a></li>
+                                <li><a href="<?= BASE_URL_ADMIN . '?act=login-admin' ?>"><i class="fas fa-user-shield fa-sm"></i> Đăng nhập Admin</a></li>
                                 <?php if (isset($_SESSION['user_client'])): ?>
                                     <!-- Nếu đã đăng nhập, hiển thị  -->
-                                    <li><a href="<?= BASE_URL . '?act=chi-tiet-khach-hang' ?>">Thông tin cá nhân</a></li>
+                                    <?php if (isset($_SESSION['user_client'])): ?>
+                                        <!-- Nếu đã đăng nhập, hiển thị thông tin người dùng -->
+                                        <li><a href="<?= BASE_URL . '?act=chi-tiet-khach-hang&id=' . $_SESSION['user_client']['id'] ?>"><i class="fas fa-id-card fa-sm"></i> Thông tin cá nhân</a></li>
+                                    <?php endif; ?>
                                     <li class="nav-item">
                                         <a class="nav-link" href="<?= BASE_URL . '?act=logout' ?>" onclick="return confirm('Đăng xuất tài khoản ?')">
-                                            <i class="fas fa-sign-out-alt"></i> Logout
+                                            <i class="fas fa-sign-out-alt fa-sm"></i> Logout
                                         </a>
                                     </li>
                                 <?php endif; ?>
@@ -38,7 +41,7 @@
                             <!-- Nếu đã đăng nhập, hiển thị thông tin người dùng -->
                             <li class="header__top-item d-flex align-items-center bg-primary" style="margin-left: 20px;">
                                 <p class="m-0 fw-bold text-light" style="font-size: 1.2rem;">
-                                    <i class="fa fa-user me-2 text-light" style="font-size: 1.2rem;"></i>
+                                    <i class="fa fa-user me-2 text-light fa-sm"></i>
                                     Hello <?php echo $_SESSION['user_client']['ho_ten']; ?> <!-- In ra tên người dùng -->
                                 </p>
                             </li>
@@ -224,6 +227,7 @@
                             border-radius: 8px;
                             /* Bo góc mềm mại */
                             z-index: 1000;
+                            font-size: 70px;
                             max-height: 300px;
                             /* Chiều cao tối đa */
                             overflow-y: auto;

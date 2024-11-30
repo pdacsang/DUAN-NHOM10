@@ -2,7 +2,6 @@
 
 class HomeController
 {
-    // public $modelSanPham;
     public $modelTaiKhoan;
 
     public function __construct()
@@ -19,12 +18,7 @@ class HomeController
         echo "Trang Chủ";
     }
 
-    // public function danhSachSanPham(){
-    //     $listProduct = $this->modelSanPham->getAllProduct();
-    //     require_once './views/listProduct.php';
-    // }
-
-    // login client
+    // Đăng nhập
     public function formLogin() {
         require_once './views/auth/formLogin.php';
         deleteSessionError();
@@ -55,9 +49,7 @@ class HomeController
             }
         }
     }
-    
-    
-    
+
     public function logout(){
         if(isset($_SESSION['user_client'])){
             unset($_SESSION['user_client']);
@@ -66,7 +58,7 @@ class HomeController
         }
     }
 
-    // đăng ký
+    // Đăng ký
     public function formRegister() {
         require_once './views/auth/register.php';
         deleteSessionError();
@@ -82,18 +74,16 @@ class HomeController
     
             // Kiểm tra dữ liệu đầu vào
             if (empty($ho_ten)) {
-                $errors['ho_ten'] = 'Tên không được để trống.';
+                $errors['ho_ten'] = 'Vui lòng điền tên !';
             }
             if (empty($email)) {
-                $errors['email'] = 'Email không được để trống.';
+                $errors['email'] = 'Vui lòng điền tài khoản email !';
             }
             if (empty($password)) {
-                $errors['password'] = 'Mật khẩu không được để trống.';
+                $errors['password'] = 'Nhập mật khẩu !';
             }
-    
             // Lưu lỗi vào session
             $_SESSION['error'] = $errors;
-    
             // Nếu không có lỗi, thực hiện lưu dữ liệu
             if (empty($errors)) {
                 // Mã hóa mật khẩu
@@ -119,61 +109,59 @@ class HomeController
             }
         }
     }
-    
-    
-    // profile khách hàng
+ 
+    // Profile khách hàng
     public function formEditKhachHang() {
-        $id_khach_hang = $_GET['id_khach_hang'];
+        // Lấy ID khách hàng từ session thay vì GET
+        $id_khach_hang = $_SESSION['user_client']['id']; 
         $khachHang = $this->modelTaiKhoan->getDetailTaiKhoan($id_khach_hang);
-        // var_dump($khachhang);die;
         require_once './views/auth/editUser.php';
         deleteSessionError();
     }
+    
     public function postEditKhachHang() {
-        if($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $khach_hang_id = $_POST['khach_hang_id'] ?? '';
-
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            // Lấy ID khách hàng từ session
+            $khach_hang_id = $_SESSION['user_client']['id']; 
+            
             $ho_ten = $_POST['ho_ten'] ?? '';
             $email = $_POST['email'] ?? '';
             $so_dien_thoai = $_POST['so_dien_thoai'] ?? '';
             $ngay_sinh = $_POST['ngay_sinh'] ?? '';
             $gioi_tinh = $_POST['gioi_tinh'] ?? '';
             $dia_chi = $_POST['dia_chi'] ?? '';
-            $trang_thai = $_POST['trang_thai'] ?? '';
-
+    
             $errors = [];
-            if(empty($ho_ten)) {
+            if (empty($ho_ten)) {
                 $errors['ho_ten'] = 'Điền họ tên';
             }
-            if(empty($email)) {
+            if (empty($email)) {
                 $errors['email'] = 'Điền email';
             }
-            if(empty($ngay_sinh)) {
+            if (empty($ngay_sinh)) {
                 $errors['ngay_sinh'] = 'Chọn ngày sinh';
             }
-            if(empty($gioi_tinh)) {
+            if (empty($gioi_tinh)) {
                 $errors['gioi_tinh'] = 'Chọn giới tính';
             }
-            if(empty($trang_thai)) {
-                $errors['trang_thai'] = 'Vui lòng chọn trạng thái';
-            }
-
             $_SESSION['error'] = $errors;
-            if(empty($errors)) {
-                $this->modelTaiKhoan->updateKhachHang($khach_hang_id, $ho_ten, $email, $so_dien_thoai, $ngay_sinh, $gioi_tinh, $dia_chi, $trang_thai);
+            
+            if (empty($errors)) {
+                $this->modelTaiKhoan->updateKhachHang($khach_hang_id, $ho_ten, $email, $so_dien_thoai, $ngay_sinh, $gioi_tinh, $dia_chi);
                 header("Location: " . BASE_URL . '?act=chi-tiet-khach-hang');
                 exit();
-            }else {
+            } else {
                 $_SESSION['flash'] = true;
-                header("Location: " . BASE_URL. '?act=form-sua-khach-hang&id_khach_hang=' . $khach_hang_id);
+                header("Location: " . BASE_URL . '?act=form-sua-khach-hang');
                 exit();
             }
         }
     }
+    
     public function deltailKhachHang() {
-        $id_khach_hang = $_GET['id_khach_hang'];
+        // Lấy ID khách hàng từ session
+        $id_khach_hang = $_SESSION['user_client']['id']; 
         $khachHang = $this->modelTaiKhoan->getDetailTaiKhoan($id_khach_hang);
         require_once './views/auth/deltailUser.php';
     }
-
 }

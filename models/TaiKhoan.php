@@ -19,7 +19,7 @@ class TaiKhoan
             } else {
                 return false;  // Không tìm thấy người dùng
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Xử lý lỗi
             echo "Lỗi: " . $e->getMessage();
             return false;
