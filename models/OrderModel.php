@@ -9,14 +9,14 @@ class OrderModel {
     }
 
     // Tạo đơn hàng
-    public function createOrder($totalAmount, $statusId, $paymentMethodId, $userId, $recipientName, $email, $phone, $address) {
+    public function createOrder($totalAmount, $statusId, $paymentMethodId, $userId, $recipientName, $email, $phone, $address, $oderNote) {
         $orderDate = date('Y-m-d'); // Lấy ngày hiện tại làm ngày đặt hàng
     
         // SQL query tạo đơn hàng mà không cần mã đơn hàng
         $sql = "INSERT INTO don_hangs 
-                (tong_tien, trang_thai_id, phuong_thuc_thanh_toan_id, tai_khoan_id, ten_nguoi_nhan, email_nguoi_nhan, sdt_nguoi_nhan, dia_chi_nguoi_nhan, ngay_dat) 
+                (tong_tien, trang_thai_id, phuong_thuc_thanh_toan_id, tai_khoan_id, ten_nguoi_nhan, email_nguoi_nhan, sdt_nguoi_nhan, dia_chi_nguoi_nhan, ngay_dat, ghi_chu) 
                 VALUES 
-                (:tong_tien, :trang_thai_id, :phuong_thuc_thanh_toan_id, :tai_khoan_id, :ten_nguoi_nhan, :email_nguoi_nhan, :sdt_nguoi_nhan, :dia_chi_nguoi_nhan, :ngay_dat)";
+                (:tong_tien, :trang_thai_id, :phuong_thuc_thanh_toan_id, :tai_khoan_id, :ten_nguoi_nhan, :email_nguoi_nhan, :sdt_nguoi_nhan, :dia_chi_nguoi_nhan, :ngay_dat, :ghi_chu)";
     
         $stmt = $this->db->prepare($sql);
     
@@ -31,7 +31,8 @@ class OrderModel {
                 ':email_nguoi_nhan' => $email,
                 ':sdt_nguoi_nhan' => $phone,
                 ':dia_chi_nguoi_nhan' => $address,
-                ':ngay_dat' => $orderDate // Thêm trường ngày đặt
+                ':ngay_dat' => $orderDate, // Thêm trường ngày đặt
+                ':ghi_chu' => $oderNote
             ]);
     
             // Lấy ID của đơn hàng vừa tạo

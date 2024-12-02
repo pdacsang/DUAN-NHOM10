@@ -98,7 +98,48 @@ class ProductModel {
             return [];
         }
     }
-
+    public function getProductsByCategoryWithPagination($categoryId, $offset, $perPage) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM san_phams WHERE danh_muc_id = :categoryId LIMIT :offset, :perPage");
+            $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Lấy tổng số sản phẩm
+            $countStmt = $this->conn->prepare("SELECT COUNT(*) FROM san_phams WHERE danh_muc_id = :categoryId");
+            $countStmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+            $countStmt->execute();
+    
+            $total = $countStmt->fetchColumn();
+    
+            return ['products' => $products, 'total' => $total];
+        } catch (PDOException $e) {
+            throw new Exception("Lỗi khi truy vấn cơ sở dữ liệu: " . $e->getMessage());
+        }
+    }
+    public function getAllProductsWithPagination($offset, $perPage) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM san_phams LIMIT :offset, :perPage");
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Lấy tổng số sản phẩm
+            $countStmt = $this->conn->prepare("SELECT COUNT(*) FROM san_phams");
+            $countStmt->execute();
+    
+            $total = $countStmt->fetchColumn();
+    
+            return ['products' => $products, 'total' => $total];
+        } catch (PDOException $e) {
+            throw new Exception("Lỗi khi truy vấn cơ sở dữ liệu: " . $e->getMessage());
+        }
+    }
     // Ghi log lỗi
     private function logError($exception) {
         $message = '[' . date('Y-m-d H:i:s') . '] ERROR: ' . $exception->getMessage() . PHP_EOL;

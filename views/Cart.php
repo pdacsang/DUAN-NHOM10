@@ -79,7 +79,7 @@ require_once './views/layout/navbar.php';
         <!-- Footer của giỏ hàng -->
         <article class="row cart__foot">
             <div class="col-6 col-lg-6 col-sm-6 cart__foot-update">
-                <button class="cart__foot-update-btn">Cập nhật giỏ hàng</button>
+                
             </div>
             <p class="col-3 col-lg-3 col-sm-3 cart__foot-total">Tổng cộng:</p>
             <span id="cart-total" class="col-3 col-lg-3 col-sm-3 cart__foot-price">
@@ -92,6 +92,7 @@ require_once './views/layout/navbar.php';
             <input type="hidden" name="cartItems[]" value='<?= json_encode([
                 'id' => $item['id'] ?? 0,
                 'name' => $item['name'] ?? 'Tên sản phẩm không xác định',
+                'image' => $item['image'] ?? 'images/default.jpg',
                 'quantity' => $item['quantity'] ?? 0, // Sử dụng 'quantity' thay cho 'so_luong'
                 'price' => $item['price'] ?? 0, // Thêm thông tin giá nếu cần
             ], JSON_UNESCAPED_UNICODE) ?>'>
