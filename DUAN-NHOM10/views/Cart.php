@@ -68,13 +68,18 @@ require_once './views/layout/navbar.php';
                 </article>
             <?php endforeach; ?>
         <?php else: ?>
-            <p class="cart-empty-message">Giỏ hàng của bạn đang trống.</p>
+            <p class="cart-empty-message" style="font-size:20px;text-align:center;margin-top: 20px;">Giỏ hàng của bạn đang trống.</p>
+            <div style="text-align:center;margin-bottom: 20px;" >
+            <a href="index.php?act=productByCategory" class="btn btn-success" style="font-size:10px;">Xem sản phẩm</a>
+
+            <a href="index.php" class="btn btn-primary " style="font-size:10px;">Quay lại trang chủ</a>
+            </div>
         <?php endif; ?>
 
         <!-- Footer của giỏ hàng -->
         <article class="row cart__foot">
             <div class="col-6 col-lg-6 col-sm-6 cart__foot-update">
-                <button class="cart__foot-update-btn">Cập nhật giỏ hàng</button>
+                
             </div>
             <p class="col-3 col-lg-3 col-sm-3 cart__foot-total">Tổng cộng:</p>
             <span id="cart-total" class="col-3 col-lg-3 col-sm-3 cart__foot-price">
@@ -82,14 +87,20 @@ require_once './views/layout/navbar.php';
             </span>
             
             <div class="cart__checkout">
-            <form action="index.php?act=placeOrder" method="POST">
-    <!-- Các trường dữ liệu cần thiết -->
-    <button type="submit" class="cart__foot-price-btn">Thanh toán</button>
-</form>
+    <form action="index.php?act=order" method="POST">
+        <?php foreach ($cartItems as $item): ?>
+            <input type="hidden" name="cartItems[]" value='<?= json_encode([
+                'id' => $item['id'] ?? 0,
+                'name' => $item['name'] ?? 'Tên sản phẩm không xác định',
+                'image' => $item['image'] ?? 'images/default.jpg',
+                'quantity' => $item['quantity'] ?? 0, // Sử dụng 'quantity' thay cho 'so_luong'
+                'price' => $item['price'] ?? 0, // Thêm thông tin giá nếu cần
+            ], JSON_UNESCAPED_UNICODE) ?>'>
+        <?php endforeach; ?>
+        <input type="hidden" name="totalAmount" value="<?= $totalAmount ?>">
+        <button type="submit" class="cart__foot-price-btn">Thanh toán</button>
+    </form>
 </div>
-            
-        </article>
-    </div>
 </section>
 
 <?php

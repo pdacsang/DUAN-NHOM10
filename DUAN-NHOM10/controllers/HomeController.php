@@ -13,11 +13,6 @@ class HomeController
     public function home(){
         require_once './views/home.php';
     }
-
-    public function trangChu(){
-        echo "Trang Chủ";
-    }
-
     // Đăng nhập
     public function formLogin() {
         require_once './views/auth/formLogin.php';
@@ -49,7 +44,6 @@ class HomeController
             }
         }
     }
-
     public function logout(){
         if(isset($_SESSION['user_client'])){
             unset($_SESSION['user_client']);
@@ -57,7 +51,6 @@ class HomeController
             exit();
         }
     }
-
     // Đăng ký
     public function formRegister() {
         require_once './views/auth/register.php';
@@ -71,45 +64,62 @@ class HomeController
             $email = $_POST['email'];
             $password = $_POST['mat_khau'];
             $errors = [];
-    
+        
+            // Lưu dữ liệu đã nhập vào session
+            $_SESSION['old_data'] = [
+                'ho_ten' => $ho_ten,
+                'email' => $email,
+                // Không lưu password để bảo mật
+            ];
+        
             // Kiểm tra dữ liệu đầu vào
             if (empty($ho_ten)) {
-                $errors['ho_ten'] = 'Vui lòng điền tên !';
+                $errors['ho_ten'] = 'Vui lòng điền tên!';
             }
             if (empty($email)) {
-                $errors['email'] = 'Vui lòng điền tài khoản email !';
+                $errors['email'] = 'Vui lòng điền tài khoản email!';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = 'Email không hợp lệ!';
             }
+            
             if (empty($password)) {
-                $errors['password'] = 'Nhập mật khẩu !';
+                $errors['password'] = 'Nhập mật khẩu!';
+            } elseif (strlen($password) <= 5) {
+                $errors['password'] = 'Mật khẩu phải có nhiều hơn 5 ký tự!';
             }
+        
             // Lưu lỗi vào session
             $_SESSION['error'] = $errors;
-            // Nếu không có lỗi, thực hiện lưu dữ liệu
+        
+            // Nếu không có lỗi
             if (empty($errors)) {
                 // Mã hóa mật khẩu
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-    
+        
                 // Chức vụ mặc định là 2 (Khách hàng)
                 $chuc_vu_id = 2;
-    
+        
                 // Lưu thông tin người dùng vào database
                 $this->modelTaiKhoan->insertTaiKhoan($ho_ten, $email, $hashedPassword, $chuc_vu_id);
-    
+        
                 // Thêm thông báo thành công vào session
                 $_SESSION['success'] = 'Đăng ký thành công! Vui lòng đăng nhập.';
-    
+        
+                // Xóa dữ liệu tạm thời trong session
+                unset($_SESSION['old_data']);
+                unset($_SESSION['error']);
+        
                 // Chuyển hướng đến trang đăng nhập
                 header("Location: " . BASE_URL . '?act=login');
                 exit();
             } else {
-                // Lưu thông báo lỗi và chuyển hướng lại form
-                $_SESSION['flash'] = true;
+                // Chuyển hướng lại form
                 header("Location: " . BASE_URL . '?act=register');
                 exit();
             }
         }
+        
     }
- 
     // Profile khách hàng
     public function formEditKhachHang() {
         // Lấy ID khách hàng từ session thay vì GET
@@ -164,4 +174,64 @@ class HomeController
         $khachHang = $this->modelTaiKhoan->getDetailTaiKhoan($id_khach_hang);
         require_once './views/auth/deltailUser.php';
     }
+
+
+
+    // lịch sử mua hàng
+    public function viewOrderHistory() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    
+        // Kiểm tra đăng nhập
+        if (!isset($_SESSION['user_client']['id'])) {
+            header("Location: " . BASE_URL . '?act=login');
+            return;
+        }
+    
+        $userId = $_SESSION['user_client']['id'];
+    
+        try {
+            // Lấy dữ liệu lịch sử đơn hàng từ model
+            $orderDetails = $this->modelTaiKhoan->getHistoryOrderByUserId($userId);
+    
+            // Debug dữ liệu trả về
+            if (!$orderDetails || empty($orderDetails)) {
+                $error_message = "Không có đơn hàng nào trong lịch sử.";
+            }
+    
+            include './views/OrderHistory.php';
+        } catch (Exception $e) {
+            $error_message = "Lỗi xảy ra khi lấy lịch sử đặt hàng: " . $e->getMessage();
+            include './views/OrderHistory.php';
+        }
+    }
+    
+    // Hiển thị chi tiết đơn hàng
+    public function orderDetails()
+{
+    // Lấy order_id từ URL
+    $orderId = $_GET['order_id'] ?? null;
+
+    if (!$orderId) {
+        echo "<p>Không tìm thấy thông tin đơn hàng.</p>";
+        exit;
+    }
+
+    try {
+        // Lấy thông tin chi tiết đơn hàng từ model
+        $orderDetails = $this->modelTaiKhoan->getOrderDetailsById($orderId);
+
+        if (!$orderDetails) {
+            echo "<p>Đơn hàng không tồn tại hoặc bạn không có quyền xem.</p>";
+            exit;
+        }
+
+        // Truyền dữ liệu sang view
+        require_once './views/OrderDetails.php'; // Đường dẫn view
+    } catch (Exception $e) {
+        echo "<p>Lỗi: " . $e->getMessage() . "</p>";
+        exit;
+    }
+}
 }

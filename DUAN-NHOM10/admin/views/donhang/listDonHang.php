@@ -58,10 +58,10 @@
                       <td>
                         <div class="btn-group">
                           <a href="<?= BASE_URL_ADMIN . '?act=chi-tiet-don-hang&id_don_hang=' . $donHang['id'] ?>">
-                            <button class="btn btn-primary"><i class="far fa-eye"></i></button>
+                            <button class="btn btn-primary">Xem</button>
                           </a>
                           <a href="<?= BASE_URL_ADMIN . '?act=form-sua-don-hang&id_don_hang=' . $donHang['id'] ?>">
-                            <button class="btn btn-warning"><i class="fas fa-cog"></i></button>
+                            <button class="btn btn-warning">Sửa</button>
                           </a>
                         </div>
                       </td>

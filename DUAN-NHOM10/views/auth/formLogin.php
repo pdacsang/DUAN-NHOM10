@@ -30,11 +30,11 @@
                       <div class="col-sm-12 sign-in-page-data">
                           <div class="sign-in-from bg-primary rounded">
                           <h3 class="mb-0 text-center text-white" style="font-size: 35px;">Sign in</h3>
-                            <?php if(isset($_SESSION['error'])){ ?>
+                            <?php if(isset($_SESSION['error'])) : ?>
                                 <p class="text-danger-custom text-center" style="font-size: 15px;"><?= $_SESSION['error'] ?></p>
-                            <?php }else{ ?>
+                            <?php else: ?>
                             <p class="text-center text-white" style="font-size: 20px;">Vui lòng đăng nhập</p>
-                            <?php } ?>
+                            <?php endif; ?>
                               <form action="<?= BASE_URL .'?act=check-login' ?>" method="POST" class="mt-4 form-text">
                                   <div class="form-group">
                                       <label for="exampleInputEmail1">Email address</label>

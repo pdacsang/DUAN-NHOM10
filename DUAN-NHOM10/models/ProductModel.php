@@ -110,4 +110,102 @@ class ProductModel {
 
         file_put_contents($file, $message, FILE_APPEND);
     }
+    public function getProductsByCategoryWithPagination($categoryId, $offset, $perPage) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM san_phams WHERE danh_muc_id = :categoryId LIMIT :offset, :perPage");
+            $stmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Lấy tổng số sản phẩm
+            $countStmt = $this->conn->prepare("SELECT COUNT(*) FROM san_phams WHERE danh_muc_id = :categoryId");
+            $countStmt->bindValue(':categoryId', $categoryId, PDO::PARAM_INT);
+            $countStmt->execute();
+    
+            $total = $countStmt->fetchColumn();
+    
+            return ['products' => $products, 'total' => $total];
+        } catch (PDOException $e) {
+            throw new Exception("Lỗi khi truy vấn cơ sở dữ liệu: " . $e->getMessage());
+        }
+    }
+    public function getAllProductsWithPagination($offset, $perPage) {
+        try {
+            $stmt = $this->conn->prepare("SELECT * FROM san_phams LIMIT :offset, :perPage");
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindValue(':perPage', $perPage, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            // Lấy tổng số sản phẩm
+            $countStmt = $this->conn->prepare("SELECT COUNT(*) FROM san_phams");
+            $countStmt->execute();
+    
+            $total = $countStmt->fetchColumn();
+    
+            return ['products' => $products, 'total' => $total];
+        } catch (PDOException $e) {
+            throw new Exception("Lỗi khi truy vấn cơ sở dữ liệu: " . $e->getMessage());
+        }
+    }
+
+    // Bình luận
+    // Lấy bình luận cho sản phẩm
+    // public function getCommentsForProduct($sanPhamId) {
+    //     $stmt = $this->db->prepare("SELECT b.id, b.noi_dung, b.ngay_dang, u.ten AS user_name
+    //                                 FROM binh_luan b
+    //                                 LEFT JOIN tai_khoan u ON b.tai_khoan_id = u.id
+    //                                 WHERE b.san_pham_id = ? AND b.trang_thai = 1
+    //                                 ORDER BY b.ngay_dang DESC");
+    //     $stmt->bind_param("i", $sanPhamId);
+    //     $stmt->execute();
+    //     $result = $stmt->get_result();
+    
+    //     $comments = [];
+    //     while ($row = $result->fetch_assoc()) {
+    //         $comments[] = $row;
+    //     }
+    //     return $comments;
+    // }
+    
+    // Lấy chi tiết bình luận
+    public function getCommentsByProductId($productId) {
+        try {
+            $sql = "SELECT binh_luans.*, tai_khoans.ho_ten
+                    FROM binh_luans
+                    INNER JOIN tai_khoans ON binh_luans.tai_khoan_id = tai_khoans.id
+                    WHERE binh_luans.san_pham_id = :san_pham_id AND binh_luans.trang_thai = 1";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':san_pham_id', $productId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $this->logError($e);
+            return [];
+        }
+    }
+    // Thêm bình luận
+    public function addComment($productId, $userId, $commentContent) {
+        try {
+            $sql = "INSERT INTO binh_luans (san_pham_id, tai_khoan_id, noi_dung, ngay_dang, trang_thai)
+                    VALUES (:san_pham_id, :tai_khoan_id, :noi_dung, NOW(), 1)";
+            
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':san_pham_id', $productId, PDO::PARAM_INT);
+            $stmt->bindParam(':tai_khoan_id', $userId, PDO::PARAM_INT);
+            $stmt->bindParam(':noi_dung', $commentContent, PDO::PARAM_STR);
+            
+            return $stmt->execute();
+        } catch (Exception $e) {
+            $this->logError($e);
+            return false;
+        }
+    }
+    
 }

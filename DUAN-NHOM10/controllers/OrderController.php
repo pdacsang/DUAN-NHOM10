@@ -1,121 +1,179 @@
 <?php
 require_once './models/OrderModel.php';
-require_once './models/CartModel.php';
 
 class OrderController {
+    private $db;
     private $orderModel;
-    private $cartModel;
 
     public function __construct($db) {
+        $this->db = $db;
         $this->orderModel = new OrderModel($db);
-        $this->cartModel = new CartModel($db);
     }
 
-    // Hiển thị trang thanh toán
-    public function checkout() {
-        try {
-            // Lấy thông tin giỏ hàng
-            $cartItems = $this->cartModel->getCartItems();
-            $totalAmount = $this->cartModel->getTotalAmount();
-
-            if (empty($cartItems)) {
-                throw new Exception("Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm vào giỏ hàng.");
-            }
-
-            // Hiển thị trang thanh toán
-            require './views/Order.php';
-        } catch (Exception $e) {
-            // Hiển thị lỗi và điều hướng người dùng
-            echo "<p class='error'>Lỗi: " . htmlspecialchars($e->getMessage()) . "</p>";
-            echo "<a href='index.php?act=products' class='btn'>Quay lại mua hàng</a>";
+    // Hiển thị form nhập thông tin đặt hàng
+    public function orderForm() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
         }
+
+        // Kiểm tra nếu giỏ hàng trống
+        if (empty($_SESSION['cart'])) {
+            echo "Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.";
+            return;
+        }
+
+        include './views/Order.php';
     }
 
-    // Xử lý đặt hàng
-    public function placeOrder() {
+    // Xử lý thanh toán và đặt hàng
+    public function checkout() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Kiểm tra nếu thanh toán từ sản phẩm chi tiết
+        if (isset($_POST['product_id'])) {
+            // Thanh toán từ chi tiết sản phẩm
+            $product = [
+                'id' => $_POST['product_id'],
+                'name' => $_POST['product_name'],
+                'price' => $_POST['product_price'],
+                'quantity' => $_POST['product_quantity'],
+            ];
+            $cart = [$product]; // Tạo giỏ hàng tạm thời
+            $totalAmount = $product['price'] * $product['quantity'];
+        } else {
+            // Thanh toán từ giỏ hàng
+            $cart = $_SESSION['cart'] ?? [];
+            $totalAmount = array_sum(array_map(function ($item) {
+                return $item['price'] * $item['quantity'];
+            }, $cart));
+        }
+
+        // Lấy dữ liệu từ form
+        $recipientName = $_POST['recipient_name'] ?? null;
+        $email = $_POST['email'] ?? null;
+        $phone = $_POST['phone'] ?? null;
+        $address = $_POST['address'] ?? null;
+        $orderNote = $_POST['note'] ?? null;
+        $paymentMethodId = $_POST['payment_method'] ?? 1; // Mặc định là thanh toán COD
+
+        // Lấy `userId` từ session
+        $userId = $_SESSION['user_client']['id'] ?? null;
+
+        // Kiểm tra dữ liệu đầu vào
+        if (!$userId || !$recipientName || !$email || !$phone || !$address) {
+            $error_message = "Vui lòng nhập đầy đủ thông tin.";
+            include './views/Order.php';
+            return;
+        }
+
+        if ($totalAmount <= 0) {
+            $error_message = "Tổng tiền không hợp lệ.";
+            include './views/Order.php';
+            return;
+        }
+
         try {
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-                throw new Exception("Yêu cầu không hợp lệ.");
-            }
-
-            // Lấy và kiểm tra dữ liệu từ form
-            $fullName = filter_input(INPUT_POST, 'full_name', FILTER_SANITIZE_STRING);
-            $email = filter_input(INPUT_POST, 'email', FILTER_VALIDATE_EMAIL);
-            $phone = filter_input(INPUT_POST, 'phone', FILTER_SANITIZE_STRING);
-            $address = filter_input(INPUT_POST, 'address', FILTER_SANITIZE_STRING);
-            $note = filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING);
-            $paymentMethod = filter_input(INPUT_POST, 'payment_method', FILTER_VALIDATE_INT);
-
-            if (empty($fullName) || empty($email) || empty($phone) || empty($address) || empty($paymentMethod)) {
-                throw new Exception("Vui lòng điền đầy đủ thông tin.");
-            }
-
-            // Kiểm tra định dạng email và số điện thoại
-            if (!$email) {
-                throw new Exception("Địa chỉ email không hợp lệ.");
-            }
-            if (!preg_match('/^0[0-9]{9,10}$/', $phone)) {
-                throw new Exception("Số điện thoại không hợp lệ.");
-            }
-
-            // Lấy thông tin giỏ hàng
-            $cartItems = $this->cartModel->getCartItems();
-            if (empty($cartItems)) {
-                throw new Exception("Giỏ hàng trống. Không thể tiến hành đặt hàng.");
-            }
-
-            // Tính tổng tiền
-            $totalAmount = array_reduce($cartItems, function ($carry, $item) {
-                return $carry + ($item['price'] * $item['quantity']);
-            }, 0);
-
-            // Tạo mã đơn hàng
-            $orderCode = 'DH-' . time();
-
-            // Thêm đơn hàng vào CSDL
-            $orderId = $this->orderModel->createOrder([
-                'ma_don_hang' => $orderCode,
-                'tai_khoan_id' => $_SESSION['user_id'] ?? 0,
-                'ten_nguoi_nhan' => $fullName,
-                'email_nguoi_nhan' => $email,
-                'sdt_nguoi_nhan' => $phone,
-                'dia_chi_nguoi_nhan' => $address,
-                'ngay_dat' => date('Y-m-d H:i:s'),
-                'tong_tien' => $totalAmount,
-                'ghi_chu' => $note,
-                'phuong_thuc_thanh_toan_id' => $paymentMethod,
-                'trang_thai_id' => 1,
-            ]);
-
-            if (!$orderId) {
-                throw new Exception("Không thể thêm đơn hàng vào CSDL.");
-            }
+            // Tạo đơn hàng
+            $orderId = $this->orderModel->createOrder($totalAmount, 1, $paymentMethodId, $userId, $recipientName, $email, $phone, $address, $orderNote);
 
             // Thêm chi tiết đơn hàng
-            foreach ($cartItems as $item) {
-                $this->orderModel->addOrderDetail([
-                    'don_hang_id' => $orderId,
-                    'san_pham_id' => $item['id'],
-                    'don_gia' => $item['price'],
-                    'so_luong' => $item['quantity'],
-                    'thanh_tien' => $item['price'] * $item['quantity'],
-                ]);
+            foreach ($cart as $item) {
+                $this->orderModel->addOrderDetails($orderId, $item['id'], $item['quantity'], $item['price']);
             }
 
-            
+            // Nếu thanh toán từ giỏ hàng, xóa giỏ hàng
+            if (!isset($_POST['product_id'])) {
+                unset($_SESSION['cart']);
+            }
 
-            // Chuyển hướng tới trang thành công
-            header("Location: index.php?act=orderSuccess&order_id={$orderId}");
-            exit;
+            // Kiểm tra phương thức thanh toán
+            if ($paymentMethodId == 2) { // 2: Thanh toán VNPay
+                $this->createVNPayPaymentRequest($orderId, $totalAmount, $recipientName, $email, $phone, $address, $orderNote);
+                return; // Dừng tại đây vì đã chuyển hướng đến VNPay
+            }
 
+            // Thanh toán COD (mặc định)
+            header("Location: index.php?act=orderSuccess");
+            exit();
         } catch (Exception $e) {
-            // Log lỗi nếu cần
-            error_log("Lỗi đặt hàng: " . $e->getMessage());
-
-            // Hiển thị lỗi cho người dùng
-            echo "<p class='error'>Lỗi: " . htmlspecialchars($e->getMessage()) . "</p>";
-            echo "<a href='index.php?act=checkout' class='btn'>Quay lại thanh toán</a>";
+            // Xử lý lỗi
+            $error_message = "Lỗi khi xử lý đơn hàng: " . $e->getMessage();
+            include './views/Order.php';
         }
     }
+
+    // Thanh toán từ chi tiết sản phẩm
+    public function checkoutFromProduct() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Lấy thông tin sản phẩm từ form
+            $productId = $_POST['product_id'] ?? null;
+            $productName = $_POST['product_name'] ?? null;
+            $productPrice = $_POST['product_price'] ?? null;
+            $productQuantity = $_POST['product_quantity'] ?? 1;
+
+            // Kiểm tra dữ liệu
+            if (!$productId || !$productName || !$productPrice) {
+                echo "Thông tin sản phẩm không hợp lệ.";
+                return;
+            }
+
+            // Chuẩn bị dữ liệu để hiển thị trên trang thanh toán
+            $product = [
+                'id' => $productId,
+                'name' => $productName,
+                'price' => $productPrice,
+                'quantity' => $productQuantity,
+            ];
+
+            // Chuyển đến trang thanh toán
+            $isSingleProduct = true; // Đánh dấu là thanh toán từ sản phẩm chi tiết
+            include './views/Checkout.php';
+        } else {
+            echo "Phương thức không hợp lệ.";
+        }
+    }
+
+    public function createVNPayPaymentRequest($orderId, $totalAmount, $recipientName, $email, $phone, $address, $orderNote) {
+        $vnp_TmnCode = "31DQ0GI0";  
+        $vnp_HashSecret = "W4J1L035O98GIOWPIJUIUDL7D61VFXC5"; 
+        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";  
+        $vnp_Returnurl = "http://localhost:81/";
+
+        $vnp_TxnRef = $orderId;
+        $vnp_OrderInfo = $_POST['order_desc'] ?? 'No description provided';
+        $vnp_OrderType = $_POST['order_type'] ?? 'other';
+        $vnp_Amount = $totalAmount * 100;
+        $vnp_Locale = 'vn';
+        $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+
+        $inputData = [
+            "vnp_Version" => "2.1.0",
+            "vnp_TmnCode" => $vnp_TmnCode,
+            "vnp_Amount" => $vnp_Amount,
+            "vnp_Command" => "pay",
+            "vnp_CreateDate" => date('YmdHis'),
+            "vnp_CurrCode" => "VND",
+            "vnp_IpAddr" => $vnp_IpAddr,
+            "vnp_Locale" => $vnp_Locale,
+            "vnp_OrderInfo" => $vnp_OrderInfo,
+            "vnp_OrderType" => $vnp_OrderType,
+            "vnp_ReturnUrl" => $vnp_Returnurl,
+            "vnp_TxnRef" => $vnp_TxnRef,
+        ];
+
+        ksort($inputData);
+        $hashdata = http_build_query($inputData);
+        $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
+
+        $vnp_Url .= "?" . $hashdata . "&vnp_SecureHash=" . $vnpSecureHash;
+
+        header('Location: ' . $vnp_Url);
+        die();
+    }
+
+    public function orderSuccess() {
+        include './views/OrderSuccess.php'; 
+    }
 }
-?>

@@ -32,27 +32,35 @@
                               <!-- Full Name -->
                               <div class="form-group">
                                  <label for="fullName" class="text-white">Your Full Name</label>
-                                 <input type="text" class="form-control mb-2 text-dark" id="fullName" name="ho_ten" placeholder="Enter your full name">
+                                 <input type="text" class="form-control mb-2 text-dark" id="fullName" name="ho_ten" 
+                                       placeholder="Enter your full name" 
+                                       value="<?= isset($_SESSION['old_data']['ho_ten']) ? htmlspecialchars($_SESSION['old_data']['ho_ten']) : '' ?>">
                                  <?php if (isset($_SESSION['error']['ho_ten'])) { ?>
-                                            <p class="text-danger-custom"><?= $_SESSION['error']['ho_ten'] ?></p>
-                                        <?php } ?>
+                                    <p class="text-danger-custom"><?= $_SESSION['error']['ho_ten'] ?></p>
+                                 <?php } ?>
                               </div>
+
                               <!-- Email -->
                               <div class="form-group">
                                  <label for="email" class="text-white">Email Address</label>
-                                 <input type="email" class="form-control mb-2 text-dark" id="email" name="email" placeholder="Enter your email">
+                                 <input type="email" class="form-control mb-2 text-dark" id="email" name="email" 
+                                       placeholder="Enter your email" 
+                                       value="<?= isset($_SESSION['old_data']['email']) ? htmlspecialchars($_SESSION['old_data']['email']) : '' ?>">
                                  <?php if (isset($_SESSION['error']['email'])) { ?>
-                                            <p class="text-danger-custom"><?= $_SESSION['error']['email'] ?></p>
-                                        <?php } ?>
+                                    <p class="text-danger-custom"><?= $_SESSION['error']['email'] ?></p>
+                                 <?php } ?>
                               </div>
+
                               <!-- Password -->
                               <div class="form-group">
                                  <label for="password" class="text-white">Password</label>
-                                 <input type="password" class="form-control mb-2 text-dark" id="password" name="mat_khau" placeholder="Enter your password">
+                                 <input type="password" class="form-control mb-2 text-dark" id="password" name="mat_khau" 
+                                       placeholder="Enter your password">
                                  <?php if (isset($_SESSION['error']['password'])) { ?>
-                                            <p class="text-danger-custom"><?= $_SESSION['error']['password'] ?></p>
-                                        <?php } ?>
+                                    <p class="text-danger-custom"><?= $_SESSION['error']['password'] ?></p>
+                                 <?php } ?>
                               </div>
+
                               <!-- Confirm Password -->
                               <!-- <div class="form-group">
                                  <label for="confirmPassword" class="text-white">Confirm Password</label>
@@ -111,3 +119,8 @@
    </body>
    <?php require_once './views/layout/footer.php' ?>
 </html>
+<?php 
+unset($_SESSION['error']);
+unset($_SESSION['old_data']);
+?>
+

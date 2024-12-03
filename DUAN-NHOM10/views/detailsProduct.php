@@ -31,160 +31,148 @@ require_once './views/layout/navbar.php';
                 </nav>
 
                 <article class="product__main col-lg-9 col-md-12 col-sm-12">
-                    <div class="row">
-                    <div class="product__main-img col-lg-4 col-md-4 col-sm-12"> 
-    <div class="product__main-img-primary"> 
-        <img src="<?php echo htmlspecialchars($product['hinh_anh']); ?>" alt="<?php echo htmlspecialchars($product['ten_sach']); ?>"> 
-    </div> 
-</div>
+    <div class="row">
+        <!-- Hình ảnh sản phẩm -->
+        <div class="product__main-img col-lg-4 col-md-4 col-sm-12">
+            <div class="product__main-img-primary">
+                <img src="<?= htmlspecialchars($product['hinh_anh'] ?? 'images/default.jpg') ?>" 
+                     alt="<?= htmlspecialchars($product['ten_sach'] ?? 'Không có tên sản phẩm') ?>">
+            </div>
+        </div>
 
-                        <div class="product__main-info col-lg-8 col-md-8 col-sm-12">
-                            <div class="product__main-info-breadcrumb">
-                                Trang chủ / Sản phẩm
-                            </div>
-                            
-                            
-                            <article class="product__main-info col-lg-8 col-md-8 col-sm-12"> 
-   
+        <!-- Thông tin sản phẩm -->
+        <div class="product__main-info col-lg-8 col-md-8 col-sm-12">
+            <div class="product__main-info-breadcrumb">
+                <a href="index.php">Trang chủ</a> / <span>Sản phẩm</span>
+            </div>
 
-                            <a href="#" class="product__main-info-title">
-    <h2 class="product__main-info-heading">
-        <?php echo htmlspecialchars($product['ten_sach']); ?>
-    </h2>
-</a>
+            <h2 class="product__main-info-heading">
+                <?= htmlspecialchars($product['ten_sach'] ?? 'Tên sản phẩm không có') ?>
+            </h2>
 
-<div class="product__main-info-price">
-    <span class="product__main-info-price-current">
-        <?php echo number_format($product['gia_sach'], 0, ',', '.') . 'đ'; ?>
-    </span>
-</div>
-
-<div class="product__main-info-status">
-                <strong style="font-size: 15px;">Trạng thái: </strong>
-                <span style="font-size: 15px;">
-                    <?php echo $product['trang_thai'] == 1 ? 'Còn hàng' : 'Hết hàng'; ?>
+            <div class="product__main-info-price">
+                <span class="product__main-info-price-current">
+                    <?= isset($product['gia_sach']) ? number_format($product['gia_sach'], 0, ',', '.') . 'đ' : 'Liên hệ' ?>
                 </span>
             </div>
 
+            <div class="product__main-info-status">
+                <strong>Trạng thái:</strong>
+                <span>
+                    <?= $product['trang_thai'] == 1 ? 'Còn hàng' : 'Hết hàng'; ?>
+                </span>
+            </div>
+
+            <!-- Form thêm vào giỏ hàng -->
             <div class="product__main-info-cart-btn-wrap">
-    <!-- Form xử lý thêm vào giỏ hàng -->
-    <form method="post" action="index.php?act=addToCart&id=<?= htmlspecialchars($product['id']); ?>" 
-          onsubmit="ensureValidQuantity(<?= htmlspecialchars($product['id']); ?>)">
-        <label for="quantity-<?= htmlspecialchars($product['id']); ?>">Số lượng:</label>
-        <div class="cart__body-quantity">
-            <!-- Nút giảm số lượng -->
-            <input type="button" value="-" class="cart__body-quantity-minus" 
-                   onclick="updateQuantity(<?= htmlspecialchars($product['id']); ?>, false)">
-            <!-- Input nhập số lượng -->
-            <input type="number" step="1" min="1" max="999" name="quantity" 
-                   id="quantity-<?= htmlspecialchars($product['id']); ?>" 
-                   value="1" onchange="validateQuantity(<?= htmlspecialchars($product['id']); ?>)">
-            <!-- Nút tăng số lượng -->
-            <input type="button" value="+" class="cart__body-quantity-plus" 
-                   onclick="updateQuantity(<?= htmlspecialchars($product['id']); ?>, true)">
+                <form method="post" action="index.php?act=addToCart&id=<?= htmlspecialchars($product['id'] ?? 0) ?>" 
+                      onsubmit="ensureValidQuantity(<?= htmlspecialchars($product['id'] ?? 0) ?>)">
+                    <label for="quantity-<?= htmlspecialchars($product['id'] ?? 0) ?>">Số lượng:</label>
+                    <div class="cart__body-quantity">
+                        <!-- Nút giảm số lượng -->
+                        <input type="button" value="-" class="cart__body-quantity-minus" 
+                               onclick="updateQuantity(<?= htmlspecialchars($product['id'] ?? 0) ?>, false)">
+                        <!-- Input nhập số lượng -->
+                        <input type="number" step="1" min="1" max="999" name="quantity" 
+                               id="quantity-<?= htmlspecialchars($product['id'] ?? 0) ?>" 
+                               value="1" onchange="validateQuantity(<?= htmlspecialchars($product['id'] ?? 0) ?>)">
+                        <!-- Nút tăng số lượng -->
+                        <input type="button" value="+" class="cart__body-quantity-plus" 
+                               onclick="updateQuantity(<?= htmlspecialchars($product['id'] ?? 0) ?>, true)">
+                    </div>
+                    <button type="submit" class="product__main-info-cart-btn">Thêm vào giỏ hàng</button>
+                </form>
+                <form action="<?= BASE_URL . '?act=checkout' ?>" method="POST" id="checkoutForm">
+                    <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id']); ?>">
+                    <input type="hidden" name="product_name" value="<?= htmlspecialchars($product['ten_sach']); ?>">
+                    <input type="hidden" name="product_price" value="<?= htmlspecialchars($product['gia_sach']); ?>">
+                    <input type="hidden" name="product_image" value="<?= htmlspecialchars($product['hinh_anh']); ?>">
+                    <!-- Trường số lượng được đồng bộ từ ô nhập số lượng -->
+                    <input type="hidden" name="product_quantity" id="checkout-quantity" value="1">
+                    <button type="submit" class="btn btn-primary" onclick="prepareCheckout(<?= htmlspecialchars($product['id']); ?>)">Thanh Toán</button>
+                </form>
+            </div>
+
+            <div class="product__main-info-contact">
+                <a href="#" class="product__main-info-contact-fb">
+                    <i class="fab fa-facebook-f"></i> Chat Facebook
+                </a>
+                <div class="product__main-info-contact-phone-wrap">
+                    <div class="product__main-info-contact-phone-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="product__main-info-contact-phone">
+                        <div class="product__main-info-contact-phone-title">Gọi điện tư vấn</div>
+                        <div class="product__main-info-contact-phone-number">(0352.860.701)</div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!-- Nút thêm vào giỏ hàng -->
-        <button type="submit" class="product__main-info-cart-btn">Thêm vào giỏ hàng</button>
-    </form>
-</div>
+    </div>
+
+    <!-- Tabs Mô tả & Đánh giá -->
+    <div class="row bg-white">
+        <div class="col-12 product__main-tab">
+            <a href="#" class="product__main-tab-link product__main-tab-link--active">Mô tả</a>
+            <a href="#" class="product__main-tab-link">Đánh giá</a>
+        </div>
+
+        <div class="col-12 product__main-content-wrap">
+            <!-- Mô tả sản phẩm -->
+            <div class="product__main-info-description">
+                <?= nl2br(htmlspecialchars($product['mo_ta'] ?? 'Không có mô tả.')) ?>
+            </div>
+
+            <!-- Thông tin chi tiết -->
+            <h2 class="thongtin"><span>Thông tin chi tiết</span></h2>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <th>Công ty phát hành</th>
+                            <td><?= htmlspecialchars($product['nha_xuat_ban'] ?? 'Không có thông tin') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Ngày xuất bản</th>
+                            <td><?= htmlspecialchars($product['ngay_xuat_ban'] ?? 'Không có thông tin') ?></td>
+                        </tr>
+                        <tr>
+                            <th>Số trang</th>
+                            <td><?= htmlspecialchars($product['so_trang'] ?? 'Không có thông tin') ?></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</article>
 
 <script>
-    // Hàm cập nhật số lượng khi nhấn nút "+" hoặc "-"
     function updateQuantity(productId, increase) {
         let quantityInput = document.getElementById('quantity-' + productId);
-        let currentQuantity = parseInt(quantityInput.value) || 1; // Đảm bảo giá trị mặc định là 1
+        let currentQuantity = parseInt(quantityInput.value) || 1;
         if (increase) {
             quantityInput.value = currentQuantity + 1;
-        } else {
-            if (currentQuantity > 1) {
-                quantityInput.value = currentQuantity - 1;
-            }
+        } else if (currentQuantity > 1) {
+            quantityInput.value = currentQuantity - 1;
         }
     }
 
-    // Hàm kiểm tra số lượng nhập vào có hợp lệ không
     function validateQuantity(productId) {
         let quantityInput = document.getElementById('quantity-' + productId);
         let quantity = parseInt(quantityInput.value);
         if (quantity < 1 || isNaN(quantity)) {
-            quantityInput.value = 1; // Đặt lại giá trị tối thiểu là 1 nếu nhập sai
+            quantityInput.value = 1;
         }
     }
 
-    // Hàm đảm bảo số lượng luôn hợp lệ khi submit form
     function ensureValidQuantity(productId) {
         let quantityInput = document.getElementById('quantity-' + productId);
         if (parseInt(quantityInput.value) < 1 || isNaN(quantityInput.value)) {
-            quantityInput.value = 1; // Đặt lại giá trị tối thiểu nếu cần
+            quantityInput.value = 1;
         }
     }
 </script>
-                            <div class="product__main-info-contact">
-                                <a href="#" class="product__main-info-contact-fb">
-                                    <i class="fab fa-facebook-f"></i>
-                                    Chat Facebook
-                                </a>
-                                <div class="product__main-info-contact-phone-wrap">
-                                    <div class="product__main-info-contact-phone-icon">
-                                        <i class="fas fa-phone-alt "></i>
-                                    </div>
-                                    
-                                    <div class="product__main-info-contact-phone">
-                                        <div class="product__main-info-contact-phone-title">
-                                            Gọi điện tư vấn
-                                        </div>
-                                        <div class="product__main-info-contact-phone-number">
-                                            ( 0352.860.701)
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row bg-white">
-                        <div class="col-12 product__main-tab">
-                            <a href="#" class="product__main-tab-link product__main-tab-link--active">
-                                Mô tả
-                            </a>
-                            <a href="#" class="product__main-tab-link">
-                                Đánh giá
-                            </a>
-                        </div>
-
-                        <div class="col-12 product__main-content-wrap">
-                        <div class="product__main-info-description">
-    <?= nl2br(htmlspecialchars($product['mo_ta'])); ?>
-</div>
-                            <h2 class="thongtin">    <span>Thông tin chi tiết</span> 
-                             </h2>
-                             <div class="table-responsive">
-    <table class="table table-bordered">
-        <tbody>
-            <tr>
-                <th>Công ty phát hành</th>
-                <td><?= htmlspecialchars($product['nha_xuat_ban']); ?></td>
-            </tr>
-            <tr>
-                <th>Ngày xuất bản</th>
-                <td><?= htmlspecialchars($product['ngay_xuat_ban']); ?></td>
-            </tr>
-            <tr>
-                <th>Số trang</th>
-                <td><?= htmlspecialchars($product['so_trang']); ?></td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-                              
-                        
-                        </div>
-                        
-                    </div>
-                </article>
-
                 <aside class="product__aside col-lg-3 col-md-0 col-sm-0">
                     <div class="product__aside-top">
                         <div class="product__aside-top-item">
@@ -332,39 +320,60 @@ require_once './views/layout/navbar.php';
                         </div>
                     </div>
                 </aside>
-
             </div>
-            
-           <div class="customer-reviews row pb-4 pb-4  py-4 pb-4 py-4 py-4">
-            <div class="col-lg-12 col-md-12 col-sm-12">
-                <h3 >Bình luận sản phẩm</h3>
-                <form id ="formgroupcomment" method="post">
-                    <div class="form-group">
-                        <label>Tên:</label>
-                        <input name="comm_name" required="" type="text" id ='form-name' class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>Email:</label>
-                        <input name="comm_mail" required="" type="email"  class="form-control" id="pwd">
-                    </div>
-                    <div class="form-group">
-                        <label>Nội dung:</label>
-                        <textarea name="comm_details" required="" rows="8" id ='formcontent' class="form-control"></textarea>     
-                    </div>
-                    <button type="submit" name="sbm" id= "submitcomment" class="btn btn-primary">Gửi</button>
-                </form> 
-            </div>
-           </div>
-            
-           <div class="product-comment row pb-4 pb-4  py-4 pb-4 py-4 py-4">
-            
-           </div>
-             
-            
 
-    
-                               
-                             
+         
+            <!-- Hiển thị Bình luận -->
+            <div id="comments-section" class="product-comment row pb-4 py-4">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="comment-item">
+                        <ul class="item-reviewer">
+                            <!-- Loop through existing comments and display them -->
+                            <?php if (!empty($comments)): ?>
+                                <?php foreach ($comments as $comment): ?>
+                                    <div class="comment-item-user">
+                                        <img src="images/img/1.png" alt="" class="comment-item-user-img">
+                                        <!-- Hiển thị tên người dùng từ cơ sở dữ liệu -->
+                                        <li><b>
+                                            <?php echo htmlspecialchars($comment['ho_ten']); ?>
+                                        </b></li>
+                                    </div>
+                                    <br>
+                                    <!-- Hiển thị ngày đăng bình luận -->
+                                    <li><?php echo date("Y-m-d", strtotime($comment['ngay_dang'])); ?></li>
+                                    <li>
+                                        <h4><?php echo nl2br(htmlspecialchars($comment['noi_dung'])); ?></h4>
+                                    </li>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p>Chưa có bình luận nào.</p>
+                            <?php endif; ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kiểm tra đăng nhập trước khi cho phép gửi bình luận -->
+            <?php if (isset($_SESSION['user_client'])): ?>
+                <!-- Form Bình luận, gửi bình luận -->
+                <div class="customer-reviews row pb-4 pb-4 py-4 pb-4 py-4 py-4">
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <h3>Bình luận sản phẩm</h3>
+                        <!-- Thêm anchor link vào action của form để tự động cuộn đến phần bình luận sau khi gửi -->
+                        <form action="<?= BASE_URL . '?act=addComment#comments-section' ?>" method="post">
+                            <input type="hidden" name="product_id" value="<?= $product['id'] ?>"> <!-- Hidden field to send product ID -->
+                            <input type="hidden" name="user_id" value="<?= $_SESSION['user_client']['id'] ?? '' ?>"> <!-- User ID -->
+                            <div class="form-group">
+                                <label>Nội dung:</label>
+                                <textarea name="comm_details" required rows="8" id="formcontent" class="form-control"></textarea>     
+                            </div>
+                            <button type="submit" name="sbm" class="btn btn-primary">Gửi</button>
+                        </form>
+                    </div>
+                </div>
+            <?php else: ?>
+                <p>Vui lòng <a href="<?= BASE_URL . '?act=login' ?>">đăng nhập</a> để bình luận.</p>
+            <?php endif; ?>
 
             <section class="product__love col-12 mt-4">
                 <div class="row bg-white">

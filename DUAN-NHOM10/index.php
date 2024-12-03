@@ -42,8 +42,17 @@ $routes = [
         (new CartController($dbConnection))->updateCart();
     },
     'removeFromCart' => [CartController::class, 'removeFromCart'],
+
+    // Thêm route mới cho đặt hàng và thanh toán
+    'checkout' => [OrderController::class, 'checkout'], // Xử lý thanh toán
+    'confirmOrder' => [OrderController::class, 'confirmOrder'], // Xác nhận đơn hàng
     'placeOrder' => [OrderController::class, 'placeOrder'],
-    'orderConfirmation' => [OrderController::class, 'orderConfirmation'],
+    'order' => [OrderController::class, 'orderForm'],
+    'orderSuccess' => [OrderController::class, 'orderSuccess'],
+    // Lịch sử đơn hàng
+    'orderHistory' => [HomeController::class, 'viewOrderHistory'],
+    'orderDetails' => [HomeController::class, 'orderDetails'],
+    'checkoutFromDetail' => [HomeController::class, 'checkoutFromDetail'],
     
     // auth
     // login
@@ -58,6 +67,11 @@ $routes = [
     'form-sua-khach-hang' => [HomeController::class, 'formEditKhachHang'],
     'sua-khach-hang' => [HomeController::class, 'postEditKhachHang'],
     'chi-tiet-khach-hang' => [HomeController::class, 'deltailKhachHang'],
+
+    // Bình luận
+    'addComment' => [ProductController::class, 'addComment'], // Thêm bình luận cho sản phẩm
+    'showComments' => [ProductController::class, 'showProductDetail'], // Hiển thị bình luận khi xem chi tiết sản phẩm
+
 ];
 // Kiểm tra và xử lý route
 try {

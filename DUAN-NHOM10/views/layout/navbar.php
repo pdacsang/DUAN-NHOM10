@@ -1,3 +1,6 @@
+<?php $productModel = new ProductModel();
+$categories = $productModel->getAllCategories(); ?>
+
 <header id="header">
         <!-- header top -->
         <div class="header__top">
@@ -29,6 +32,7 @@
                                             <!-- Nếu đã đăng nhập, hiển thị thông tin người dùng -->
                                             <li><a href="<?= BASE_URL . '?act=chi-tiet-khach-hang&id=' . $_SESSION['user_client']['id'] ?>"><i class="fas fa-id-card fa-sm"></i> Thông tin cá nhân</a></li>
                                         <?php endif; ?>
+                                        <li><a href="<?= BASE_URL . '?act=orderHistory' ?>">Lich sử đơn hàng</a></li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="<?= BASE_URL . '?act=logout' ?>" onclick="return confirm('Đăng xuất tài khoản ?')">
                                                 <i class="fas fa-sign-out-alt fa-sm"></i> Logout
@@ -113,207 +117,231 @@
             <div class="container">
                 <section class="row">
                 <div class="header__nav-menu-wrap col-lg-3 col-md-0 col-sm-0">
-                <i class="fas fa-bars header__nav-menu-icon">
-    <div id="dropdownMenu" class="header__nav-menu hidden">
-        <select onchange="location = this.value;">
-            <option value="index.php?act=productByCategory" <?= empty($_GET['danh_muc_id']) ? 'selected' : '' ?>>
-                Tất cả
-            </option>
-            <?php if (isset($categories)): ?>
-                <?php foreach ($categories as $category): ?>
-                    <option 
-                        value="index.php?act=productByCategory&danh_muc_id=<?= $category['id'] ?>" 
-                        <?= (isset($_GET['danh_muc_id']) && $_GET['danh_muc_id'] == $category['id']) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($category['ten_danh_muc']) ?>
-                    </option>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <option disabled>Không có danh mục</option>
-            <?php endif; ?>
-        </select>
-    </div>
-</i>
-<style>
-    .header__nav-menu {
-        position: absolute;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 10px;
-        z-index: 1000;
-    }
-    .hidden {
-        display: none;
-    }
-    .fas.fa-bars {
-        cursor: pointer;
-        font-size: 24px;
-    }
-    .header__search-container {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    background-color: white;
-    overflow: hidden;
-}
-.header__search-category {
-    border: none;
-    padding: 0 10px;
-    background: none;
-    cursor: pointer;
-    outline: none;
-    font-size: 14px;
-    color: #333;
-}
-.header__search-category:focus {
-    outline: none;
-}
-.header__search-input {
-    flex: 1;
-    border: none;
-    padding: 10px;
-    font-size: 14px;
-    outline: none;
-    width: 500px;
-}
-.header__search-btn {
-    background-color: #ff4d4d;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    outline: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.header__search-btn .header__search-icon {
-    color: white;
-    font-size: 16px;
-}
-.header__search-btn:hover {
-    background-color: #e63939;
-}
+                    <i class="fas fa-bars header__nav-menu-icon">
+                        <div id="dropdownMenu" class="header__nav-menu hidden">
+                            <select class="catelist" onchange="location = this.value;">
+                                <option value="index.php?act=productByCategory" <?= empty($_GET['danh_muc_id']) ? 'selected' : '' ?>>
+                                    Tất cả
+                                </option>
+                                <?php if (isset($categories)): ?>
+                                    <?php foreach ($categories as $category): ?>
+                                        <option
+                                            value="index.php?act=productByCategory&danh_muc_id=<?= $category['id'] ?>"
+                                            <?= (isset($_GET['danh_muc_id']) && $_GET['danh_muc_id'] == $category['id']) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($category['ten_danh_muc']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option disabled>Không có danh mục</option>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                    </i>
 
-.header__search-container input:focus {
-    outline: none;
-}
-.search-results {
-    position: absolute;
-    top: calc(80%); /* Dưới thanh tìm kiếm */
-    left: 15px;
-    width: 100%;
-    max-width: 548px; /* Giới hạn chiều rộng */
-    background: #ffffff; /* Nền trắng */
-    border: 1px solid #ddd; /* Viền */
-    border-radius: 8px; /* Bo góc mềm mại */
-    z-index: 1000;
-    max-height: 300px; /* Chiều cao tối đa */
-    overflow-y: auto; /* Cuộn dọc nếu quá dài */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
-    padding: 8px 0; /* Khoảng cách bên trong */
-}
+                    <style>
+                        .header__nav-menu {
+                            position: absolute;
+                            transform: translateX(-10%);
+                            margin-top: 10px;
+                            border-radius: 5px;
+                            z-index: 1000;
 
-.search-results ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-.search-results li {
-    display: flex; 
-    align-items: center; 
-    padding: 8px 12px; 
-    border-bottom: 1px solid #f1f1f1; 
-    cursor: pointer; 
-    transition: background-color 0.2s ease; 
-}
-.search-results li:hover {
-    background-color: #f9f9f9; 
-}
+                        }
 
-.search-results li:last-child {
-    border-bottom: none; 
-}
-.search-results img {
-    width: 40px; 
-    height: 40px; 
-    object-fit: cover; 
-    border-radius: 4px; 
-    margin-right: 12px; 
-}
-.search-results .search-result-title {
-    font-size: 14px; 
-    color: #333; 
-    line-height: 1.4; 
-    flex: 1; 
-}
-.search-results .search-result-empty {
-    color: #888;
-    font-size: 14px; 
-    text-align: center; 
-    padding: 10px 0;
-}
-</style>
-<div class="header__nav-menu-title">Danh mục sản phẩm</div>
-<script>
-    const menuIcon = document.querySelector(".header__nav-menu-icon");
-const dropdownMenu = document.getElementById("dropdownMenu");
+                        .header__nav-menu select {
+                            width: 285px;
+                            padding: 8px 12px;
+                            font-size: 14px;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            outline: none;
+                        }
 
-menuIcon.addEventListener("mouseover", () => {
-    dropdownMenu.classList.remove("hidden");
-});
+                        .hidden {
+                            display: none;
+                        }
 
-menuIcon.addEventListener("mouseout", (e) => {
-    if (!menuIcon.contains(e.relatedTarget)) {
-        dropdownMenu.classList.add("hidden");
-    }
-});
-dropdownMenu.addEventListener("mouseout", (e) => {
-    if (!menuIcon.contains(e.relatedTarget)) {
-        dropdownMenu.classList.add("hidden");
-    }
-});
-document.getElementById('search-keyword').addEventListener('input', function () {
-    const keyword = this.value.trim();
-    const resultsContainer = document.getElementById('search-results');
+                        .fas.fa-bars {
+                            cursor: pointer;
+                            font-size: 24px;
+                        }
 
-    if (keyword === '') {
-        resultsContainer.classList.add('hidden');
-        return;
-    }
-    // Gửi AJAX để tìm kiếm
-    fetch(`index.php?act=search&keyword=${encodeURIComponent(keyword)}`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-        },
-    })
-        .then((response) => response.text())
-        .then((html) => {
-            resultsContainer.innerHTML = `<ul>${html}</ul>`;
-            resultsContainer.classList.remove('hidden');
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            resultsContainer.innerHTML = '<p class="search-result-empty">Có lỗi xảy ra. Vui lòng thử lại.</p>';
-            resultsContainer.classList.remove('hidden');
-        });
-});
+                        .header__search-container {
+                            display: flex;
+                            align-items: center;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            background-color: white;
+                            overflow: hidden;
+                        }
 
-// Điều hướng đến trang chi tiết sản phẩm
-function redirectToProduct(productId) {
-    window.location.href = `index.php?act=showProductDetail&id=${productId}`;
-}
-// Ẩn kết quả khi click ra ngoài
-document.addEventListener('click', function (e) {
-    const resultsContainer = document.getElementById('search-results');
-    if (!resultsContainer.contains(e.target) && e.target.id !== 'search-keyword') {
-        resultsContainer.classList.add('hidden');
-    }
-});
-</script>
-    
-</div>
+                        .header__search-category {
+                            border: none;
+                            padding: 0 10px;
+                            background: none;
+                            cursor: pointer;
+                            outline: none;
+                            font-size: 14px;
+                            color: #333;
+                        }
+
+                        .header__search-category:focus {
+                            outline: none;
+                        }
+
+                        .header__search-input {
+                            flex: 1;
+                            border: none;
+                            padding: 10px;
+                            font-size: 14px;
+                            outline: none;
+                            width: 500px;
+                        }
+
+                        .header__search-btn {
+                            background-color: #ff4d4d;
+                            border: none;
+                            padding: 10px 15px;
+                            cursor: pointer;
+                            outline: none;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .header__search-btn .header__search-icon {
+                            color: white;
+                            font-size: 16px;
+                        }
+
+                        .header__search-btn:hover {
+                            background-color: #e63939;
+                        }
+
+                        .header__search-container input:focus {
+                            outline: none;
+                        }
+
+                        .search-results {
+                            position: absolute;
+                            top: calc(80%);
+                            left: 15px;
+                            width: 100%;
+                            max-width: 548px;
+                            background: #ffffff;
+                            border: 1px solid #ddd;
+                            border-radius: 8px;
+                            z-index: 1000;
+                            font-size: 70px;
+                            max-height: 300px;
+                            overflow-y: auto;
+                            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                            padding: 8px 0;
+                        }
+
+                        .search-results ul {
+                            list-style: none;
+                            margin: 0;
+                            padding: 0;
+                        }
+
+                        .search-results li {
+                            display: flex;
+                            align-items: center;
+                            padding: 8px 12px;
+                            border-bottom: 1px solid #f1f1f1;
+                            cursor: pointer;
+                            transition: background-color 0.2s ease;
+                        }
+
+                        .search-results li:hover {
+                            background-color: #f9f9f9;
+                        }
+
+                        .search-results li:last-child {
+                            border-bottom: none;
+                        }
+
+                        .search-results img {
+                            width: 40px;
+                            height: 40px;
+                            object-fit: cover;
+                            border-radius: 4px;
+                            margin-right: 12px;
+                        }
+
+                        .search-results .search-result-title {
+                            font-size: 14px;
+                            color: #333;
+                            line-height: 1.4;
+                            flex: 1;
+                        }
+
+                        .search-results .search-result-empty {
+                            color: #888;
+                            font-size: 14px;
+                            text-align: center;
+                            padding: 10px 0;
+                        }
+                    </style>
+                    <div class="header__nav-menu-title">Danh mục sản phẩm</div>
+                    <script>
+                        const menuIcon = document.querySelector(".header__nav-menu-icon");
+                        const dropdownMenu = document.getElementById("dropdownMenu");
+
+                        menuIcon.addEventListener("mouseover", () => {
+                            dropdownMenu.classList.remove("hidden");
+                        });
+
+
+                        dropdownMenu.addEventListener("mouseout", (e) => {
+                            if (!menuIcon.contains(e.relatedTarget)) {
+                                dropdownMenu.classList.add("hidden");
+                            }
+                        });
+                        document.getElementById('search-keyword').addEventListener('input', function() {
+                            const keyword = this.value.trim();
+                            const resultsContainer = document.getElementById('search-results');
+
+                            if (keyword === '') {
+                                resultsContainer.classList.add('hidden');
+                                return;
+                            }
+
+                            // Gửi AJAX để tìm kiếm
+                            fetch(`index.php?act=search&keyword=${encodeURIComponent(keyword)}`, {
+                                    method: 'GET',
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest',
+                                    },
+                                })
+                                .then((response) => response.text())
+                                .then((html) => {
+                                    resultsContainer.innerHTML = `<ul>${html}</ul>`;
+                                    resultsContainer.classList.remove('hidden');
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                    resultsContainer.innerHTML = '<p class="search-result-empty">Có lỗi xảy ra. Vui lòng thử lại.</p>';
+                                    resultsContainer.classList.remove('hidden');
+                                });
+                        });
+
+                        // Điều hướng đến trang chi tiết sản phẩm
+                        function redirectToProduct(productId) {
+                            window.location.href = `index.php?act=showProductDetail&id=${productId}`;
+                        }
+
+                        // Ẩn kết quả khi click ra ngoài
+                        document.addEventListener('click', function(e) {
+                            const resultsContainer = document.getElementById('search-results');
+                            if (!resultsContainer.contains(e.target) && e.target.id !== 'search-keyword') {
+                                resultsContainer.classList.add('hidden');
+                            }
+                        });
+                    </script>
+
+                </div>
                     <div class="header__nav col-lg-9 col-md-0 col-sm-0">
                         <ul class="header__nav-list">
                             <li class="header__nav-item">
