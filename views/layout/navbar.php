@@ -1,3 +1,5 @@
+<?php $productModel = new ProductModel();
+$categories = $productModel->getAllCategories(); ?>
 <header id="header">
     <!-- header top -->
     <div class="header__top">
@@ -46,6 +48,7 @@
                                 </p>
                             </li>
                         <?php endif; ?>
+
                     </ul>
                 </nav>
             </section>
@@ -96,9 +99,16 @@
                             039.882.3232
                         </div>
                     </div>
+                    <div style="text-align: center; margin: 20px;">
+                        <a href="index.php?act=orderHistory" style="text-decoration: none;">
+                            <i class="fas fa-user" style="font-size: 30px; color: white;"></i>
+                            <span style="display: block; font-size: 14px; ;"></span>
+                        </a>
+                    </div>
                 </div>
 
                 <a href="index.php?act=viewCart" class="col-lg-1 col-md-1 col-sm-0 header__cart">
+
                     <div class="header__cart-icon-wrap">
                         <i class="fas fa-shopping-cart header__nav-cart-icon"></i>
                         <span class="header__notice"><?= htmlspecialchars($uniqueProductCount ?? 0) ?></span>
@@ -118,7 +128,7 @@
                 <div class="header__nav-menu-wrap col-lg-3 col-md-0 col-sm-0">
                     <i class="fas fa-bars header__nav-menu-icon">
                         <div id="dropdownMenu" class="header__nav-menu hidden">
-                            <select onchange="location = this.value;">
+                            <select class="catelist" onchange="location = this.value;">
                                 <option value="index.php?act=productByCategory" <?= empty($_GET['danh_muc_id']) ? 'selected' : '' ?>>
                                     Tất cả
                                 </option>
@@ -140,11 +150,20 @@
                     <style>
                         .header__nav-menu {
                             position: absolute;
-                            background-color: #fff;
-                            border: 1px solid #ccc;
+                            transform: translateX(-10%);
+                            margin-top: 10px;
                             border-radius: 5px;
-                            padding: 10px;
                             z-index: 1000;
+
+                        }
+
+                        .header__nav-menu select {
+                            width: 285px;
+                            padding: 8px 12px;
+                            font-size: 14px;
+                            border: 1px solid #ddd;
+                            border-radius: 5px;
+                            outline: none;
                         }
 
                         .hidden {
@@ -215,27 +234,18 @@
                         .search-results {
                             position: absolute;
                             top: calc(80%);
-                            /* Dưới thanh tìm kiếm */
                             left: 15px;
                             width: 100%;
                             max-width: 548px;
-                            /* Giới hạn chiều rộng */
                             background: #ffffff;
-                            /* Nền trắng */
                             border: 1px solid #ddd;
-                            /* Viền */
                             border-radius: 8px;
-                            /* Bo góc mềm mại */
                             z-index: 1000;
                             font-size: 70px;
                             max-height: 300px;
-                            /* Chiều cao tối đa */
                             overflow-y: auto;
-                            /* Cuộn dọc nếu quá dài */
                             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-                            /* Đổ bóng nhẹ */
                             padding: 8px 0;
-                            /* Khoảng cách bên trong */
                         }
 
                         .search-results ul {
@@ -292,11 +302,7 @@
                             dropdownMenu.classList.remove("hidden");
                         });
 
-                        menuIcon.addEventListener("mouseout", (e) => {
-                            if (!menuIcon.contains(e.relatedTarget)) {
-                                dropdownMenu.classList.add("hidden");
-                            }
-                        });
+
                         dropdownMenu.addEventListener("mouseout", (e) => {
                             if (!menuIcon.contains(e.relatedTarget)) {
                                 dropdownMenu.classList.add("hidden");

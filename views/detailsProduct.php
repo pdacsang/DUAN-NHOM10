@@ -7,28 +7,7 @@ require_once './views/layout/navbar.php';
 <section class="product">
         <div class="container">
             <div class="row bg-white pt-4 pb-4 border-bt pc">
-                <nav class="menu__nav col-lg-3 col-md-12 col-sm-0">
-                    <ul class="menu__list">
-                        <li class="menu__item menu__item--active">
-                            <a href="#" class="menu__link">
-                            <img src="images1/item/baby-boy.png" alt=""  class="menu__item-icon" id="Capa_1" enable-background="new 0 0 512 512" height="512" viewBox="0 0 512 512" width="512">
-                            Sách Tiếng Việt</a>
-                        </li>
-                        <li class="menu__item">
-                            <a href="#" class="menu__link">
-                            <img src="images1/item/translation.png" alt="" class="menu__item-icon" id="Capa_1" enable-background="new 0 0 512 512" height="512" viewBox="0 0 512 512" width="512">
-                            Sách nước ngoài</a>
-                        </li>
-                      
-                        <li class="menu__item">
-                            <a href="#" class="menu__link">
-                                <img src="images1/item/1380754_batman_comic_hero_superhero_icon.png" alt="" class="menu__item-icon"  viewBox="0 0 512 512" width="1012" height="512">
-
-                            Manga - Comic</a>
-                        </li>
-                      
-                    </ul>
-                </nav>
+               
 
                 <article class="product__main col-lg-9 col-md-12 col-sm-12">
     <div class="row">
@@ -42,8 +21,8 @@ require_once './views/layout/navbar.php';
 
         <!-- Thông tin sản phẩm -->
         <div class="product__main-info col-lg-8 col-md-8 col-sm-12">
-            <div class="product__main-info-breadcrumb">
-                <a href="index.php">Trang chủ</a> / <span>Sản phẩm</span>
+            <div class="product__main-info-breadcrumb" style="font-size: 20px;">
+                <a href="index.php">Trang chủ</a> / <a href="index.php?act=productByCategory">Danh sách sản phẩm</a>/ <a href="index.php?act=productByCategory">Sản phẩm</a>
             </div>
 
             <h2 class="product__main-info-heading">
@@ -82,6 +61,15 @@ require_once './views/layout/navbar.php';
                     </div>
                     <button type="submit" class="product__main-info-cart-btn">Thêm vào giỏ hàng</button>
                 </form>
+                <form action="index.php?act=checkout" method="POST" id="checkoutForm">
+    <input type="hidden" name="product_id" value="<?= htmlspecialchars($product['id']); ?>">
+    <input type="hidden" name="product_name" value="<?= htmlspecialchars($product['ten_sach']); ?>">
+    <input type="hidden" name="product_price" value="<?= htmlspecialchars($product['gia_sach']); ?>">
+    <input type="hidden" name="product_image" value="<?= htmlspecialchars($product['hinh_anh']); ?>">
+    <!-- Trường số lượng được đồng bộ từ ô nhập số lượng -->
+    <input type="hidden" name="product_quantity" id="checkout-quantity" value="1">
+    <button type="button" class="btn btn-primary" onclick="prepareCheckout(<?= htmlspecialchars($product['id']); ?>)">Thanh Toán</button>
+</form>
             </div>
 
             <div class="product__main-info-contact">
@@ -139,9 +127,25 @@ require_once './views/layout/navbar.php';
 </article>
 
 <script>
+    // Đồng bộ số lượng trước khi thanh toán
+    function prepareCheckout(productId) {
+        // Lấy giá trị từ ô nhập số lượng
+        const quantityInput = document.getElementById('quantity-' + productId);
+        const checkoutQuantityInput = document.getElementById('checkout-quantity');
+
+        // Đồng bộ giá trị số lượng
+        checkoutQuantityInput.value = quantityInput.value;
+
+        // Gửi form thanh toán
+        document.getElementById('checkoutForm').submit();
+    }
+
+    // Hàm cập nhật số lượng khi nhấn tăng/giảm
     function updateQuantity(productId, increase) {
-        let quantityInput = document.getElementById('quantity-' + productId);
+        const quantityInput = document.getElementById('quantity-' + productId);
         let currentQuantity = parseInt(quantityInput.value) || 1;
+
+        // Tăng hoặc giảm số lượng
         if (increase) {
             quantityInput.value = currentQuantity + 1;
         } else if (currentQuantity > 1) {
@@ -149,9 +153,12 @@ require_once './views/layout/navbar.php';
         }
     }
 
+    // Hàm kiểm tra số lượng khi nhập trực tiếp
     function validateQuantity(productId) {
-        let quantityInput = document.getElementById('quantity-' + productId);
+        const quantityInput = document.getElementById('quantity-' + productId);
         let quantity = parseInt(quantityInput.value);
+
+        // Đảm bảo giá trị hợp lệ
         if (quantity < 1 || isNaN(quantity)) {
             quantityInput.value = 1;
         }

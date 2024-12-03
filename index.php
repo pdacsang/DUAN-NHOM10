@@ -47,6 +47,11 @@ $routes = [
     'placeOrder' => [OrderController::class, 'placeOrder'],
     'order' => [OrderController::class, 'orderForm'],
     'orderSuccess' => [OrderController::class, 'orderSuccess'],
+    
+    'orderHistory' => [HomeController::class, 'viewOrderHistory'],
+    'orderDetails' => [HomeController::class, 'orderDetails'],
+    'checkoutFromDetail' => [HomeController::class, 'checkoutFromDetail'],
+    
 
     // auth
     // login
@@ -60,7 +65,7 @@ $routes = [
     // Profile 
     'form-sua-khach-hang' => [HomeController::class, 'formEditKhachHang'],
     'sua-khach-hang' => [HomeController::class, 'postEditKhachHang'],
-    'chi-tiet-khach-hang' => [HomeController::class, 'deltailKhachHang'],
+    'chi-tiet-khach-hang' => [HomeController::class, 'orderDetails'],
 ];
 // Kiểm tra và xử lý route
 try {

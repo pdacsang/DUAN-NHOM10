@@ -30,86 +30,125 @@ class OrderController {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-    
-        $cart = $_SESSION['cart'] ?? [];
-        if (empty($cart)) {
-            $error_message = "Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.";
-            include './views/Order.php';
-            return;
+
+        // Kiểm tra nếu thanh toán từ sản phẩm chi tiết
+        if (isset($_POST['product_id'])) {
+            // Thanh toán từ chi tiết sản phẩm
+            $product = [
+                'id' => $_POST['product_id'],
+                'name' => $_POST['product_name'],
+                'price' => $_POST['product_price'],
+                'quantity' => $_POST['product_quantity'],
+            ];
+            $cart = [$product]; // Tạo giỏ hàng tạm thời
+            $totalAmount = $product['price'] * $product['quantity'];
+        } else {
+            // Thanh toán từ giỏ hàng
+            $cart = $_SESSION['cart'] ?? [];
+            $totalAmount = array_sum(array_map(function ($item) {
+                return $item['price'] * $item['quantity'];
+            }, $cart));
         }
-    
+
         // Lấy dữ liệu từ form
         $recipientName = $_POST['recipient_name'] ?? null;
         $email = $_POST['email'] ?? null;
         $phone = $_POST['phone'] ?? null;
         $address = $_POST['address'] ?? null;
-        $oderNote = $_POST['note'] ?? null;
+        $orderNote = $_POST['note'] ?? null;
         $paymentMethodId = $_POST['payment_method'] ?? 1; // Mặc định là thanh toán COD
-    
+
+        // Lấy `userId` từ session
+        $userId = $_SESSION['user_client']['id'] ?? null;
+
         // Kiểm tra dữ liệu đầu vào
-        if (!$recipientName || !$email || !$phone || !$address) {
+        if (!$userId || !$recipientName || !$email || !$phone || !$address) {
             $error_message = "Vui lòng nhập đầy đủ thông tin.";
             include './views/Order.php';
             return;
         }
-    
-        // Tính tổng tiền
-        $totalAmount = array_sum(array_map(function ($item) {
-            return $item['price'] * $item['quantity'];
-        }, $cart));
-    
+
         if ($totalAmount <= 0) {
             $error_message = "Tổng tiền không hợp lệ.";
             include './views/Order.php';
             return;
         }
-    
+
         try {
             // Tạo đơn hàng
-            $orderId = $this->orderModel->createOrder($totalAmount, 1, $paymentMethodId, 1, $recipientName, $email, $phone, $address, $oderNote);
-    
+            $orderId = $this->orderModel->createOrder($totalAmount, 1, $paymentMethodId, $userId, $recipientName, $email, $phone, $address, $orderNote);
+
             // Thêm chi tiết đơn hàng
             foreach ($cart as $item) {
                 $this->orderModel->addOrderDetails($orderId, $item['id'], $item['quantity'], $item['price']);
             }
-    
-            // Xóa giỏ hàng sau khi đặt hàng thành công
-            unset($_SESSION['cart']);
-    
+
+            // Nếu thanh toán từ giỏ hàng, xóa giỏ hàng
+            if (!isset($_POST['product_id'])) {
+                unset($_SESSION['cart']);
+            }
+
             // Kiểm tra phương thức thanh toán
             if ($paymentMethodId == 2) { // 2: Thanh toán VNPay
-                $this->createVNPayPaymentRequest($orderId, $totalAmount, $recipientName, $email, $phone, $address, $oderNote);
+                $this->createVNPayPaymentRequest($orderId, $totalAmount, $recipientName, $email, $phone, $address, $orderNote);
                 return; // Dừng tại đây vì đã chuyển hướng đến VNPay
             }
-    
+
             // Thanh toán COD (mặc định)
             header("Location: index.php?act=orderSuccess");
             exit();
-    
         } catch (Exception $e) {
             // Xử lý lỗi
             $error_message = "Lỗi khi xử lý đơn hàng: " . $e->getMessage();
             include './views/Order.php';
         }
     }
-    // Tạo yêu cầu thanh toán VNPay
-    public function createVNPayPaymentRequest($orderId, $totalAmount, $recipientName, $email, $phone, $address, $oderNote) {
-        // Dữ liệu từ hệ thống của bạn
-        $vnp_TmnCode = "31DQ0GI0";  // Mã Merchant của bạn
-        $vnp_HashSecret = "W4J1L035O98GIOWPIJUIUDL7D61VFXC5"; // Khóa bí mật của bạn
-        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";  // URL thanh toán VNPay
-        $vnp_Returnurl = "http://localhost:81/";  // Địa chỉ trả về sau khi thanh toán
 
-        // Sử dụng order_id đã tạo từ trước
-        $vnp_TxnRef = $orderId;  // Truyền order_id từ PHP vào VNPay
-        $vnp_OrderInfo = $_POST['order_desc'] ?? 'No description provided';  // Mô tả đơn hàng
-        $vnp_OrderType = $_POST['order_type'] ?? 'other';  // Loại đơn hàng
-        $vnp_Amount = $totalAmount * 100;  // VNPay yêu cầu số tiền phải nhân với 100 (đơn vị đồng)
-        $vnp_Locale = 'vn';  // Ngôn ngữ thanh toán
-        $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];  // Địa chỉ IP của người dùng
+    // Thanh toán từ chi tiết sản phẩm
+    public function checkoutFromProduct() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Lấy thông tin sản phẩm từ form
+            $productId = $_POST['product_id'] ?? null;
+            $productName = $_POST['product_name'] ?? null;
+            $productPrice = $_POST['product_price'] ?? null;
+            $productQuantity = $_POST['product_quantity'] ?? 1;
 
-        // Chuẩn bị dữ liệu để tạo chuỗi hash
-        $inputData = array(
+            // Kiểm tra dữ liệu
+            if (!$productId || !$productName || !$productPrice) {
+                echo "Thông tin sản phẩm không hợp lệ.";
+                return;
+            }
+
+            // Chuẩn bị dữ liệu để hiển thị trên trang thanh toán
+            $product = [
+                'id' => $productId,
+                'name' => $productName,
+                'price' => $productPrice,
+                'quantity' => $productQuantity,
+            ];
+
+            // Chuyển đến trang thanh toán
+            $isSingleProduct = true; // Đánh dấu là thanh toán từ sản phẩm chi tiết
+            include './views/Checkout.php';
+        } else {
+            echo "Phương thức không hợp lệ.";
+        }
+    }
+
+    public function createVNPayPaymentRequest($orderId, $totalAmount, $recipientName, $email, $phone, $address, $orderNote) {
+        $vnp_TmnCode = "31DQ0GI0";  
+        $vnp_HashSecret = "W4J1L035O98GIOWPIJUIUDL7D61VFXC5"; 
+        $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";  
+        $vnp_Returnurl = "http://localhost:81/";
+
+        $vnp_TxnRef = $orderId;
+        $vnp_OrderInfo = $_POST['order_desc'] ?? 'No description provided';
+        $vnp_OrderType = $_POST['order_type'] ?? 'other';
+        $vnp_Amount = $totalAmount * 100;
+        $vnp_Locale = 'vn';
+        $vnp_IpAddr = $_SERVER['REMOTE_ADDR'];
+
+        $inputData = [
             "vnp_Version" => "2.1.0",
             "vnp_TmnCode" => $vnp_TmnCode,
             "vnp_Amount" => $vnp_Amount,
@@ -122,56 +161,19 @@ class OrderController {
             "vnp_OrderType" => $vnp_OrderType,
             "vnp_ReturnUrl" => $vnp_Returnurl,
             "vnp_TxnRef" => $vnp_TxnRef,
-        );
+        ];
 
-        // Sắp xếp và tạo chuỗi hash
         ksort($inputData);
         $hashdata = http_build_query($inputData);
         $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
 
-        // Tạo URL thanh toán
         $vnp_Url .= "?" . $hashdata . "&vnp_SecureHash=" . $vnpSecureHash;
 
-        // Chuyển hướng đến VNPay
         header('Location: ' . $vnp_Url);
-        die();  // Dừng chương trình sau khi chuyển hướng
+        die();
     }
 
-    // Hàm xử lý thông báo thanh toán trả về từ VNPay
-    public function paymentReturn() {
-        $vnp_HashSecret = "W4J1L035O98GIOWPIJUIUDL7D61VFXC5"; // Khóa bí mật của bạn
-    
-        $vnp_ResponseCode = $_GET['vnp_ResponseCode'] ?? null;
-        $vnp_TxnRef = $_GET['vnp_TxnRef'] ?? null;
-        $vnp_SecureHash = $_GET['vnp_SecureHash'] ?? null;
-    
-        // Kiểm tra tính hợp lệ của kết quả thanh toán
-        $secureHash = hash_hmac('sha512', $_SERVER['QUERY_STRING'], $vnp_HashSecret);
-    
-        if ($vnp_SecureHash == $secureHash) {
-            if ($vnp_ResponseCode == '00') {
-                // Thanh toán thành công, cập nhật trạng thái đơn hàng trong DB
-                $this->orderModel->updateOrderStatus($vnp_TxnRef, 'paid');
-                
-                // Xóa giỏ hàng sau khi đặt hàng thành công
-                unset($_SESSION['cart']);
-
-                // Chuyển hướng đến trang thành công
-                header("Location: index.php?act=orderSuccess");
-                exit();
-            } else {
-                // Thanh toán thất bại
-                // Hiển thị thông báo hoặc chuyển hướng tới trang thất bại
-                header("Location: OrderFailure.php?order_id=" . $vnp_TxnRef);
-                exit();
-            }
-        } else {
-            // Không hợp lệ
-            echo "Dữ liệu không hợp lệ.";
-        }
-    }
     public function orderSuccess() {
-        include './views/OrderSuccess.php';  // Chuyển đến trang thông báo đặt hàng thành công
+        include './views/OrderSuccess.php'; 
     }
 }
-?>

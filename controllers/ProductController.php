@@ -17,14 +17,29 @@ class ProductController {
 
     // Hiển thị sản phẩm theo danh mục
     public function showProductsByCategory() {
-        $categoryId = $_GET['danh_muc_id'] ?? null;
-        $categories = $this->productModel->getAllCategories();
-        if ($categoryId && is_numeric($categoryId)) {
-            $products = $this->productModel->getProductsByCategory((int) $categoryId);
-        } else {
-            $products = $this->productModel->getAllProducts();
+        try {
+            $categoryId = $_GET['danh_muc_id'] ?? null;
+            $currentPage = $_GET['page'] ?? 1;
+            $perPage = 9;
+            $offset = ($currentPage - 1) * $perPage;
+    
+            $categories = $this->productModel->getAllCategories();
+    
+            if ($categoryId) {
+                $productsData = $this->productModel->getProductsByCategoryWithPagination($categoryId, $offset, $perPage);
+            } else {
+                $productsData = $this->productModel->getAllProductsWithPagination($offset, $perPage);
+            }
+    
+            $products = $productsData['products'];
+            $totalProducts = $productsData['total'];
+            $totalPages = ceil($totalProducts / $perPage);
+    
+            require_once './views/listProduct.php';
+        } catch (Exception $e) {
+            echo "Lỗi: " . $e->getMessage();
+            file_put_contents('./logs/error.log', date('Y-m-d H:i:s') . ' - Lỗi showProductsByCategory: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
         }
-        require_once './views/listProduct.php';
     }
 
     // Hiển thị chi tiết sản phẩm

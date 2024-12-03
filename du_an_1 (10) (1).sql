@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 27, 2024 at 05:35 PM
+-- Generation Time: Dec 02, 2024 at 09:36 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -66,7 +66,17 @@ CREATE TABLE `chi_tiet_don_hangs` (
 
 INSERT INTO `chi_tiet_don_hangs` (`id`, `don_hang_id`, `san_pham_id`, `don_gia`, `so_luong`, `thanh_tien`) VALUES
 (1, 1, 11, '75100.00', 42, '82000.00'),
-(2, 2, 12, '55000.00', 12, '60000.00');
+(2, 2, 12, '55000.00', 12, '60000.00'),
+(3, 5, 11, '80000.00', 5, '400000.00'),
+(4, 6, 11, '80000.00', 2, '160000.00'),
+(5, 6, 12, '75000.00', 2, '150000.00'),
+(6, 7, 12, '75000.00', 3, '225000.00'),
+(7, 8, 16, '250200.00', 3, '750600.00'),
+(8, 9, 11, '80000.00', 3, '240000.00'),
+(10, 12, 12, '75000.00', 3, '225000.00'),
+(12, 14, 11, '80000.00', 2, '160000.00'),
+(13, 15, 12, '75000.00', 1, '75000.00'),
+(35, 33, 11, '80000.00', 4, '320000.00');
 
 -- --------------------------------------------------------
 
@@ -153,7 +163,19 @@ CREATE TABLE `don_hangs` (
 
 INSERT INTO `don_hangs` (`id`, `tai_khoan_id`, `ma_don_hang`, `ten_nguoi_nhan`, `email_nguoi_nhan`, `sdt_nguoi_nhan`, `dia_chi_nguoi_nhan`, `ngay_dat`, `tong_tien`, `ghi_chu`, `phuong_thuc_thanh_toan_id`, `trang_thai_id`) VALUES
 (1, 1, '', 'Phí Đắc Sang', 'promaxsang@gmail.com', '0147852396', 'Trịnh Văn Bô, Hà Nội', '2024-11-08', '255000', 'Ship nhanh', 1, 2),
-(2, 2, '', 'Bùi Trọng Sơn', 'buitrongson@gmail.com', '0141254445', 'Mỹ Đình, Hà Nội', '2024-11-20', '120000', 'Ship hỏa tốc trong ngày', 2, 1);
+(2, 2, '', 'Bùi Trọng Sơn', 'buitrongson@gmail.com', '0141254445', 'Mỹ Đình, Hà Nội', '2024-11-20', '120000', 'Ship hỏa tốc trong ngày', 2, 1),
+(5, 1, 'DH0005', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-11-30', '400000', 'asdasd', 1, 1),
+(6, 1, 'DH0006', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-11-30', '310000', '1231231', 1, 1),
+(7, 6, 'DH0007', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-11-30', '225000', 'áđá', 1, 1),
+(8, 6, 'DH0008', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-11-30', '750600', '123123', 1, 1),
+(9, 6, 'DH0009', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-11-30', '240000', '123123', 1, 1),
+(12, 6, 'DH0012', 'duy', '123123', '0348653702', 'Nam Từ Liêm', '2024-11-30', '225000', 'áđá', 1, 1),
+(14, 6, 'DH0014', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-11-30', '160000', '1231231', 1, 1),
+(15, 6, 'DH0015', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-12-01', '280000', '12341234', 1, 1),
+(16, 6, 'DH0016', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-12-01', '155000', '123123', 1, 1),
+(17, 6, 'DH0017', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-12-01', '240000', '12341234', 1, 1),
+(18, 6, 'DH0018', '123412', 'hoangmacphong191223@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-12-01', '240000', '12341234', 1, 1),
+(33, 6, 'DH0033', 'duy', 'chubenghocnghech@gmail.com', '0348653702', 'Nam Từ Liêm', '2024-12-01', '320000', '12313', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -275,9 +297,9 @@ CREATE TABLE `tai_khoans` (
   `anh_dai_dien` varchar(255) DEFAULT NULL,
   `ngay_sinh` date DEFAULT NULL,
   `email` varchar(255) NOT NULL,
-  `so_dien_thoai` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `gioi_tinh` tinyint(1) NOT NULL DEFAULT '1',
-  `dia_chi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `so_dien_thoai` varchar(10) DEFAULT NULL,
+  `gioi_tinh` tinyint(1) DEFAULT NULL,
+  `dia_chi` text,
   `mat_khau` varchar(255) NOT NULL,
   `chuc_vu_id` int NOT NULL,
   `trang_thai` tinyint(1) NOT NULL DEFAULT '1'
@@ -291,7 +313,9 @@ INSERT INTO `tai_khoans` (`id`, `ho_ten`, `anh_dai_dien`, `ngay_sinh`, `email`, 
 (1, 'Nguyễn Văn Vũ ', NULL, '2005-02-15', 'nguyenvu@gmail.com', '0321654987', 1, 'Trịnh Văn Bô, Hà Nội', '$2y$10$kmilVXNvaEtKdmOOXmhlgOhnEAT3NLGdLY.bOAkrNoD3C3SMgJaKC', 1, 1),
 (2, 'Nguyễn Tương Tú', NULL, '2005-03-20', 'tuongtu@gmail.com', '0123456789', 1, 'Chương Mỹ, Hà Nội', '123456', 2, 2),
 (3, 'Phí Đắc Sang', NULL, '2005-06-27', 'phidacsang@gmail.com', '0987654321', 1, 'Hà Nội', '$2y$10$imT.Yo65SOsmBYlQnJWNqORsMQdxcpFKnAFXUfy3uYWSLcoRJ5slm', 2, 2),
-(4, 'Lưu Tiến Duy', NULL, '2005-05-24', 'luutienduy@gmail.com', '0987654321', 1, 'Hà Nội', '$2y$10$j0rQ5wrgGLs6x38CSeLEcu3JfW/V3hF.PPT4Tyhwr3cyFlamHB6eu', 2, 2);
+(4, 'Lưu Tiến Duy', NULL, '2005-05-24', 'luutienduy@gmail.com', '0987654321', 1, 'Hà Nội', '$2y$10$j0rQ5wrgGLs6x38CSeLEcu3JfW/V3hF.PPT4Tyhwr3cyFlamHB6eu', 2, 2),
+(6, 'Lưu Tiến Duy', NULL, NULL, 'chubenghocnghech@gmail.com', NULL, NULL, NULL, '$2y$10$ZJhx06R.H553xiwOOBnGMO2emlCD0XuLjLha6ZqTQzVW6Mz5wMHhy', 2, 1),
+(7, 'Lưu Tiến Duy', NULL, NULL, 'nguyenvu1@gmail.com', NULL, NULL, NULL, '$2y$10$RLMYkNAmB6kUAZzCavns1.xEYx3NTAySPVNFdVHbPZ8FE3ABqiKNa', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -442,7 +466,7 @@ ALTER TABLE `binh_luans`
 -- AUTO_INCREMENT for table `chi_tiet_don_hangs`
 --
 ALTER TABLE `chi_tiet_don_hangs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `chi_tiet_gio_hangs`
@@ -466,7 +490,7 @@ ALTER TABLE `danh_mucs`
 -- AUTO_INCREMENT for table `don_hangs`
 --
 ALTER TABLE `don_hangs`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `gio_hangs`
@@ -502,7 +526,7 @@ ALTER TABLE `tac_gia`
 -- AUTO_INCREMENT for table `tai_khoans`
 --
 ALTER TABLE `tai_khoans`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `trang_thai_don_hangs`
