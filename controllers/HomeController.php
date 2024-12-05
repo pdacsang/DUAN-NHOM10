@@ -34,6 +34,17 @@ class HomeController
     }
         require_once './views/home.php';
     }
+
+    //liên hệ
+    public function contact(){
+        require_once './views/Contact.php';
+    }
+
+    // bài viết
+    public function post(){
+        require_once './views/Post.php';
+    }
+
     public function trangChu(){
         echo "Trang Chủ";
     }

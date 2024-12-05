@@ -2,7 +2,7 @@
 require_once './views/layout/header.php';
 require_once './views/layout/navbar.php';
 ?>
->
+
 <style>
     .product__main-info-cart-btn-wrap {
         display: flex;
@@ -111,7 +111,9 @@ require_once './views/layout/navbar.php';
                         <div class="product__main-info-cart-btn-wrap">
                             <form method="post" action="index.php?act=addToCart&id=<?= htmlspecialchars($product['id'] ?? 0) ?>"
                                 onsubmit="ensureValidQuantity(<?= htmlspecialchars($product['id'] ?? 0) ?>)">
-                                <label for="quantity-<?= htmlspecialchars($product['id'] ?? 0) ?>"><h2>Số lượng:</h2></label>
+                                <label for="quantity-<?= htmlspecialchars($product['id'] ?? 0) ?>">
+                                    <h2>Số lượng:</h2>
+                                </label>
                                 <div class="cart__body-quantity">
                                     <!-- Nút giảm số lượng -->
                                     <input type="button" value="-" class="cart__body-quantity-minus"
@@ -279,9 +281,6 @@ require_once './views/layout/navbar.php';
                                         <a href="index.php?act=showProductDetail&id=<?= htmlspecialchars($suggestedProduct['id']) ?>" class="product__aside-link">
                                             <?= htmlspecialchars($suggestedProduct['ten_sach']) ?>
                                         </a>
-                                        <div class="product__aside-price">
-                                            <?= number_format($suggestedProduct['gia_sach'], 0, ',', '.') ?>đ
-                                        </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -318,13 +317,6 @@ require_once './views/layout/navbar.php';
         <div class="product-comment row pb-4 pb-4  py-4 pb-4 py-4 py-4">
 
         </div>
-
-
-
-
-
-
-
         <section class="product__love col-12 mt-4">
             <div class="row bg-white">
                 <div class="col-lg-12 col-md-12 col-sm-12 product__love-title">
@@ -343,7 +335,7 @@ require_once './views/layout/navbar.php';
                                     <?= htmlspecialchars($relatedProduct['ten_sach']) ?>
                                 </a>
                             </h3>
-                            <div class="product__panel-price">
+                            <div class="product__panel-price" style="font-size: 20px; color: red;">
                                 <?= number_format($relatedProduct['gia_sach'], 0, ',', '.') ?>đ
                             </div>
                         </div>
@@ -353,14 +345,8 @@ require_once './views/layout/navbar.php';
                 <?php endif; ?>
             </div>
         </section>
-
-
-
-
     </div>
 </section>
-
-
 
 <?php
 require_once './views/layout/footer.php';

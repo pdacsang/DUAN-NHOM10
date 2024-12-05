@@ -23,16 +23,6 @@
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="<?= BASE_URL_ADMIN ?>" class="nav-link">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p style="color: white;">
-                Thống Kê
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-          </li>
-
-          <li class="nav-item">
             <a href="<?= BASE_URL_ADMIN . '?act=danh-muc' ?>" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p style="color: white;">

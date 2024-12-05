@@ -8,6 +8,38 @@ $totalAmount = array_sum(array_map(function ($item) {
     return $item['price'] * $item['quantity'];
 }, $cartItems));
 $orderId = uniqid("order_", true);
+// Xử lý biểu mẫu khi gửi
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $isSubmitted = true;
+
+    $recipientName = trim($_POST['recipient_name'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $address = trim($_POST['address'] ?? '');
+    $paymentMethod = $_POST['payment_method'] ?? '';
+
+    // Validate các trường
+    if (empty($recipientName)) {
+        $errors['recipient_name'] = 'Tên người nhận không được để trống.';
+    }
+    if (!preg_match('/^[0-9]{10,15}$/', $phone)) {
+        $errors['phone'] = 'Số điện thoại không hợp lệ.';
+    }
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Email không hợp lệ.';
+    }
+    if (empty($address)) {
+        $errors['address'] = 'Địa chỉ không được để trống.';
+    }
+    if (!in_array($paymentMethod, ['1', '2'])) {
+        $errors['payment_method'] = 'Phương thức thanh toán không hợp lệ.';
+    }
+
+    if (empty($errors)) {
+        header("Location: index.php?act=orderSuccess");
+        exit;
+    }
+}
 ?>
 
 <style>
@@ -146,12 +178,20 @@ $orderId = uniqid("order_", true);
         text-align: center;
         margin-bottom: 15px;
     }
+    .error{
+        color: red;
+       font-size: 15px;
+       margin-bottom: 10px;
+    }
 </style>
 
 <div class="container1">
     <h1>Nhập thông tin đặt hàng</h1>
 
     <!-- Hiển thị lỗi nếu có -->
+    <?php if (isset($error_message)): ?>
+        <div class="error-message"><?= htmlspecialchars($error_message) ?></div>
+    <?php endif; ?>
 
     <!-- Form nhập thông tin -->
     <form id="orderForm" action="index.php?act=checkout" method="POST">
@@ -179,13 +219,12 @@ $orderId = uniqid("order_", true);
         </div>
 
         <div>
-            <label for="note">Ghi chú:</label>
-            <textarea id="note" name="note" required placeholder="Nhập ghi chú"><?= htmlspecialchars($_POST['note'] ?? '') ?></textarea>
-        </div>
-
-        <div>
             <label for="address">Địa chỉ:</label>
             <textarea id="address" name="address" required placeholder="Nhập địa chỉ giao hàng"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
+        </div>
+        <div>
+            <label for="note">Ghi chú:</label>
+            <textarea id="note" name="note" required placeholder="Nhập ghi chú đơn hàng"><?= htmlspecialchars($_POST['note'] ?? '') ?></textarea>
         </div>
 
         <div>

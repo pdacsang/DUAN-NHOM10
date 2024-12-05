@@ -7,7 +7,6 @@ require_once '../commons/function.php'; // Hàm hỗ trợ
 
 // Require toàn bộ file Controllers
 
-require_once './controllers/AdminBaoCaoThongKeController.php';
 require_once './controllers/AdminDanhMucController.php';
 require_once './controllers/AdminSanPhamControllrer.php';
 require_once './controllers/AdminDonHangController.php';
@@ -35,8 +34,8 @@ if ($act !== 'login-admin' && $act !== 'check-login-admin' && $act !== 'logout-a
 match ($act) {
     // Trang chủ
     // báo cáo trang chủ
-    '/' => (new AdminBaoCaoThongKeController())->home(),
     // Danh mục
+    '/' => (new AdminDanhMucController()) -> danhSachDanhMuc(),
     'danh-muc' => (new AdminDanhMucController()) -> danhSachDanhMuc(),   
     'form-them-danh-muc' => (new AdminDanhMucController()) -> formAddDanhMuc(),   
     'them-danh-muc' => (new AdminDanhMucController()) -> postAddDanhMuc(),   

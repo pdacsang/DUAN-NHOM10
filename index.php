@@ -31,6 +31,8 @@ $act = $_GET['act'] ?? '/';
 // Danh sách route
 $routes = [
     '/' => [HomeController::class, 'home'],
+    'post' => [HomeController::class, 'post'],
+    'contact' => [HomeController::class, 'contact'],
     // '/' => (new HomeController())->home(),
     'showProductDetail' => [ProductController::class, 'showProductDetail'],
     'productList' => [ProductController::class, 'showProductList'],
