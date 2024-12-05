@@ -52,12 +52,29 @@ class ProductModel {
             return [];
         }
     }
-
+    public function getBestSellingProducts($limit = 6) {
+        try {
+            $sql = "SELECT id, ten_sach, gia_sach,gia_khuyen_mai, hinh_anh
+                    FROM san_phams 
+                    WHERE trang_thai = 1 
+                    LIMIT :limit";
+    
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+            return $data;
+        } catch (Exception $e) {
+            $this->logError($e);
+            return [];
+        }
+    }
     // Lấy thông tin chi tiết sản phẩm
     public function getProductById($id) {
         try {
-            $id = intval($id); // Đảm bảo dữ liệu là số nguyên
-            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh, mo_ta, trang_thai, nha_xuat_ban, so_trang, ngay_xuat_ban 
+            $id = intval($id);
+            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh, mo_ta, trang_thai, nha_xuat_ban, so_trang, ngay_xuat_ban, danh_muc_id 
                     FROM san_phams 
                     WHERE id = :id AND trang_thai = 1";
             $stmt = $this->conn->prepare($sql);
@@ -69,7 +86,25 @@ class ProductModel {
             return null;
         }
     }
+    public function getSuggestedProducts($limit = 6)
+{
+    try {
+        $sql = "SELECT id, ten_sach, gia_sach, hinh_anh, gia_khuyen_mai 
+                FROM san_phams 
+                WHERE trang_thai = 1 
+                ORDER BY RAND() 
+                LIMIT :limit";
 
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        $this->logError($e); // Ghi log lỗi (nếu có hàm logError)
+        return [];
+    }
+}
     // Hàm tìm kiếm sản phẩm
     public function searchProducts($keyword) {
         try {
@@ -138,6 +173,37 @@ class ProductModel {
             return ['products' => $products, 'total' => $total];
         } catch (PDOException $e) {
             throw new Exception("Lỗi khi truy vấn cơ sở dữ liệu: " . $e->getMessage());
+        }
+    }
+    public function getCategoryNameById($categoryId) {
+        try {
+            $stmt = $this->conn->prepare("SELECT ten_danh_muc FROM danh_mucs WHERE id = :id");
+            $stmt->bindParam(':id', $categoryId, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchColumn();
+        } catch (Exception $e) {
+            $this->logError($e);
+            return null;
+        }
+    }
+    public function getRelatedProducts($categoryId, $currentProductId) {
+        try {
+            $sql = "SELECT id, ten_sach, gia_sach, hinh_anh 
+                    FROM san_phams 
+                    WHERE danh_muc_id = :danh_muc_id 
+                      AND id != :id 
+                      AND trang_thai = 1 
+                    LIMIT 6";
+    
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(':danh_muc_id', $categoryId, PDO::PARAM_INT);
+            $stmt->bindParam(':id', $currentProductId, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            $this->logError($e);
+            return [];
         }
     }
     // Ghi log lỗi

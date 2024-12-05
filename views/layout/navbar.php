@@ -1,5 +1,6 @@
 <?php $productModel = new ProductModel();
 $categories = $productModel->getAllCategories(); ?>
+
 <header id="header">
     <!-- header top -->
     <div class="header__top">
@@ -11,12 +12,6 @@ $categories = $productModel->getAllCategories(); ?>
 
                 <nav class="col-lg-7 col-md-0 col-sm-0 header__top-right">
                     <ul class="header__top-list">
-                        <li class="header__top-item">
-                            <a href="#" class="header__top-link">Hỏi đáp</a>
-                        </li>
-                        <li class="header__top-item">
-                            <a href="#" class="header__top-link">Hướng dẫn</a>
-                        </li>
                         <li class="header__top-item">
                             <a href="<?= BASE_URL . '?act=register' ?>" class="header__top-link">Đăng ký</a>
                         </li>
@@ -31,6 +26,7 @@ $categories = $productModel->getAllCategories(); ?>
                                         <!-- Nếu đã đăng nhập, hiển thị thông tin người dùng -->
                                         <li><a href="<?= BASE_URL . '?act=chi-tiet-khach-hang&id=' . $_SESSION['user_client']['id'] ?>"><i class="fas fa-id-card fa-sm"></i> Thông tin cá nhân</a></li>
                                     <?php endif; ?>
+                                    <li><a href="<?= BASE_URL . '?act=orderHistory' ?>">Lich sử đơn hàng</a></li>
                                     <li class="nav-item">
                                         <a class="nav-link" href="<?= BASE_URL . '?act=logout' ?>" onclick="return confirm('Đăng xuất tài khoản ?')">
                                             <i class="fas fa-sign-out-alt fa-sm"></i> Logout
@@ -48,14 +44,12 @@ $categories = $productModel->getAllCategories(); ?>
                                 </p>
                             </li>
                         <?php endif; ?>
-
                     </ul>
                 </nav>
             </section>
         </div>
     </div>
     <!--end header top -->
-
     <!-- header bottom -->
     <div class="header__bottom">
         <div class="container">
@@ -99,16 +93,9 @@ $categories = $productModel->getAllCategories(); ?>
                             039.882.3232
                         </div>
                     </div>
-                    <div style="text-align: center; margin: 20px;">
-                        <a href="index.php?act=orderHistory" style="text-decoration: none;">
-                            <i class="fas fa-user" style="font-size: 30px; color: white;"></i>
-                            <span style="display: block; font-size: 14px; ;"></span>
-                        </a>
-                    </div>
                 </div>
 
                 <a href="index.php?act=viewCart" class="col-lg-1 col-md-1 col-sm-0 header__cart">
-
                     <div class="header__cart-icon-wrap">
                         <i class="fas fa-shopping-cart header__nav-cart-icon"></i>
                         <span class="header__notice"><?= htmlspecialchars($uniqueProductCount ?? 0) ?></span>
@@ -119,12 +106,10 @@ $categories = $productModel->getAllCategories(); ?>
         </div>
     </div>
     <!--end header bottom -->
-
     <!-- header nav -->
     <div class="header__nav">
         <div class="container">
             <section class="row">
-
                 <div class="header__nav-menu-wrap col-lg-3 col-md-0 col-sm-0">
                     <i class="fas fa-bars header__nav-menu-icon">
                         <div id="dropdownMenu" class="header__nav-menu hidden">
@@ -351,9 +336,6 @@ $categories = $productModel->getAllCategories(); ?>
                     </script>
 
                 </div>
-
-
-
                 <div class="header__nav col-lg-9 col-md-0 col-sm-0">
                     <ul class="header__nav-list">
                         <li class="header__nav-item">
@@ -362,15 +344,6 @@ $categories = $productModel->getAllCategories(); ?>
                         <li class="header__nav-item">
                             <a href="index.php?act=productByCategory" class="header__nav-link">Danh mục sản phẩm</a>
 
-                        </li>
-                        <li class="header__nav-item">
-                            <a href="post.html" class="header__nav-link">Bài viết</a>
-                        </li>
-                        <li class="header__nav-item">
-                            <a href="#" class="header__nav-link">Tuyển cộng tác viên</a>
-                        </li>
-                        <li class="header__nav-item">
-                            <a href="contact.html" class="header__nav-link">Liên hệ</a>
                         </li>
                     </ul>
                 </div>

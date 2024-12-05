@@ -168,7 +168,7 @@ $orderId = uniqid("order_", true);
                     </div>
                 </div>
                 <div class="order-footer">
-                    <span class="total">Thành tiền: <?= isset($order['tong_tien']) ? number_format($order['tong_tien'], 0, ',', '.') : '0' ?>đ</span>
+                    <span class="total">Thành tiền: <?= isset($order['tong_tien']) ? number_format($order['don_gia'] * $order['so_luong'], 0, ',', '.') : '0' ?>đ</span>
                     <a href="?act=orderDetails&order_id=<?= $order['don_hang_id'] ?>" class="btn-detail">Xem chi tiết</a>                </div>
             </div>
         <?php } ?>

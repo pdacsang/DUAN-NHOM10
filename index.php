@@ -1,4 +1,4 @@
-<?php
+<?php 
 session_start();
 // Require file Common
 require_once './commons/env.php'; // Khai báo biến môi trường
@@ -7,16 +7,16 @@ require_once './commons/function.php'; // Hàm hỗ trợ
 // Require toàn bộ file Controllers
 require_once './controllers/HomeController.php';
 require_once './controllers/ProductController.php';
-require_once './controllers/SearchController.php';
-require_once './controllers/CartController.php';
+require_once './controllers/SearchController.php'; 
+require_once './controllers/CartController.php'; 
 require_once './controllers/OrderController.php';
 
 // Require toàn bộ file Models
 require_once './models/TaiKhoan.php';
-
-require_once './models/ProductModel.php';
-require_once './models/CartModel.php';
-require_once './models/OrderModel.php';
+require_once './models/SanPham.php';
+require_once './models/ProductModel.php'; 
+require_once './models/CartModel.php';    
+require_once './models/OrderModel.php';  
 
 //
 // Kết nối cơ sở dữ liệu
@@ -31,6 +31,7 @@ $act = $_GET['act'] ?? '/';
 // Danh sách route
 $routes = [
     '/' => [HomeController::class, 'home'],
+    // '/' => (new HomeController())->home(),
     'showProductDetail' => [ProductController::class, 'showProductDetail'],
     'productList' => [ProductController::class, 'showProductList'],
     'productByCategory' => [ProductController::class, 'showProductsByCategory'],
@@ -42,17 +43,18 @@ $routes = [
         (new CartController($dbConnection))->updateCart();
     },
     'removeFromCart' => [CartController::class, 'removeFromCart'],
+
+    // Thêm route mới cho đặt hàng và thanh toán
     'checkout' => [OrderController::class, 'checkout'], // Xử lý thanh toán
     'confirmOrder' => [OrderController::class, 'confirmOrder'], // Xác nhận đơn hàng
     'placeOrder' => [OrderController::class, 'placeOrder'],
     'order' => [OrderController::class, 'orderForm'],
     'orderSuccess' => [OrderController::class, 'orderSuccess'],
-    
+    // Lịch sử đơn hàng
     'orderHistory' => [HomeController::class, 'viewOrderHistory'],
     'orderDetails' => [HomeController::class, 'orderDetails'],
     'checkoutFromDetail' => [HomeController::class, 'checkoutFromDetail'],
     
-
     // auth
     // login
     'login' => [HomeController::class, 'formLogin'],
@@ -65,7 +67,12 @@ $routes = [
     // Profile 
     'form-sua-khach-hang' => [HomeController::class, 'formEditKhachHang'],
     'sua-khach-hang' => [HomeController::class, 'postEditKhachHang'],
-    'chi-tiet-khach-hang' => [HomeController::class, 'orderDetails'],
+    'chi-tiet-khach-hang' => [HomeController::class, 'deltailKhachHang'],
+
+    // Bình luận
+    'addComment' => [ProductController::class, 'addComment'], // Thêm bình luận cho sản phẩm
+    'showComments' => [ProductController::class, 'showProductDetail'], // Hiển thị bình luận khi xem chi tiết sản phẩm
+
 ];
 // Kiểm tra và xử lý route
 try {

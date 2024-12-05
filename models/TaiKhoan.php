@@ -8,43 +8,45 @@ class TaiKhoan
     }
     public function checkLogin($email) {
         try {
+            // Truy vấn lấy thông tin tài khoản từ email
             $sql = "SELECT * FROM tai_khoans WHERE email = :email";
             $stmt = $this->conn->prepare($sql);
             $stmt->execute(['email' => $email]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);  // Trả về thông tin người dùng
+            $user = $stmt->fetch();
+    
+            if ($user) {
+                return $user;  // Trả về thông tin người dùng
+            } else {
+                return false;  // Không tìm thấy người dùng
+            }
         } catch (\Exception $e) {
+            // Xử lý lỗi
             echo "Lỗi: " . $e->getMessage();
             return false;
         }
     }
     
     // đăng ký :
-    public function insertTaiKhoan($ho_ten, $email, $mat_khau, $chuc_vu_id) {
+    public function insertTaiKhoan($ho_ten, $email, $password, $chuc_vu_id){
         try {
-            // Kiểm tra nếu email đã tồn tại
-            $checkSql = "SELECT COUNT(*) FROM tai_khoans WHERE email = :email";
-            $checkStmt = $this->conn->prepare($checkSql);
-            $checkStmt->execute([':email' => $email]);
+            // Truy vấn chèn dữ liệu vào bảng tai_khoans
+            $sql = 'INSERT INTO tai_khoans(ho_ten, email, mat_khau, chuc_vu_id)
+                    VALUES (:ho_ten, :email, :password, :chuc_vu_id)';
     
-            if ($checkStmt->fetchColumn() > 0) {
-                throw new Exception("Email đã tồn tại.");
-            }
-    
-            // Chèn tài khoản mới vào cơ sở dữ liệu
-            $sql = "INSERT INTO tai_khoans (ho_ten, email, mat_khau, chuc_vu_id)
-                    VALUES (:ho_ten, :email, :mat_khau, :chuc_vu_id)";
             $stmt = $this->conn->prepare($sql);
+    
+            // Thực thi truy vấn với dữ liệu từ form
             $stmt->execute([
                 ':ho_ten' => $ho_ten,
                 ':email' => $email,
-                ':mat_khau' => $mat_khau,
-                ':chuc_vu_id' => $chuc_vu_id,
+                ':password' => $password,  // Mật khẩu đã mã hóa
+                ':chuc_vu_id' => $chuc_vu_id,  // Chức vụ mặc định là khách hàng (2)
             ]);
     
-            return true; // Thành công
+            return true;  // Trả về true nếu thành công
         } catch (Exception $e) {
-            error_log("Lỗi khi thêm tài khoản: " . $e->getMessage());
-            return false; // Thất bại
+            // Xử lý lỗi
+            echo "Lỗi: " . $e->getMessage();
         }
     }
     
@@ -91,6 +93,9 @@ class TaiKhoan
             echo "lỗi" . $e->getMessage();
         }
     }
+
+
+    // lịch sử mua hàng
     public function getHistoryOrderByUserId($userId) {
         try {
             $sql = "
@@ -191,4 +196,3 @@ class TaiKhoan
     }
 }
 }
-    

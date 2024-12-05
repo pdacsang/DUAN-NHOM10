@@ -9,7 +9,7 @@ class OrderModel {
     }
 
     // Tạo đơn hàng
-    public function createOrder($totalAmount, $statusId, $paymentMethodId, $userId, $recipientName, $email, $phone, $address, $oderNote) {
+    public function createOrder($totalAmount, $statusId, $paymentMethodId, $userId, $recipientName, $email, $phone, $address, $note) {
         $orderDate = date('Y-m-d'); // Lấy ngày hiện tại làm ngày đặt hàng
     
         // SQL query tạo đơn hàng mà không cần mã đơn hàng
@@ -32,7 +32,7 @@ class OrderModel {
                 ':sdt_nguoi_nhan' => $phone,
                 ':dia_chi_nguoi_nhan' => $address,
                 ':ngay_dat' => $orderDate, // Thêm trường ngày đặt
-                ':ghi_chu' => $oderNote
+                ':ghi_chu' => $note 
             ]);
     
             // Lấy ID của đơn hàng vừa tạo

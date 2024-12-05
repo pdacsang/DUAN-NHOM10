@@ -1,7 +1,7 @@
 <?php 
 
 // Đường dẫn vào Admin
-define('BASE_URL'       , 'http://localhost/project/DUAN-NHOM10/index.php');  // vào trang chủ
+define('BASE_URL'       , 'http://localhost/project/DUAN-NHOM10/');  // vào trang chủ
 define('BASE_URL_ADMIN'       , 'http://localhost/project/DUAN-NHOM10/admin/'); // vào admin
 
 define('DB_HOST'    , 'localhost');

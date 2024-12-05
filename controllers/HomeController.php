@@ -1,22 +1,42 @@
 <?php 
-require_once './models/TaiKhoan.php';
+
 class HomeController
 {
     public $modelTaiKhoan;
+    public $modelSanPham;
+    public $productModel;
+
     public function __construct()
     {
-        // $this->modelSanPham = new SanPham();
-        $this->modelTaiKhoan = new TaiKhoan(); 
+        $this->modelSanPham = new SanPham();
+        $this->modelTaiKhoan = new TaiKhoan();     
+        $this->productModel = new ProductModel(); // Chú ý đảm bảo bạn có $dbConnection nếu ProductModel cần kết nối DB
     }
 
     public function home(){
+        $listSanPham = $this->modelSanPham->getAllSanPham();
+        // Lấy danh sách sản phẩm bán chạy
+        $bestSellingProducts = $this->productModel->getBestSellingProducts();
+
+        $suggestedProducts = $this->productModel->getSuggestedProducts();
+
+       // Lấy tất cả danh mục sản phẩm
+    $categories = $this->productModel->getAllCategories();
+
+    // Lấy ID danh mục từ GET, mặc định là danh mục đầu tiên nếu không chọn
+    $categoryId = $_GET['danh_muc_id'] ?? ($categories[0]['id'] ?? null);
+
+    // Lấy danh sách sản phẩm theo danh mục
+    if ($categoryId) {
+        $products = $this->productModel->getProductsByCategory($categoryId);
+    } else {
+        $products = $this->productModel->getAllProducts();
+    }
         require_once './views/home.php';
     }
-
     public function trangChu(){
         echo "Trang Chủ";
     }
-
     // Đăng nhập
     public function formLogin() {
         require_once './views/auth/formLogin.php';
@@ -48,7 +68,6 @@ class HomeController
             }
         }
     }
-
     public function logout(){
         if(isset($_SESSION['user_client'])){
             unset($_SESSION['user_client']);
@@ -56,60 +75,75 @@ class HomeController
             exit();
         }
     }
-
     // Đăng ký
     public function formRegister() {
         require_once './views/auth/register.php';
         deleteSessionError();
         exit();
     }
-    public function postAddUser() {
+    public function postAddUser(){
+        // Xử lý thêm dữ liệu
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $ho_ten = $_POST['ho_ten'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $mat_khau = $_POST['mat_khau'] ?? '';
+            $ho_ten = $_POST['ho_ten'];
+            $email = $_POST['email'];
+            $password = $_POST['mat_khau'];
             $errors = [];
-    
+        
+            // Lưu dữ liệu đã nhập vào session
+            $_SESSION['old_data'] = [
+                'ho_ten' => $ho_ten,
+                'email' => $email,
+                // Không lưu password để bảo mật
+            ];
+        
             // Kiểm tra dữ liệu đầu vào
             if (empty($ho_ten)) {
-                $errors['ho_ten'] = 'Vui lòng nhập họ tên!';
+                $errors['ho_ten'] = 'Vui lòng điền tên!';
             }
             if (empty($email)) {
-                $errors['email'] = 'Vui lòng nhập email!';
+                $errors['email'] = 'Vui lòng điền tài khoản email!';
+            } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors['email'] = 'Email không hợp lệ!';
             }
-            if (empty($mat_khau)) {
-                $errors['mat_khau'] = 'Vui lòng nhập mật khẩu!';
+            
+            if (empty($password)) {
+                $errors['password'] = 'Nhập mật khẩu!';
+            } elseif (strlen($password) <= 5) {
+                $errors['password'] = 'Mật khẩu phải có nhiều hơn 5 ký tự!';
             }
-    
-            // Lưu lỗi vào session nếu có
+        
+            // Lưu lỗi vào session
             $_SESSION['error'] = $errors;
-    
+        
+            // Nếu không có lỗi
             if (empty($errors)) {
                 // Mã hóa mật khẩu
-                $hashedPassword = password_hash($mat_khau, PASSWORD_DEFAULT);
-    
-                // Mặc định vai trò là khách hàng
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+                // Chức vụ mặc định là 2 (Khách hàng)
                 $chuc_vu_id = 2;
-    
-                // Gọi phương thức thêm tài khoản vào cơ sở dữ liệu
-                if ($this->modelTaiKhoan->insertTaiKhoan($ho_ten, $email, $hashedPassword, $chuc_vu_id)) {
-                    $_SESSION['success'] = 'Đăng ký thành công! Vui lòng đăng nhập.';
-                    header("Location: " . BASE_URL . '?act=login');
-                    exit();
-                } else {
-                    $_SESSION['error'] = ['email' => 'Email đã tồn tại!'];
-                    header("Location: " . BASE_URL . '?act=register');
-                    exit();
-                }
+        
+                // Lưu thông tin người dùng vào database
+                $this->modelTaiKhoan->insertTaiKhoan($ho_ten, $email, $hashedPassword, $chuc_vu_id);
+        
+                // Thêm thông báo thành công vào session
+                $_SESSION['success'] = 'Đăng ký thành công! Vui lòng đăng nhập.';
+        
+                // Xóa dữ liệu tạm thời trong session
+                unset($_SESSION['old_data']);
+                unset($_SESSION['error']);
+        
+                // Chuyển hướng đến trang đăng nhập
+                header("Location: " . BASE_URL . '?act=login');
+                exit();
             } else {
-                $_SESSION['flash'] = true;
+                // Chuyển hướng lại form
                 header("Location: " . BASE_URL . '?act=register');
                 exit();
             }
         }
+        
     }
-    
- 
     // Profile khách hàng
     public function formEditKhachHang() {
         // Lấy ID khách hàng từ session thay vì GET
@@ -158,6 +192,16 @@ class HomeController
         }
     }
     
+    public function deltailKhachHang() {
+        // Lấy ID khách hàng từ session
+        $id_khach_hang = $_SESSION['user_client']['id']; 
+        $khachHang = $this->modelTaiKhoan->getDetailTaiKhoan($id_khach_hang);
+        require_once './views/auth/deltailUser.php';
+    }
+
+
+
+    // lịch sử mua hàng
     public function viewOrderHistory() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();

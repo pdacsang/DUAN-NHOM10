@@ -13,24 +13,20 @@ class SearchController {
         // Lấy từ khóa tìm kiếm từ request
         $keyword = $_GET['keyword'] ?? ($_POST['keyword'] ?? '');
         $keyword = trim($keyword);
-    
-        // Kiểm tra xem có đang tìm kiếm không
-        $isSearching = !empty($keyword);
-    
+
         // Lấy danh sách sản phẩm và danh mục
         $products = $this->getProductsByKeyword($keyword);
         $categories = $this->productModel->getAllCategories();
-    
+
         // Kiểm tra loại request (AJAX hay không)
         if ($this->isAjaxRequest()) {
             $this->renderAjaxSearchResults($products);
             exit;
         }
-    
+
         // Hiển thị giao diện danh sách sản phẩm
         require_once './views/listProduct.php';
     }
-    
 
     // Lấy danh sách sản phẩm theo từ khóa
     private function getProductsByKeyword($keyword) {

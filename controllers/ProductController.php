@@ -38,7 +38,39 @@ class ProductController {
             require_once './views/listProduct.php';
         } catch (Exception $e) {
             echo "Lỗi: " . $e->getMessage();
-            file_put_contents('./logs/error.log', date('Y-m-d H:i:s') . ' - Lỗi showProductsByCategory: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+        }
+    }
+    public function showCategoryHome() {
+        try {
+            // Lấy danh mục ID từ URL
+            $categoryId = $_GET['danh_muc_id'] ?? null;
+    
+            // Xử lý phân trang
+            $currentPage = $_GET['page'] ?? 1;
+            $perPage = 9;
+            $offset = ($currentPage - 1) * $perPage;
+    
+            // Lấy danh sách danh mục
+            $categories = $this->productModel->getAllCategories();
+    
+            // Lấy sản phẩm theo danh mục hoặc tất cả sản phẩm
+            if ($categoryId) {
+                $productsData = $this->productModel->getProductsByCategoryWithPagination($categoryId, $offset, $perPage);
+            } else {
+                $productsData = $this->productModel->getAllProductsWithPagination($offset, $perPage);
+            }
+    
+            $products = $productsData['products'];
+            $totalProducts = $productsData['total'];
+            $totalPages = ceil($totalProducts / $perPage);
+    
+            // Truyền thông tin danh mục đang hoạt động (active category)
+            $activeCategory = $categoryId ? $this->productModel->getCategoryNameById($categoryId) : null;
+    
+            // Gửi dữ liệu xuống view
+            require_once './views/listProduct.php';
+        } catch (Exception $e) {
+            echo "Lỗi: " . $e->getMessage();
         }
     }
 
@@ -49,8 +81,18 @@ class ProductController {
             echo "ID sản phẩm không hợp lệ.";
             return;
         }
+    
+        // Lấy chi tiết sản phẩm
         $product = $this->productModel->getProductById((int) $productId);
+    
         if ($product) {
+            // Lấy sản phẩm tương tự
+            $relatedProducts = $this->productModel->getRelatedProducts($product['danh_muc_id'], $productId);
+    
+            // Lấy sản phẩm gợi ý
+            $suggestedProducts = $this->productModel->getSuggestedProducts();
+    
+            // Gửi dữ liệu xuống view
             require_once './views/detailsProduct.php';
         } else {
             echo "Sản phẩm không tồn tại.";
