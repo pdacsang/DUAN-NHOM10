@@ -8,7 +8,11 @@ $totalAmount = array_sum(array_map(function ($item) {
     return $item['price'] * $item['quantity'];
 }, $cartItems));
 $orderId = uniqid("order_", true);
-// Xử lý biểu mẫu khi gửi
+
+// Biến lưu lỗi
+$errors = [];
+$isSubmitted = false; // Xác định trạng thái form chưa được gửi
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isSubmitted = true;
 
@@ -16,31 +20,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = trim($_POST['phone'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $address = trim($_POST['address'] ?? '');
+    $note = trim($_POST['note'] ?? '');
     $paymentMethod = $_POST['payment_method'] ?? '';
 
     // Validate các trường
     if (empty($recipientName)) {
         $errors['recipient_name'] = 'Tên người nhận không được để trống.';
     }
-    if (!preg_match('/^[0-9]{10,15}$/', $phone)) {
-        $errors['phone'] = 'Số điện thoại không hợp lệ.';
+    if (empty($phone) || !preg_match('/^[0-9]{10,15}$/', $phone)) {
+        $errors['phone'] = 'Số điện thoại phải là số từ 10 đến 15 chữ số.';
     }
-    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $errors['email'] = 'Email không hợp lệ.';
     }
     if (empty($address)) {
         $errors['address'] = 'Địa chỉ không được để trống.';
     }
-    if (!in_array($paymentMethod, ['1', '2'])) {
+    if (empty($paymentMethod) || !in_array($paymentMethod, ['1', '2'])) {
         $errors['payment_method'] = 'Phương thức thanh toán không hợp lệ.';
     }
 
+    // Nếu không có lỗi, điều hướng đến trang thành công
     if (empty($errors)) {
         header("Location: index.php?act=orderSuccess");
         exit;
     }
 }
 ?>
+
 
 <style>
     /* Cải thiện modal */
@@ -193,49 +200,70 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="error-message"><?= htmlspecialchars($error_message) ?></div>
     <?php endif; ?>
 
-    <!-- Form nhập thông tin -->
-    <form id="orderForm" action="index.php?act=checkout" method="POST">
+    
+
+    <form id="orderForm" action="index.php?act=checkout" method="POST" onsubmit="return validateForm()">
         <input type="hidden" name="order_id" value="<?= htmlspecialchars($orderId) ?>">
 
+        <!-- Tên người nhận -->
         <div>
             <label for="recipient_name">Tên người nhận:</label>
             <input class="name" type="text" id="recipient_name" name="recipient_name" 
-                value="<?= htmlspecialchars($_POST['recipient_name'] ?? '') ?>" required placeholder="Nhập tên người nhận">
+                   placeholder="Nhập tên người nhận" 
+                   onblur="validateField('recipient_name', 'recipientNameError')"
+                   oninput="validateField('recipient_name', 'recipientNameError')">
+            <p class="error" id="recipientNameError" style="display: none;">Tên người nhận không được để trống.</p>
         </div>
 
-        <div>
-            <label for="phone">Số điện thoại:</label>
-            <input class="sdt" type="text" id="phone" name="phone" 
-                value="<?= htmlspecialchars($_POST['phone'] ?? '') ?>" 
-                required pattern="[0-9]{10,15}" 
-                title="Số điện thoại phải từ 10 đến 15 chữ số." 
-                placeholder="Nhập số điện thoại">
-        </div>
+      <!-- Số điện thoại -->
+<div>
+    <label for="phone">Số điện thoại:</label>
+    <input class="sdt" type="text" id="phone" name="phone" 
+           placeholder="Nhập số điện thoại" 
+           onblur="validatePhone()" 
+           oninput="validatePhone()">
+    <p class="error" id="phoneEmptyError" style="display: none;">Số điện thoại không được để trống.</p>
+    <p class="error" id="phoneInvalidError" style="display: none;">Số điện thoại phải từ 10 đến 15 chữ số.</p>
+</div>
 
-        <div>
-            <label for="email">Email người nhận:</label>
-            <input class="email" type="email" id="email" name="email" 
-                value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required placeholder="Nhập email người nhận">
-        </div>
+<!-- Email -->
+<div>
+    <label for="email">Email người nhận:</label>
+    <input class="email" type="email" id="email" name="email" 
+           placeholder="Nhập email người nhận" 
+           onblur="validateEmail()" 
+           oninput="validateEmail()">
+    <p class="error" id="emailEmptyError" style="display: none;">Email không được để trống.</p>
+    <p class="error" id="emailInvalidError" style="display: none;">Email không hợp lệ.</p>
+</div>
 
+        <!-- Địa chỉ -->
         <div>
             <label for="address">Địa chỉ:</label>
-            <textarea id="address" name="address" required placeholder="Nhập địa chỉ giao hàng"><?= htmlspecialchars($_POST['address'] ?? '') ?></textarea>
-        </div>
-        <div>
-            <label for="note">Ghi chú:</label>
-            <textarea id="note" name="note" required placeholder="Nhập ghi chú đơn hàng"><?= htmlspecialchars($_POST['note'] ?? '') ?></textarea>
+            <textarea id="address" name="address" 
+                      placeholder="Nhập địa chỉ giao hàng" 
+                      onblur="validateField('address', 'addressError')"
+                      oninput="validateField('address', 'addressError')"></textarea>
+            <p class="error" id="addressError" style="display: none;">Địa chỉ không được để trống.</p>
         </div>
 
+        <!-- Ghi chú -->
+        <div>
+            <label for="note">Ghi chú:</label>
+            <textarea id="note" name="note" placeholder="Nhập ghi chú đơn hàng"></textarea>
+        </div>
+
+        <!-- Phương thức thanh toán -->
         <div>
             <label for="payment_method">Phương thức thanh toán:</label>
             <select id="payment_method" name="payment_method">
-                <option value="1" <?= isset($_POST['payment_method']) && $_POST['payment_method'] == 1 ? 'selected' : '' ?>>Thanh toán trực tiếp</option>
-                <option value="2" <?= isset($_POST['payment_method']) && $_POST['payment_method'] == 2 ? 'selected' : '' ?>>Thanh toán qua VNPay</option>
+                <option value="1">Thanh toán trực tiếp</option>
+                <option value="2">Thanh toán qua VNPay</option>
             </select>
         </div>
 
-        <div class="cart-summary" style="font-size:30px;">
+        <!-- Giỏ hàng -->
+        <div class="cart-summary" style="font-size: 30px;">
             <h2>Thông tin giỏ hàng</h2>
             <ul>
                 <?php foreach ($cartItems as $item): ?>
@@ -245,8 +273,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p><strong>Tổng cộng:</strong> <?= number_format($totalAmount, 0, ',', '.') ?> đ</p>
         </div>
 
+        <!-- Nút Xác nhận -->
         <button type="submit" id="confirmOrderBtn" <?= empty($cartItems) ? 'disabled' : '' ?>>Xác nhận đặt hàng</button>
     </form>
+</div>
+
 </div>
 
 <!-- Modal xác nhận -->
@@ -260,22 +291,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </div>
 
 <script>
+// Kiểm tra trường văn bản chung
+function validateField(fieldId, errorId) {
+    const field = document.getElementById(fieldId);
+    const error = document.getElementById(errorId);
+
+    if (field.value.trim() === '') {
+        error.style.display = 'block';
+        return false;
+    } else {
+        error.style.display = 'none';
+        return true;
+    }
+}
+
+function validatePhone() {
+    const phone = document.getElementById('phone');
+    const phoneEmptyError = document.getElementById('phoneEmptyError');
+    const phoneInvalidError = document.getElementById('phoneInvalidError');
+    const phoneRegex = /^[0-9]{10,15}$/;
+
+    // Kiểm tra nếu để trống
+    if (phone.value.trim() === '') {
+        phoneEmptyError.style.display = 'block';
+        phoneInvalidError.style.display = 'none';
+        return false;
+    } else {
+        phoneEmptyError.style.display = 'none';
+    }
+
+    // Kiểm tra định dạng hợp lệ
+    if (!phoneRegex.test(phone.value.trim())) {
+        phoneInvalidError.style.display = 'block';
+        return false;
+    } else {
+        phoneInvalidError.style.display = 'none';
+    }
+
+    return true;
+}
+function validateEmail() {
+    const email = document.getElementById('email');
+    const emailEmptyError = document.getElementById('emailEmptyError');
+    const emailInvalidError = document.getElementById('emailInvalidError');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Kiểm tra nếu để trống
+    if (email.value.trim() === '') {
+        emailEmptyError.style.display = 'block';
+        emailInvalidError.style.display = 'none';
+        return false;
+    } else {
+        emailEmptyError.style.display = 'none';
+    }
+
+    // Kiểm tra định dạng hợp lệ
+    if (!emailRegex.test(email.value.trim())) {
+        emailInvalidError.style.display = 'block';
+        return false;
+    } else {
+        emailInvalidError.style.display = 'none';
+    }
+
+    return true;
+}
+
+function validateForm() {
+    const isNameValid = validateField('recipient_name', 'recipientNameEmptyError');
+    const isPhoneValid = validatePhone();
+    const isEmailValid = validateEmail();
+    const isAddressValid = validateField('address', 'addressEmptyError');
+
+    return isNameValid && isPhoneValid && isEmailValid && isAddressValid;
+}
 document.getElementById('confirmOrderBtn').addEventListener('click', function(event) {
     // Ngăn chặn form gửi đi ngay lập tức
     event.preventDefault();
 
     // Lấy dữ liệu từ form
-    const recipientName = document.getElementById('recipient_name').value;
-    const phone = document.getElementById('phone').value;
-    const email = document.getElementById('email').value;
-    const address = document.getElementById('address').value;
+    const recipientName = document.getElementById('recipient_name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const address = document.getElementById('address').value.trim();
     const paymentMethod = document.getElementById('payment_method').value;
     const totalAmount = <?= $totalAmount ?>;
     const orderId = "<?= $orderId ?>";  // Lấy order_id từ PHP
 
     // Kiểm tra tính hợp lệ của dữ liệu đầu vào
     if (!recipientName || !phone || !email || !address) {
-        alert('Vui lòng điền đầy đủ thông tin.');
         return;
     }
 

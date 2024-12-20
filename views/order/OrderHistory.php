@@ -145,36 +145,55 @@ $orderId = uniqid("order_", true);
 
 <body>
     <h1>Lịch sử đặt hàng</h1>
+<?php if (!empty($orderDetails)) { ?>
+    <?php 
+    // Nhóm các sản phẩm theo đơn hàng ID
+    $ordersGrouped = [];
+    foreach ($orderDetails as $order) {
+        $ordersGrouped[$order['don_hang_id']][] = $order;
+    }
+    ?>
+    
+    <?php foreach ($ordersGrouped as $orderId => $products) { ?>
+        <div class="order-container">
+            <!-- Header của đơn hàng -->
+            <div class="order-header">
+                <span class="status">
+                    Trạng thái: <?= isset($products[0]['ten_trang_thai']) ? htmlspecialchars($products[0]['ten_trang_thai']) : 'Không rõ' ?>
+                </span>
+                <span class="time">
+                    Thời gian: <?= isset($products[0]['ngay_dat']) ? htmlspecialchars($products[0]['ngay_dat']) : 'Không rõ' ?>
+                </span>
+            </div>
 
-    <?php if (!empty($orderDetails)) { ?>
-        <?php foreach ($orderDetails as $order) { ?>
-            <div class="order-container">
-                <div class="order-header">
-                    <span class="status">
-                        Trạng thái: <?= isset($order['ten_trang_thai']) ? htmlspecialchars($order['ten_trang_thai']) : 'Không rõ' ?>
-                    </span> <span class="time">Thời gian: <?= isset($order['ngay_dat']) ? htmlspecialchars($order['ngay_dat']) : 'Không rõ' ?></span>
-                </div>
+            <!-- Hiển thị các sản phẩm thuộc đơn hàng -->
+            <?php foreach ($products as $product) { ?>
                 <div class="order-item">
-                    <!-- Hiển thị ảnh sản phẩm -->
-                    <img src="<?= isset($order['hinh_anh_san_pham']) ? htmlspecialchars($order['hinh_anh_san_pham']) : 'default.png' ?>" alt="Hình ảnh sản phẩm">
+                <img src="<?= isset($product['hinh_anh_san_pham']) ? htmlspecialchars($product['hinh_anh_san_pham']) : 'default.png' ?>" alt="Hình ảnh sản phẩm" style="width: 80px; height: 100px; object-fit: cover; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px;">
+
                     <div class="info">
-                        <!-- Hiển thị tên sản phẩm -->
-                        <h4><?= isset($order['ten_san_pham']) ? htmlspecialchars($order['ten_san_pham']) : 'Không rõ' ?></h4>
-                        <!-- Hiển thị giá và số lượng -->
+                        <h4><?= isset($product['ten_san_pham']) ? htmlspecialchars($product['ten_san_pham']) : 'Không rõ' ?></h4>
                         <div class="price-quantity">
-                            <a class="price" ><?= isset($order['don_gia']) ? number_format($order['don_gia'], 0, ',', '.') : '0' ?>đ</a>
-                            &times;<?= isset($order['so_luong']) ? htmlspecialchars($order['so_luong']) : '0' ?>
+                            <span class="price"><?= isset($product['don_gia']) ? number_format($product['don_gia'], 0, ',', '.') : '0' ?>đ</span>
+                            &times;<span class="quantity"><?= isset($product['so_luong']) ? htmlspecialchars($product['so_luong']) : '0' ?></span>
                         </div>
                     </div>
                 </div>
-                <div class="order-footer">
-                    <span class="total">Thành tiền: <?= isset($order['tong_tien']) ? number_format($order['don_gia'] * $order['so_luong'], 0, ',', '.') : '0' ?>đ</span>
-                    <a href="?act=orderDetails&order_id=<?= $order['don_hang_id'] ?>" class="btn-detail">Xem chi tiết</a>                </div>
+            <?php } ?>
+
+            <!-- Footer của đơn hàng -->
+            <div class="order-footer">
+                <span class="total">
+                    Thành tiền: <?= isset($products[0]['tong_tien']) ? number_format($products[0]['tong_tien'], 0, ',', '.') : '0' ?>đ
+                </span>
+                <a href="?act=orderDetails&order_id=<?= $orderId ?>" class="btn-detail">Xem chi tiết</a>
             </div>
-        <?php } ?>
-    <?php } else { ?>
-        <p style="text-align: center; color: #666; font-size:20px;">Bạn chưa có đơn hàng nào trong lịch sử.</p>
+        </div>
     <?php } ?>
+<?php } else { ?>
+    <p style="text-align: center; color: #666; font-size:20px;">Bạn chưa có đơn hàng nào trong lịch sử.</p>
+<?php } ?>
+
 
     <a href="javascript:history.back()" class="btn-back" style="font-size:15px;">Trở lại</a>
 

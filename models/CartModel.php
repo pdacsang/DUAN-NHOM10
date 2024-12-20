@@ -121,7 +121,15 @@ class CartModel {
             'image' => $image
         ];
     }
-
+    public function setProductQuantity($productId, $quantity) {
+        if (isset($_SESSION['cart'][$productId])) {
+            $_SESSION['cart'][$productId]['quantity'] = $quantity;
+            return true;
+        }
+        return false;
+    }
+    
+   
     // Cập nhật số lượng và tổng tiền trong giỏ hàng
     private function updateCartMetrics() {
         $_SESSION['cart_total_quantity'] = array_sum(array_column($_SESSION['cart'], 'quantity') ?? []);

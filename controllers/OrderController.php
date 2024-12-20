@@ -22,7 +22,7 @@ class OrderController {
             return;
         }
 
-        include './views/Order.php';
+        include './views/order/Order.php';
     }
 
     // Xử lý thanh toán và đặt hàng
@@ -43,7 +43,7 @@ class OrderController {
         // Kiểm tra tính hợp lệ của dữ liệu
         if (!$userId || !$recipientName || !$email || !$phone || !$address) {
             $error_message = "Vui lòng nhập đầy đủ thông tin.";
-            include './views/Order.php';
+            include './views/order/Order.php';
             return;
         }
     
@@ -51,7 +51,7 @@ class OrderController {
         $cart = $_SESSION['cart'] ?? [];
         if (empty($cart)) {
             $error_message = "Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi đặt hàng.";
-            include './views/Order.php';
+            include './views/order/Order.php';
             return;
         }
     
@@ -62,7 +62,7 @@ class OrderController {
     
         if ($totalAmount <= 0) {
             $error_message = "Tổng tiền không hợp lệ.";
-            include './views/Order.php';
+            include './views/order/Order.php';
             return;
         }
     
@@ -92,49 +92,19 @@ class OrderController {
             exit();
         } catch (Exception $e) {
             $error_message = "Lỗi khi xử lý đơn hàng: " . $e->getMessage();
-            include './views/Order.php';
+            include './views/order/Order.php';
         }
     }
     
     
 
 
-    // Thanh toán từ chi tiết sản phẩm
-    public function checkoutFromProduct() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            // Lấy thông tin sản phẩm từ form
-            $productId = $_POST['product_id'] ?? null;
-            $productName = $_POST['product_name'] ?? null;
-            $productPrice = $_POST['product_price'] ?? null;
-            $productQuantity = $_POST['product_quantity'] ?? 1;
-
-            // Kiểm tra dữ liệu
-            if (!$productId || !$productName || !$productPrice) {
-                echo "Thông tin sản phẩm không hợp lệ.";
-                return;
-            }
-
-            // Chuẩn bị dữ liệu để hiển thị trên trang thanh toán
-            $product = [
-                'id' => $productId,
-                'name' => $productName,
-                'price' => $productPrice,
-                'quantity' => $productQuantity,
-            ];
-
-            // Chuyển đến trang thanh toán
-            $isSingleProduct = true; // Đánh dấu là thanh toán từ sản phẩm chi tiết
-            include './views/Checkout.php';
-        } else {
-            echo "Phương thức không hợp lệ.";
-        }   
-    }
 
     public function createVNPayPaymentRequest($orderId, $totalAmount, $recipientName, $email, $phone, $address, $orderNote) {
         $vnp_TmnCode = "31DQ0GI0";  
         $vnp_HashSecret = "W4J1L035O98GIOWPIJUIUDL7D61VFXC5"; 
         $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";  
-        $vnp_Returnurl = "http://localhost:81/";
+        $vnp_Returnurl = "http://localhost/project/DUAN-NHOM10/index.php?act=orderSuccess";
 
         $vnp_TxnRef = $orderId;
         $vnp_OrderInfo = $_POST['order_desc'] ?? 'No description provided';
@@ -169,6 +139,6 @@ class OrderController {
     }
 
     public function orderSuccess() {
-        include './views/OrderSuccess.php'; 
+        include './views/order/OrderSuccess.php'; 
     }
 }

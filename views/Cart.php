@@ -1,6 +1,35 @@
 <?php
 require_once './views/layout/header.php';
 require_once './views/layout/navbar.php';
+$isLoggedIn = isset($_SESSION['user_client']) && !empty($_SESSION['user_client']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_GET['act'] === 'updateCart') {
+    $input = json_decode(file_get_contents('php://input'), true);
+    $productId = $input['product_id'] ?? 0;
+    $quantity = $input['quantity'] ?? 1;
+
+    if (isset($_SESSION['cart'][$productId])) {
+        // Cập nhật số lượng sản phẩm
+        $_SESSION['cart'][$productId]['quantity'] = $quantity;
+
+        // Tính lại giá tiền cho sản phẩm
+        $itemTotal = $_SESSION['cart'][$productId]['quantity'] * $_SESSION['cart'][$productId]['price'];
+
+        // Tính tổng tiền giỏ hàng
+        $totalAmount = array_sum(array_map(function ($item) {
+            return $item['quantity'] * $item['price'];
+        }, $_SESSION['cart']));
+
+        // Trả về kết quả
+        echo json_encode([
+            'success' => true,
+            'itemTotal' => number_format($itemTotal, 0, ',', '.') . 'đ',
+            'totalAmount' => number_format($totalAmount, 0, ',', '.') . 'đ'
+        ]);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Sản phẩm không tồn tại trong giỏ hàng.']);
+    }
+    exit;
+}
 ?>
 <button onclick="topFunction()" id="myBtn-scroll" title="Go to top"><i class="fas fa-chevron-down"></i></button>
 
@@ -59,12 +88,19 @@ require_once './views/layout/navbar.php';
                         <input type="button" value="+" class="cart__body-quantity-plus" data-product-id="<?= $item['id'] ?>">
                     </div>
                     <div class="col-3 cart__body-price">
-                        <span id="item-total-<?= $item['id'] ?>">
-                            <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>đ
-                        </span>
+                    <span id="item-total-<?= $item['id'] ?>">
+    <?= number_format($item['price'] * $item['quantity'], 0, ',', '.') ?>đ
+</span>
                         <a href="index.php?act=removeFromCart&id=<?= $item['id'] ?>" 
                            onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')">Xóa</a>
                     </div>
+                    <div id="deleteModal" class="modal">
+    <div class="modal-content">
+        <p>Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?</p>
+        <button id="confirmDelete" class="btn-confirm">Xóa</button>
+        <button id="cancelDelete" class="btn-cancel">Hủy</button>
+    </div>
+</div>
                 </article>
             <?php endforeach; ?>
         <?php else: ?>
@@ -98,48 +134,154 @@ require_once './views/layout/navbar.php';
             ], JSON_UNESCAPED_UNICODE) ?>'>
         <?php endforeach; ?>
         <input type="hidden" name="totalAmount" value="<?= $totalAmount ?>">
-        <button type="submit" class="cart__foot-price-btn">Thanh toán</button>
-    </form>
+<!-- Nút thanh toán -->
+<button type="button" id="btnCheckout" class="cart__foot-price-btn">Thanh toán</button>    </form>
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <p>Bạn cần phải đăng nhập để có thể thanh toán.</p>
+    </div>
+</div>
 </div>
 </section>
 
 <?php
 require_once './views/layout/footer.php';
 ?>
+<style>
+    .cart {
+    min-height: calc(100vh - 300px); /* Đặt chiều cao tối thiểu để lấp đầy màn hình */
+    
+}
+    .modal {
+    display: none; /* Ẩn modal mặc định */
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
 
+.modal-content {
+    background-color: #fff;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-content p {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 10px;
+}
+
+.modal-content .close {
+    color: #aaa;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content .close:hover,
+.modal-content .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
 <script>
+        const isLoggedIn = <?= json_encode($isLoggedIn); ?>;
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const checkoutButton = document.getElementById("btnCheckout");
+    const modal = document.getElementById("loginModal");
+    const closeModal = document.querySelector(".close");
+
+    checkoutButton.addEventListener("click", function () {
+        if (!isLoggedIn) { // Sử dụng biến `isLoggedIn` được truyền từ PHP
+            modal.style.display = "block"; // Hiển thị modal nếu chưa đăng nhập
+        } else {
+            // Thực hiện thanh toán
+            window.location.href = "index.php?act=order";
+        }
+    });
+
+    // Đóng modal khi nhấn vào nút close
+    closeModal.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    // Đóng modal khi nhấn ra ngoài modal
+    window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+});
 document.addEventListener("DOMContentLoaded", function () {
     const cartContainer = document.querySelector(".cart");
 
     cartContainer.addEventListener("click", function (event) {
         const target = event.target;
 
-        if (target.matches(".cart__body-quantity-plus, .cart__body-quantity-minus")) {
+        // Xử lý nút tăng số lượng
+        if (target.matches(".cart__body-quantity-plus")) {
+            const inputField = target.previousElementSibling;
             const productId = target.getAttribute("data-product-id");
-            const change = target.classList.contains("cart__body-quantity-plus") ? 1 : -1;
 
-            // Gửi yêu cầu cập nhật số lượng
-            updateQuantity(productId, change);
+            let currentValue = parseInt(inputField.value) || 0;
+            if (currentValue < 999) {
+                currentValue += 1;
+                inputField.value = currentValue; // Cập nhật giá trị trong input
+                updateQuantity(productId, currentValue);
+            }
         }
-        if (change === -1 && currentQuantity === 1) {
-            return;  // Không làm gì nếu số lượng đã là 1
+
+        // Xử lý nút giảm số lượng
+        if (target.matches(".cart__body-quantity-minus")) {
+            const inputField = target.nextElementSibling;
+            const productId = target.getAttribute("data-product-id");
+
+            let currentValue = parseInt(inputField.value) || 1;
+            if (currentValue > 1) {
+                currentValue -= 1;
+                inputField.value = currentValue; // Cập nhật giá trị trong input
+                updateQuantity(productId, currentValue);
+            }
         }
     });
 
-    const updateQuantity = (productId, change) => {
+    const updateQuantity = (productId, quantity) => {
         fetch("index.php?act=updateCart", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ product_id: productId, change: change })
+            body: JSON.stringify({ product_id: productId, quantity: quantity })
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Cập nhật giá và tổng tiền
-                document.querySelector(`#item-total-${productId}`).innerText = data.itemTotal;
-                document.querySelector("#cart-total").innerText = data.totalAmount;
+                // Cập nhật giá sản phẩm
+                const itemTotalElement = document.querySelector(`#item-total-${productId}`);
+                if (itemTotalElement) {
+                    itemTotalElement.innerText = data.itemTotal; // Cập nhật giá tiền từng sản phẩm
+                }
+
+                // Cập nhật tổng tiền
+                const cartTotalElement = document.querySelector("#cart-total");
+                if (cartTotalElement) {
+                    cartTotalElement.innerText = data.totalAmount; // Cập nhật tổng tiền
+                }
             } else {
-                alert("Cập nhật thất bại: " + data.message);
+                alert("Không thể cập nhật số lượng: " + data.message);
             }
         })
         .catch(error => {

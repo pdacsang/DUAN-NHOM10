@@ -235,10 +235,10 @@ class HomeController
                 $error_message = "Không có đơn hàng nào trong lịch sử.";
             }
     
-            include './views/OrderHistory.php';
+            include './views/order/OrderHistory.php';
         } catch (Exception $e) {
             $error_message = "Lỗi xảy ra khi lấy lịch sử đặt hàng: " . $e->getMessage();
-            include './views/OrderHistory.php';
+            include './views/order/OrderHistory.php';
         }
     }
     
@@ -263,7 +263,7 @@ class HomeController
         }
 
         // Truyền dữ liệu sang view
-        require_once './views/OrderDetails.php'; // Đường dẫn view
+        require_once './views/order/OrderDetails.php'; // Đường dẫn view
     } catch (Exception $e) {
         echo "<p>Lỗi: " . $e->getMessage() . "</p>";
         exit;

@@ -171,6 +171,33 @@ require_once './views/layout/navbar.php';
 .progress-line.active {
     background-color: #3498db;
 }
+.btn-back {
+    display: inline-block;
+    margin: 20px auto;
+    padding: 12px 25px;
+    background-color: #3498db; /* Màu xanh */
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin-left: 330px;
+    text-decoration: none;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    
+}
+
+.btn-back:hover {
+    background-color: #2980b9; /* Màu xanh đậm hơn khi hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+
+}
+
+
+
+
 </style>
 <div class="order-container">
     <h2>Đơn đặt hàng của tôi</h2>
@@ -219,6 +246,7 @@ require_once './views/layout/navbar.php';
     <!-- Bảng thông tin chi tiết -->
     <div class="order-details">
         <table>
+            
             <tr>
                 <th>Họ và tên</th>
                 <td><?= htmlspecialchars($orderDetails['ten_nguoi_nhan'] ?? 'Không rõ') ?></td>
@@ -241,9 +269,10 @@ require_once './views/layout/navbar.php';
             </tr>
         </table>
     </div>
+<a href="javascript:history.back()" class="btn-back">Quay lại</a>
+
 </div>
 
 
-<a href="javascript:history.back()" class="btn-back">Quay lại</a>
 
 <?php require_once './views/layout/footer.php'; ?>

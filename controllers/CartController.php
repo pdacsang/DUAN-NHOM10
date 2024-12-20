@@ -57,35 +57,45 @@ class CartController {
         }
     }
 
-    // Cập nhật số lượng sản phẩm trong giỏ
     public function updateCart() {
         try {
             $data = json_decode(file_get_contents('php://input'), true);
             $productId = $data['product_id'] ?? null;
-            $change = $data['change'] ?? null;
-
+            $quantity = $data['quantity'] ?? null;
+    
             // Kiểm tra dữ liệu đầu vào
-            if (!is_numeric($productId) || !in_array($change, [-1, 1])) {
+            if (!is_numeric($productId) || !is_numeric($quantity) || $quantity <= 0) {
                 throw new Exception("Dữ liệu không hợp lệ.");
             }
-
-            $success = $this->cartModel->updateProductQuantity($productId, $change);
+    
+            // Cập nhật số lượng sản phẩm trong giỏ
+            $success = $this->cartModel->setProductQuantity($productId, (int)$quantity);
+            if (!$success) {
+                throw new Exception("Không thể cập nhật số lượng sản phẩm.");
+            }
+    
+            // Lấy thông tin giỏ hàng sau khi cập nhật
             $cartItems = $this->cartModel->getCartItems();
-
-            $itemTotal = ($cartItems[$productId]['price'] ?? 0) * ($cartItems[$productId]['quantity'] ?? 0);
+    
+            // Tính lại giá từng sản phẩm và tổng tiền giỏ hàng
+            $itemTotal = isset($cartItems[$productId])
+                ? $cartItems[$productId]['price'] * $cartItems[$productId]['quantity']
+                : 0;
+    
             $totalAmount = $this->cartModel->getTotalAmount();
-
+    
             // Trả kết quả về dạng JSON
             echo json_encode([
-                'success' => $success,
+                'success' => true,
                 'itemTotal' => number_format($itemTotal, 0, ',', '.') . 'đ',
                 'totalAmount' => number_format($totalAmount, 0, ',', '.') . 'đ',
             ]);
         } catch (Exception $e) {
             file_put_contents('./logs/error.log', date('Y-m-d H:i:s') . ' - Lỗi cập nhật giỏ hàng: ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
-            echo json_encode(['success' => false, 'message' => 'Lỗi xảy ra.']);
+            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+    
 
     // Xóa sản phẩm khỏi giỏ
     public function removeFromCart() {
